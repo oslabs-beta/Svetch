@@ -1,6 +1,7 @@
+import { canvas } from '../store.js';
+
 export default {
   createChild: (name, type, parent) => {
-    console.log(name, type, parent)
     canvas.update(c => {
       c[parent].children.push(name);
       c[name] = {children:[], 'scriptId': type}
