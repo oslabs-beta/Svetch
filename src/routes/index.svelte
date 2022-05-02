@@ -6,14 +6,29 @@ import Elements from "../lib/Elements.svelte";
 import Canvas from '../lib/Canvas.svelte'
   // @ts-ignore
 import Tree from '../lib/Tree.svelte'
+import CodeBlock from '../lib/codeBlock.svelte';
+import fileUtility from '../utils/fileUtility';
+import canvasUtility from '../utils/canvasUtility';
+import tester from '../utils/tester.js'
+import { canvas } from "../store";
+import Directory from '../lib/Directory.svelte'
  
-  let toggled = true
- 
+  let toggled = true;
+  let selected = 'index';
+  let code;
+  $: code = fileUtility.parse(selected)[0].data;
+  // $: console.log(fileUtility.parse(selected)[0].data);
+
+  // $: {canvas; code = fileUtility.parse('index')[0].data }
+
   function toggle() {
 		toggled = !toggled;
    // console.log("test",checked)
 	}
-  $:console.log(toggled)
+  const updateSelected = (newSelection) => {
+    if (selected === newSelection) selected = null;
+    selected = newSelection;
+  }
 </script>
 
 <main>
@@ -28,6 +43,20 @@ import Tree from '../lib/Tree.svelte'
 <Tree bind:toggled = {toggled}/>
 {/if}
 </div>
+<div id = "FileandCode">
+<Directory />
+<CodeBlock bind:code={code}/> 
+
+</div>
+
+<button on:click = {() => {canvasUtility.createChild('div1', 'div', 'index'); updateSelected('div1'); }}>Add div1 </button>
+<button on:click = {() => {canvasUtility.createChild('div2', 'div', 'index'); updateSelected('div2'); }}>Add div2 </button>
+<!-- <button on:click = {() => {canvasUtility.createChild('button1', 'button', 'index');updateSelected('button1') }}>Add booty </button>  -->
+<button on:click = {() => {canvasUtility.createChild('p1', 'p', 'index');updateSelected('p1')}}>Add p </button>
+<button on:click = {() => {canvasUtility.createChild('p1', 'p', 'div1');updateSelected('p1')}}>Add p to div1 </button>
+<button on:click = {() => {updateSelected('index')}}>Show Index </button>
+<button on:click = {() => {updateSelected('div1')}}>Show Div1 </button>
+<button on:click = {() => {updateSelected('div2')}}>Show Div2 </button>
 </main>
 <style>
 	#main {
@@ -38,14 +67,19 @@ import Tree from '../lib/Tree.svelte'
 		text-align: center;
 	
 		width: 100vw;
-    height: 100vh;
+    height: 100%;
 		margin: 0 auto;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
    
 	}
-  #togBut{
-    float: right;
-    margin-top: .5vh;
+  #FileandCode{
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 30vh;
   }
+  
   
   
 	

@@ -1,23 +1,14 @@
 <script>
-	import { canvas } from './store.js';
+	import { canvas } from '../store.js';
   import Folder from './Folder.svelte';
-	let testCanvas = {
-		"index":{
-			"children":[
-				"div1"
-			],
-			"scriptId":"index"
-		},
-		"div1":{
-			"children":[],
-			"scriptId":"div"}
-	};
-	function parseCanvas(obj) {
+
+	let root;
+	
+	const parse = (obj) => {
 		const fileDirectory = {
 			name: 'Src',
 			children: []
-		}
-		//add the index
+		};
 		fileDirectory.children.push({name:'index'});
 		const keys = Object.keys(obj);
 		const lib = {name:'Lib', children: []}
@@ -30,6 +21,7 @@
 		}
 		return fileDirectory;
 	}
+<<<<<<< HEAD
   //We need to construct an object of the same shape when reading/manipulating files & folders
   export let root = 
     {
@@ -64,6 +56,9 @@
        	},
 			]
     };
+=======
+	
+>>>>>>> 4fd09adfd2934ae6065f018f5c93428ab4aac55a
 	const sortFiles = (a, b) => {
 		if (a.children && !b.children) {
 			a.children.sort(sortFiles);
@@ -77,10 +72,24 @@
 		if (b.name < a.name) return 1;
 		return 0;
 	}
-// 	root = parseCanvas({...$canvas});
-	root = parseCanvas({testCanvas});
-	root.children.sort(sortFiles);
-</script>
 
-<h1>Component Directory</h1>
+	const update = (canvas) => {
+		root = parse(canvas);
+		root.children.sort(sortFiles);
+	}
+
+	$: {
+		update({...canvas})
+	}
+</script>
+<!-- <h1>Component Directory</h1> -->
+<div id ='dir'>
 <Folder name={root.name} children={root.children}></Folder>
+</div>
+
+<style>
+	#dir {
+    width: 30vw;
+    border: 2px solid black
+  }
+</style>
