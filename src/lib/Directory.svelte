@@ -56,9 +56,6 @@
          	]
        	},
 				{
-					name: 'App.svelte'
-				},
-				{
          	name: 'zebras',
        	 	children: [
          	  { name: 'ChartContainer.svelte' },
