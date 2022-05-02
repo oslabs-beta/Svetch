@@ -14,17 +14,23 @@ $:console.log(toggled)
 </script>
 
 <main>
-  <Elements id = "el"/>
+  <div class="elementsContainer">
+    <Elements />
+  </div>
+  <div class="visualizerContainer">
     {#if toggled}
       <Canvas bind:toggled = {toggled}/>
     {:else}
       <Tree bind:toggled = {toggled}/>
     {/if}
-  <pre>
-    <code>
-      <Codeblock />
-    </code>
-  </pre>
+  </div>
+  <div class="codeboxContainer">
+    <pre>
+      <code>
+        <Codeblock />
+      </code>
+    </pre>
+  </div>
 </main>
 
 <style>
@@ -36,6 +42,18 @@ main {
   width: 100vw;
   height: 100vh;
   margin: 0 auto;
+}
+.elementsContainer {
+	border: 2px solid black;
+	height: 70vh;
+	width: 20vw;
+	border-radius: 15px;
+}
+.visualizerContainer {
+
+}
+.codeboxContainer {
+
 }
 
 @media (min-width: 640px) {
