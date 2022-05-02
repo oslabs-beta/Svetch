@@ -8,7 +8,7 @@
 		const fileDirectory = {
 			name: 'Src',
 			children: []
-		}
+		};
 		fileDirectory.children.push({name:'index'});
 		const keys = Object.keys(obj);
 		const lib = {name:'Lib', children: []}
@@ -36,9 +36,13 @@
 		return 0;
 	}
 
-	$: {
-		root = parse({...$canvas});
+	const update = (canvas) => {
+		root = parse(canvas);
 		root.children.sort(sortFiles);
+	}
+
+	$: {
+		update({...canvas})
 	}
 </script>
 <!-- <h1>Component Directory</h1> -->
