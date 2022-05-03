@@ -57,6 +57,7 @@ import Directory from '../lib/Directory.svelte'
 <button on:click = {() => {updateSelected('index')}}>Show Index </button>
 <button on:click = {() => {updateSelected('div1')}}>Show Div1 </button>
 <button on:click = {() => {updateSelected('div2')}}>Show Div2 </button>
+<button on:click = {fileUtility.createFile}>create file </button>
 </main>
 <style>
 	#main {
