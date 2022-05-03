@@ -14,8 +14,9 @@ import Directory from '../lib/Directory.svelte'
   let toggled = true;
   let selected = 'index';
   let code;
+
   $: {
-    code = fileUtility.parse(selected)[0].data; 
+    code = fileUtility.parse(selected)[0].data;
   }
 
   function toggle() {
