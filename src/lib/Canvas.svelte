@@ -1,15 +1,10 @@
-<main> 
-    <div class="container">
-        <label id = "switch">
-        <Switch bind:checked={toggled}></Switch>
-                <!-- <br>
-                {toggled} -->
-            </label>
-        <canvas id='dotCanvas'>
-            
-        </canvas>
-    </div>
-</main>
+
+<div class="container">
+    <label id = "switch">
+    <Switch bind:checked={toggled}></Switch>
+    </label>
+    <canvas id='dotCanvas'></canvas>
+</div>
 <script>
 import {onMount} from 'svelte'
 
@@ -18,8 +13,8 @@ import Switch from './Switch.svelte';
 export let toggled = true;
 
 onMount(() =>{
-    function getDocumentWidth() {
-  return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  function getDocumentWidth() {
+    return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 };
 
 function getDocumentHeight() {

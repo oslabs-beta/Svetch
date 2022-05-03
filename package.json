@@ -12,9 +12,13 @@
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
+    "d3": "^7.4.4",
     "eslint": "^7.32.0",
     "eslint-plugin-svelte3": "^3.2.1",
     "svelte": "^3.44.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "svelte-highlight": "^6.0.1"
+  }
 }
