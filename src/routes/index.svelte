@@ -9,21 +9,17 @@ import Tree from '../lib/Tree.svelte'
 import CodeBlock from '../lib/codeBlock.svelte';
 import fileUtility from '../utils/fileUtility';
 import canvasUtility from '../utils/canvasUtility';
-import tester from '../utils/tester.js'
-import { canvas } from "../store";
 import Directory from '../lib/Directory.svelte'
  
   let toggled = true;
   let selected = 'index';
   let code;
-  $: code = fileUtility.parse(selected)[0].data;
-  // $: console.log(fileUtility.parse(selected)[0].data);
-
-  // $: {canvas; code = fileUtility.parse('index')[0].data }
+  $: {
+    code = fileUtility.parse(selected)[0].data; 
+  }
 
   function toggle() {
 		toggled = !toggled;
-   // console.log("test",checked)
 	}
   const updateSelected = (newSelection) => {
     if (selected === newSelection) selected = null;
@@ -45,7 +41,7 @@ import Directory from '../lib/Directory.svelte'
 </div>
 <div id = "FileandCode">
 <Directory />
-<CodeBlock bind:code={code}/> 
+<CodeBlock code={code}/> 
 
 </div>
 
@@ -57,6 +53,7 @@ import Directory from '../lib/Directory.svelte'
 <button on:click = {() => {updateSelected('index')}}>Show Index </button>
 <button on:click = {() => {updateSelected('div1')}}>Show Div1 </button>
 <button on:click = {() => {updateSelected('div2')}}>Show Div2 </button>
+<button on:click = {() => {() => console.log('all files:', fileUtility.parse('index', true))}}>grab files </button>
 </main>
 <style>
 	#main {

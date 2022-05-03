@@ -2,7 +2,7 @@
   import File from './File.svelte';
   export let name;
   export let children;
-  let expanded = false;
+  export let expanded = false;
   
   const toggleExpansion = () => {
     expanded = !expanded;

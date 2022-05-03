@@ -3,7 +3,7 @@
     // import monokai from "svelte-highlight/styles/monokai";
       export let code = 'test code';
     // $: code = `<button on:click={() => { console.log(0); }}>Increment {count}</button>`;
-$:console.log(code)
+// $:console.log(code)
     //     $:{ code =
 //     `<script>
 //       let count = 0;
@@ -26,9 +26,7 @@ $:console.log(code)
   
   <HighlightSvelte {code} />  -->
 
-  <div id = 'block'>
-    {code}
-  </div>
+  <textarea id = 'block' readonly>{code}</textarea>
 
   <style>
       #block{
