@@ -2,7 +2,11 @@ import { writable } from 'svelte/store';
 
 export const canvas = writable({
 	'index' : {
-		children : [],
+		children : ['div1'],
 		scriptId : 'main'
+	},
+	'div1' : {
+		children : [],
+		scriptId : 'div'
 	}
 });

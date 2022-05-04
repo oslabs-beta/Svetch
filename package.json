@@ -2,12 +2,13 @@
   "name": "svetch",
   "version": "0.0.1",
   "scripts": {
-    "dev": "svelte-kit dev",
+    "dev": "svelte-kit dev & node server/server.js",
     "build": "svelte-kit build",
     "package": "svelte-kit package",
     "preview": "svelte-kit preview",
     "prepare": "svelte-kit sync",
-    "lint": "eslint --ignore-path .gitignore ."
+    "lint": "eslint --ignore-path .gitignore .",
+    "serve": "node server/server.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
@@ -19,6 +20,7 @@
   },
   "type": "module",
   "dependencies": {
+    "express": "^4.18.1",
     "svelte-highlight": "^6.0.1"
   }
 }

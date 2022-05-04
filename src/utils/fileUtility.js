@@ -1,4 +1,5 @@
 import { canvas } from '../store.js';
+
 const fileUtility = {};
 
 
@@ -85,4 +86,43 @@ fileUtility.sort = files => {
 	}
 	return files.sort(sortFiles);
 }
+fileUtility.createFile = () => {
+	let canvasStore;
+	let exporting = true;
+	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
+	unsubscribe();
+	//console.log(fileUtility.parse);
+	 let array = fileUtility.parse('index', exporting)
+
+	 //console.log(array)
+
+	 for (let i = 0; i < array.length; i++)
+	 {
+		 let {name, data} = array[i];
+		 let folder;
+		 name == 'index'? folder = 'Export' : folder = 'Export/lib'
+		 //console.log(folder)
+		 let postContent = {
+			 name: name,
+			 text : data,
+			 folder : folder
+		 }
+		 postContent = JSON.stringify(postContent);
+		 fetch('/file', {
+			Method: 'POST',
+			Headers:{
+				'Content-Type':'application/json'
+			},
+			Body: postContent,
+			Mode : 'no-cors'
+		})
+		console.log(postContent)
+		//.then((res) => {console.log("done")})
+		//.catch((err) => console.log('server not found or req failed'));
+		}
+
+	 }
+	
+	
+
 export default fileUtility;
