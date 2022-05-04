@@ -19,6 +19,7 @@
   },
   "type": "module",
   "dependencies": {
+    "axios": "^0.27.2",
     "svelte-highlight": "^6.0.1"
   }
 }
