@@ -10,9 +10,6 @@ import CodeBlock from '../lib/codeBlock.svelte';
 import fileUtility from '../utils/fileUtility';
 import canvasUtility from '../utils/canvasUtility';
 import Directory from '../lib/Directory.svelte';
-import { canvas } from '../store.js';
-
-// export let boxArray = []; 
 
 //import fsTester from './fakeServer.js';
  
@@ -22,7 +19,6 @@ import { canvas } from '../store.js';
 
   $: {
     code = fileUtility.parse(selected)[0].data;
-    console.log($canvas);
   }
 
   function toggle() {
@@ -32,29 +28,6 @@ import { canvas } from '../store.js';
     if (selected === newSelection) selected = null;
     selected = newSelection;
   }
-
-  //BOX MOVEMENT FUNCTIONS
-
-
-  class Box {
-  constructor(x, y, width, height, type) {
-    this.x = x,
-    this.y = y, 
-    this.width = width,
-    this.height = height,
-    this.type = type 
-  }
-}
-
-  // let moving = false;
-  // let selectedBox = null;
-  // let resizing = false; 
-
-
-  const boxArray = []; 
-
-
-
 </script>
 
 <main>
@@ -62,9 +35,9 @@ import { canvas } from '../store.js';
   <!-- <button id = 'togBut' on:click = {toggle}> switch between canvas and tree </button> -->
   <div id = 'main' >
 
-<Elements id = "el" boxArray={boxArray}/>
+<Elements id = "el"/>
 {#if toggled}
-<Canvas bind:toggled = {toggled} boxArray={boxArray}/>
+<Canvas bind:toggled = {toggled}/>
 {:else}
 <Tree bind:toggled = {toggled}/>
 {/if}

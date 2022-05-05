@@ -1,23 +1,45 @@
 <script>
-import { namespace } from "d3";
+	//import H1Element from "./DraggableComponents/H1Element.svelte"; 
+	//import PElement from "./DraggableComponents/PElement.svelte"; 
+	//import ImgElement from "./DraggableComponents/ImgElement.svelte"; 
+	//import Draggable from "./DraggableComponents/Draggable.svelte"; 
 
-import Box from "../boxClass.js"
-import drawNewRect from './Canvas.svelte'; 
-import drawAll from '../boxClass.js'; 
-	//import { drawNewRect } from './Canvas.svelte'
 	const htmlElements = [
-		{id: 1, name: "h1"}, 
-		{id: 2, name: "img"}, 
-		{id: 3, name: "paragraph"}
+		{id: 1, name: "H1 Header"}, 
+		{id: 2, name: "Image"}, 
+		{id: 3, name: "Paragraph"}
 	]; 
 
+	//import {flip} from 'svelte/animate'; 
+	//import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
+
+	let inCanvas = false; 
+
+	const dragging = (e) => {
+		//triggered on mousedown of list item
+		e.dataTransfer.dropEffect = "move"; 
+		e.dataTransfer.setData("text", e.target.getAttribute("id"))
+
+		//grab the current left and top position
+
+		//track left and top position
+			//update dynamically
+	}
+
+	const dropItem = () => {
+		//triggered on mouseup of list item
+
+		//if position of the list item is within canvas
+			//add to canvas
+			//rerender the list of html elements
+
+		//else animate return to 
+
+	}
 
 
-	import createBox from '../routes/index.svelte';
 
-	import context from './Canvas.svelte'; 
 
-	export let boxArray; 
 
 </script>
 
@@ -25,12 +47,14 @@ import drawAll from '../boxClass.js';
 <!-- //div contains html elements list declared above -->
 <div id = "el">
 	<h1>HTML Elements</h1>
-	<ul>
-		{#each htmlElements as element}
-		<!-- on:click should trigger DrawNewRect -->
-			<button on:click = {() => {boxArray.push(new Box(50,50,100,50, element.name, context)); drawAll(boxArray)}}>{element.name}</button>
-		{/each}
-	</ul>
+		<ul>
+			<!--loops through the htmlElements array and displays each value as a list item-->
+			{#each htmlElements as element}
+				<li on:mousedown={dragging}>
+					{element.name}
+				</li>
+			{/each}
+		</ul>
 </div>
 
 <style>
@@ -48,10 +72,5 @@ import drawAll from '../boxClass.js';
 		height: 500%; 
 		width: 19%; 
 		border: solid 1px gray; 
-	}
-	.elementItem{
-		width: 80%;
-		border: solid blue; 
-		padding: 1px; 
 	}
 </style>
