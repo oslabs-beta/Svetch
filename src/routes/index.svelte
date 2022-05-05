@@ -9,8 +9,10 @@ import Tree from '../lib/Tree.svelte'
 import CodeBlock from '../lib/codeBlock.svelte';
 import fileUtility from '../utils/fileUtility';
 import canvasUtility from '../utils/canvasUtility';
-import Directory from '../lib/Directory.svelte'
+import Directory from '../lib/Directory.svelte';
 
+//import fsTester from './fakeServer.js';
+ 
   let toggled = true;
   let selected = 'index';
   let code;
@@ -55,6 +57,7 @@ import Directory from '../lib/Directory.svelte'
 <button on:click = {() => {updateSelected('div1')}}>Show Div1 </button>
 <button on:click = {() => {updateSelected('div2')}}>Show Div2 </button>
 <button on:click = {() => {() => console.log('all files:', fileUtility.parse('index', true))}}>grab files </button>
+<button on:click = {() =>  fileUtility.createFile()}>get file path </button>
 </main>
 <style>
 	#main {
