@@ -89,14 +89,11 @@ fileUtility.sort = files => {
 	}
 	return files.sort(sortFiles);
 }
-fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
-	let canvasStore;
-	let exporting = true;
-	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
-	unsubscribe();
-	
-	const filesTemplates = fileUtility.parse('index', exporting);
 
+fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
+
+	let exporting = true;
+	const filesTemplates = fileUtility.parse('index', exporting);
 	const requests = [];
 
 	filesTemplates.forEach(template => {
@@ -120,30 +117,6 @@ fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
 	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
 	fileSaver.saveAs(blob, `${projectName}.zip`);
 
-		// axios.get('/zip')
-		
-		//   .then((zipAsBase64) => {
-		// 	 console.log(zipAsBase64)
-		// 	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
-		// 	fileSaver.saveAs(blob, `example.zip`);
-			
-		//   });
-
-	 }
+}
 	
-		//  for (let i = 0; i < array.length; i++)
-	//  {
-	// 	 let {name, data} = filesTemplates[i];
-	// 	 let folder;
-	// 	 name == 'index'? folder = 'Export' : folder = 'Export/lib'
-		 
-	// 	 let postContent = {
-	// 		 name: name,
-	// 		 text : data,
-	// 		 folder : folder
-	// 	 }
-		
-		//axios.post('/fileCreate', postContent)
-		//}
-
 export default fileUtility;

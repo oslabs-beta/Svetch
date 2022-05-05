@@ -44,18 +44,16 @@ export async function get (request) {
   // get user info from Github
   const user = await getUser(token);
   request.locals.user = user.login;
-  console.log('about to send post to repos');
+  // console.log('user received by callback:', user);
   
   if (exportProject) {
-    console.log('the token is: ', token)
-    const t = token
     await axios({
       method: 'post',
       url: 'http://localhost:3000/exportProject',
-      headers: {
-        token: token
-      },
-      data: {token: token}
+      data: {
+        token: token,
+        user: user 
+      }
     });
 
   }

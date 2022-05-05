@@ -1,5 +1,5 @@
 <script>
-	import p from './lib/p.svelte'
+	import p from '../lib/p.svelte'
 </script>
 
 <div>

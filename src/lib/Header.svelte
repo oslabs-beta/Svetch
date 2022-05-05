@@ -1,18 +1,26 @@
 <script>
 	export let user;
+	import fileUtility from '../utils/fileUtility';
 </script>
 
 <div id='header'>
 	<div style="flex:1;">
 		<button>
 		New Project
-		</button>	
-       <a href='/login?exportProject=true'><button>
-				Import
-		</button></a>
-        <button>
-            Export
-        </button>
+	</button>	
+	<button on:click = {() => fileUtility.createFile()}>
+		Download Project
+	</button>
+	
+	<!-- conditionally render these two buttons -->
+	{#if user}
+	<button>
+			Import
+	</button>
+	<a href='/login?exportProject=true'>
+		<button>Export</button>
+	</a>
+	{/if}
 	</div>
 	<div style="flex:1;">
 		<h1 style="text-align:center">Svetch</h1>
