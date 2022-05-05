@@ -20,7 +20,11 @@
   },
   "type": "module",
   "dependencies": {
+    "axios": "^0.27.2",
+    "b64-to-blob": "^1.2.19",
     "express": "^4.18.1",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.9.1",
     "svelte-highlight": "^6.0.1"
   }
 }

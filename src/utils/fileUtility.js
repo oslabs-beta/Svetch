@@ -1,4 +1,7 @@
 import { canvas } from '../store.js';
+import axios from 'axios';
+import b64ToBlob from "b64-to-blob";
+import fileSaver from "file-saver";
 
 const fileUtility = {};
 
@@ -29,7 +32,7 @@ fileUtility.parse = (component, exporting = false) => {
 			if (canvasStore[child].children.length) {
 				newComponent = child;
 			} 
-			if (!importMap.has(newComponent)) importMap.set(newComponent,`import ${newComponent} from './${newComponent}.svelte'`);	
+			if (!importMap.has(newComponent)) importMap.set(newComponent,`import ${newComponent} from './lib/${newComponent}.svelte'`);	
 			components.push(`<${newComponent} />`);
 		});
 
@@ -86,43 +89,61 @@ fileUtility.sort = files => {
 	}
 	return files.sort(sortFiles);
 }
-fileUtility.createFile = () => {
+fileUtility.createFile = async (projectName = 'example', ) => {
 	let canvasStore;
 	let exporting = true;
 	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
 	unsubscribe();
-	//console.log(fileUtility.parse);
-	 let array = fileUtility.parse('index', exporting)
+	
+	const filesTemplates = fileUtility.parse('index', exporting);
 
-	 //console.log(array)
+	const requests = [];
 
-	 for (let i = 0; i < array.length; i++)
-	 {
-		 let {name, data} = array[i];
-		 let folder;
-		 name == 'index'? folder = 'Export' : folder = 'Export/lib'
-		 //console.log(folder)
-		 let postContent = {
-			 name: name,
-			 text : data,
-			 folder : folder
-		 }
-		 postContent = JSON.stringify(postContent);
-		 fetch('/file', {
-			Method: 'POST',
-			Headers:{
-				'Content-Type':'application/json'
-			},
-			Body: postContent,
-			Mode : 'no-cors'
-		})
-		console.log(postContent)
-		//.then((res) => {console.log("done")})
-		//.catch((err) => console.log('server not found or req failed'));
+	filesTemplates.forEach(template => {
+		let {name, data} = template;
+		let folder;
+
+		name == 'index'? folder = 'Export/Src' : folder = 'Export/Src/lib';
+
+		let postContent = {
+			name: name,
+			text : data,
+			folder : folder
 		}
+		const request = axios.post('/fileCreate', postContent);
+		requests.push(request);
+	});
+
+	await Promise.all(requests);
+
+	const zipAsBase64 = await axios.get('/zip');
+	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
+	fileSaver.saveAs(blob, `${projectName}.zip`);
+
+		// axios.get('/zip')
+		
+		//   .then((zipAsBase64) => {
+		// 	 console.log(zipAsBase64)
+		// 	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
+		// 	fileSaver.saveAs(blob, `example.zip`);
+			
+		//   });
 
 	 }
 	
-	
+		//  for (let i = 0; i < array.length; i++)
+	//  {
+	// 	 let {name, data} = filesTemplates[i];
+	// 	 let folder;
+	// 	 name == 'index'? folder = 'Export' : folder = 'Export/lib'
+		 
+	// 	 let postContent = {
+	// 		 name: name,
+	// 		 text : data,
+	// 		 folder : folder
+	// 	 }
+		
+		//axios.post('/fileCreate', postContent)
+		//}
 
 export default fileUtility;
