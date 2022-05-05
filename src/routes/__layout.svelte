@@ -1,9 +1,19 @@
-<script>
-	import Header from '../lib/Header.svelte';
-	//import '../../static/global.css';
+<script context="module" >
+	export async function load({ session }) {
+		return {
+			props: {
+				user: session.user
+			}
+		}
+	}
 </script>
 
-<Header />
+<script>
+	import Header from '../lib/Header.svelte';
+	export let user;
+</script>
+
+<Header user={user}/>
 
 <main>
 	<slot />

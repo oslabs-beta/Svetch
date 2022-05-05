@@ -13,6 +13,8 @@ import Directory from '../lib/Directory.svelte';
 import { canvas } from '../store.js';
 
 // export let boxArray = []; 
+
+//import fsTester from './fakeServer.js';
  
   let toggled = true;
   let selected = 'index';
@@ -82,6 +84,7 @@ import { canvas } from '../store.js';
 <button on:click = {() => {updateSelected('div1')}}>Show Div1 </button>
 <button on:click = {() => {updateSelected('div2')}}>Show Div2 </button>
 <button on:click = {() => {() => console.log('all files:', fileUtility.parse('index', true))}}>grab files </button>
+<button on:click = {() =>  fileUtility.createFile()}>get file path </button>
 </main>
 <style>
 	#main {
