@@ -32,7 +32,7 @@ fileUtility.parse = (component, exporting = false) => {
 			if (canvasStore[child].children.length) {
 				newComponent = child;
 			} 
-			if (!importMap.has(newComponent)) importMap.set(newComponent,`import ${newComponent} from './lib/${newComponent}.svelte'`);	
+			if (!importMap.has(newComponent)) importMap.set(newComponent,`import ${newComponent} from '../lib/${newComponent}.svelte'`);	
 			components.push(`<${newComponent} />`);
 		});
 
@@ -58,12 +58,12 @@ fileUtility.parse = (component, exporting = false) => {
 
 fileUtility.createFileTree = () => {
 	const fileDirectory = {
-		name: 'Src',
+		name: 'src',
 		children: []
 	};
 	fileDirectory.children.push({name:'index'});
 	const files = fileUtility.parse('index', true);
-	const lib = {name:'Lib', children: []}
+	const lib = {name:'lib', children: []}
 	if (files.length > 1) fileDirectory.children.push(lib);
 	files.shift();
 	const queue = files;
@@ -89,7 +89,7 @@ fileUtility.sort = files => {
 	}
 	return files.sort(sortFiles);
 }
-fileUtility.createFile = async (projectName = 'example', ) => {
+fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
 	let canvasStore;
 	let exporting = true;
 	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
@@ -103,7 +103,7 @@ fileUtility.createFile = async (projectName = 'example', ) => {
 		let {name, data} = template;
 		let folder;
 
-		name == 'index'? folder = 'Export/Src' : folder = 'Export/Src/lib';
+		name == 'index'? folder = 'Export/src/routes' : folder = 'Export/src/lib';
 
 		let postContent = {
 			name: name,
