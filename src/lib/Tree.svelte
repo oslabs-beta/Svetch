@@ -2,11 +2,13 @@
 import { onMount } from 'svelte';
 import d3TreeRenderer from '../utils/d3TreeRenderer.js';
 import Switch from './Switch.svelte';
-// export let toggled = false;
+import { canvas } from '../store.js';
+export let toggled = false;
 
 let el;
+let data;
 const width = document.body.clientWidth * 0.5;
-export let data = {
+let fakeData = {
 	name: 'App.svelte',
 	children: [
 		{
@@ -29,8 +31,36 @@ export let data = {
 	]
 };
 
+function parseCanvas(component) {
+	const storeKey = component;
+	const current = {...$canvas[storeKey]};
+
+	const data = {
+		name: component,
+		children: []
+	}
+
+	const children = current.children;
+	if (children) {
+	children.forEach(child => {
+		let scriptId = $canvas[child].scriptId;
+		let childName = scriptId;
+
+		if ($canvas[child].children.length) {
+			childName = child;
+		}
+		data.children.push(parseCanvas(childName, scriptId));
+	});
+	}
+
+	return data;
+}
+
+data = parseCanvas('index');
+const renderTree = () => d3TreeRenderer.render(data, el, width);
+
 onMount(() => {
-	d3TreeRenderer.render(data, el, width);
+	renderTree();
 });
 
 

@@ -6,3 +6,5 @@ export const canvas = writable({
 		scriptId : 'main'
 	}
 });
+
+export const session = writable({});

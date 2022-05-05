@@ -1,4 +1,8 @@
 import { canvas } from '../store.js';
+import axios from 'axios';
+import b64ToBlob from "b64-to-blob";
+import fileSaver from "file-saver";
+
 const fileUtility = {};
 
 
@@ -28,7 +32,7 @@ fileUtility.parse = (component, exporting = false) => {
 			if (canvasStore[child].children.length) {
 				newComponent = child;
 			} 
-			if (!importMap.has(newComponent)) importMap.set(newComponent,`import ${newComponent} from './${newComponent}.svelte'`);	
+			if (!importMap.has(newComponent)) importMap.set(newComponent,`import ${newComponent} from '../lib/${newComponent}.svelte'`);	
 			components.push(`<${newComponent} />`);
 		});
 
@@ -54,12 +58,12 @@ fileUtility.parse = (component, exporting = false) => {
 
 fileUtility.createFileTree = () => {
 	const fileDirectory = {
-		name: 'Src',
+		name: 'src',
 		children: []
 	};
 	fileDirectory.children.push({name:'index'});
 	const files = fileUtility.parse('index', true);
-	const lib = {name:'Lib', children: []}
+	const lib = {name:'lib', children: []}
 	if (files.length > 1) fileDirectory.children.push(lib);
 	files.shift();
 	const queue = files;
@@ -85,4 +89,34 @@ fileUtility.sort = files => {
 	}
 	return files.sort(sortFiles);
 }
+
+fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
+
+	let exporting = true;
+	const filesTemplates = fileUtility.parse('index', exporting);
+	const requests = [];
+
+	filesTemplates.forEach(template => {
+		let {name, data} = template;
+		let folder;
+
+		name == 'index'? folder = 'Export/src/routes' : folder = 'Export/src/lib';
+
+		let postContent = {
+			name: name,
+			text : data,
+			folder : folder
+		}
+		const request = axios.post('/fileCreate', postContent);
+		requests.push(request);
+	});
+
+	await Promise.all(requests);
+
+	const zipAsBase64 = await axios.get('/zip');
+	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
+	fileSaver.saveAs(blob, `${projectName}.zip`);
+
+}
+	
 export default fileUtility;
