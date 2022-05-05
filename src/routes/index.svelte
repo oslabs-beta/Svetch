@@ -9,7 +9,9 @@ import Tree from '../lib/Tree.svelte'
 import CodeBlock from '../lib/codeBlock.svelte';
 import fileUtility from '../utils/fileUtility';
 import canvasUtility from '../utils/canvasUtility';
-import Directory from '../lib/Directory.svelte'
+import Directory from '../lib/Directory.svelte';
+import { canvas } from '../store.js';
+import Draggable from "../lib/DraggableComponents/Draggable.svelte";
  
   let toggled = true;
   let selected = 'index';
@@ -17,6 +19,7 @@ import Directory from '../lib/Directory.svelte'
 
   $: {
     code = fileUtility.parse(selected)[0].data;
+    console.log($canvas);
   }
 
   function toggle() {

@@ -9,6 +9,7 @@ export default {
     });
   },
   removeChild: (name, parent) => {
+    //c represents the state of the store
     canvas.update(c => {
       const index = c[parent].children.indexOf(name);
       c[parent].children.splice(index, 1);
@@ -16,8 +17,10 @@ export default {
     });
   },
   addChild: (name, parent) => {
-    c[parent].children.push(name);
-    return c;
+    canvas.update(c =>{
+      c[parent].children.push(name);
+      return c;
+    }); 
   },
   deleteChild: (name, parent) => {
     canvas.update(c => {

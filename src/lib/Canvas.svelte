@@ -1,16 +1,21 @@
 
 <div class="container">
     <label id = "switch">
-    <Switch bind:checked={toggled}></Switch>
+      <Switch bind:checked={toggled}></Switch>
     </label>
-    <canvas id='dotCanvas'></canvas>
+  <canvas id='dotCanvas' bind:this={dotCanvas}></canvas>
 </div>
 <script>
+
+export let dotCanvas; 
+
+import  { Box } from "../boxClass.js"
+
 import {onMount} from 'svelte'
 
 import Switch from './Switch.svelte';
 
-export let toggled = true;
+export let toggled = true; 
 
 onMount(() =>{
   function getDocumentWidth() {
@@ -22,7 +27,7 @@ function getDocumentHeight() {
 };
 
 let canvas = document.getElementById('dotCanvas');
-console.log(canvas)
+console.log(canvas);
 let context = canvas.getContext('2d');
 
 var vw = getDocumentWidth(),
@@ -66,7 +71,7 @@ function drawGrid(){
 }
  drawGrid();
 
-// // dots
+// dots
 function drawDots() {
   var r = 2,
       cw = 30,
@@ -80,7 +85,138 @@ function drawDots() {
   }
 }
 drawDots();
+
+
+
+// let canvas = document.getElementById("dotCanvas"); 
+//BOX MOVEMENT EVENT LISTENERS
+
+const boxArray = [];
+let moving = false;
+let selected = null;
+let resizing = false; 
+let startX = 0; 
+let startY = 0; 
+
+
+
+//must be called after every movement to prevent portions of boxes from being erased
+const drawAll = (arr) => {
+  for (let i = 0; i < arr.length; i++){
+    drawNewRect(arr[i]); 
+  }
+};
+
+canvas.addEventListener('mousedown', e => { 
+  let x = e.offsetX; 
+  let y = e.offsetY; 
+
+  console.log('mouse x position is ' + x + ' mouse y position is ' + y);
+  
+  //loops through the array of boxes
+  for (let i = 0; i < boxArray.length; i++){
+    //if the mouse is within the box boundaries, set selected to current box
+    if (x > boxArray[i].x && x < (boxArray[i].x + boxArray[i].width) && y > boxArray[i].y + 6 && y <     
+    (boxArray[i].y + boxArray[i].height + 6 )) {
+      selected = boxArray[i]; 
+      moving = true;
+      //if the mouse position is within the resize tab, invoke resize 
+      if (x >= selected.x + selected.width - 10 && x <= selected.x + selected.width + 10 && y >= selected.y + selected.height - 10 && selected.y + selected.height + 10 ) { 
+        moving = false; 
+        resizing = true; 
+        resize(e, selected); 
+        //drawAll(boxArray); 
+      }
+      console.log('selected box is ' + selected.type)
+    }
+  } 
+})
+
+canvas.addEventListener('mousemove', e => {
+  if(selected != null){
+    move(e, selected);
+  }; 
+  if(resizing === true){
+    resize(e, selected); 
+  }
+}); 
+
+canvas.addEventListener('mouseup', e => {
+  moving = false; 
+  resizing = false; 
+  //console.log('new x is ' + selected.x + ' new y is ' + selected.y)
+  selected = null; 
 });
+
+const resize = (e, boxClass) => {
+  if (resizing === true){
+  clear(boxClass)
+  //logic for resizing here
+    
+  boxClass.width += e.movementX; 
+  boxClass.height += e.movementY;
+  drawAll(boxArray); 
+  }
+}
+
+const move = (e, boxClass) => {
+  if (moving === true){
+    console.log('move triggered')
+    clear(boxClass)
+    //keeps correct position reletive to mouse but has a glitch
+    // let diffX = boxClass.x - e.pageX; 
+    // let diffY = boxClass.y - e.pageY;
+    // boxClass.x = e.pageX - diffX; 
+    // boxClass.y = e.pageY - diffY; 
+    // boxClass.y = e.offsetY; 
+    // boxClass.x = e.offsetX; 
+    boxClass.x += e.movementX; 
+    boxClass.y += e.movementY; 
+  }
+  drawAll(boxArray);
+}
+
+  const drawNewRect = (boxClass) => {
+   if (boxClass.type === 'h1'){
+    context.strokeStyle = 'green'; 
+   }
+   if (boxClass.type === 'img'){
+    context.strokeStyle = 'yellow'; 
+   }
+   if (boxClass.type === 'paragraph'){
+    context.strokeStyle = 'blue'; 
+   }
+   context.lineWidth = 1;
+   context.strokeRect(boxClass.x , boxClass.y, boxClass.width, boxClass.height);
+   drawTab(boxClass); 
+  }
+
+  const drawTab = (boxClass) => {
+    let x = boxClass.x + boxClass.width - 10
+    let y = boxClass.y + boxClass.height - 10
+    context.fillRect(x,y,10,10);
+  }
+
+  const clear = (boxClass) => {
+    console.log('clear triggered')
+    context.clearRect(boxClass.x - 1 , boxClass.y - 1, boxClass.width + 6, boxClass.height + 6) 
+  }
+
+  const rect1 = new Box(100, 100, 1000, 500, 'h1'); 
+  boxArray.push(rect1); 
+  drawNewRect(rect1);
+
+
+});
+//END OF ONMOUNT
+
+
+
+
+
+
+
+
 </script>
 <style>
     .container {
