@@ -11,7 +11,8 @@ import fileUtility from '../utils/fileUtility';
 import canvasUtility from '../utils/canvasUtility';
 import Directory from '../lib/Directory.svelte';
 import { canvas } from '../store.js';
-import Draggable from "../lib/DraggableComponents/Draggable.svelte";
+
+// export let boxArray = []; 
  
   let toggled = true;
   let selected = 'index';
@@ -29,6 +30,29 @@ import Draggable from "../lib/DraggableComponents/Draggable.svelte";
     if (selected === newSelection) selected = null;
     selected = newSelection;
   }
+
+  //BOX MOVEMENT FUNCTIONS
+
+
+  class Box {
+  constructor(x, y, width, height, type) {
+    this.x = x,
+    this.y = y, 
+    this.width = width,
+    this.height = height,
+    this.type = type 
+  }
+}
+
+  // let moving = false;
+  // let selectedBox = null;
+  // let resizing = false; 
+
+
+  const boxArray = []; 
+
+
+
 </script>
 
 <main>
@@ -36,9 +60,9 @@ import Draggable from "../lib/DraggableComponents/Draggable.svelte";
   <!-- <button id = 'togBut' on:click = {toggle}> switch between canvas and tree </button> -->
   <div id = 'main' >
 
-<Elements id = "el"/>
+<Elements id = "el" boxArray={boxArray}/>
 {#if toggled}
-<Canvas bind:toggled = {toggled}/>
+<Canvas bind:toggled = {toggled} boxArray={boxArray}/>
 {:else}
 <Tree bind:toggled = {toggled}/>
 {/if}

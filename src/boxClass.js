@@ -5,62 +5,62 @@ import dotCanvas from "./lib/Canvas.svelte";
 // const ctx = canvas.getContext('2d'); 
 
 //all instances of Box class are sotred in this array
-const boxArray = []; 
+// const boxArray = []; 
 
-//must be called after every movement to prevent portions of boxes from being erased
-const drawAll = (arr) => {
-  for (let i = 0; i < arr.length; i++){
-    arr[i].drawNewRect(); 
-  }
-};
+// //must be called after every movement to prevent portions of boxes from being erased
+// const drawAll = (arr) => {
+//   for (let i = 0; i < arr.length; i++){
+//     arr[i].drawNewRect(); 
+//   }
+// };
+
 
 class Box {
-  constructor(x, y, width, height, type) {
+  constructor(x, y, width, height, type, context) {
     this.x = x,
     this.y = y, 
     this.width = width,
     this.height = height,
-    this.type = type 
-    // this.leftBound = this.x, 
-    // this.rightBound = this.x + width, 
-    // this.topBound = this.y, 
-    // this.lowerBound = this.y + height
+    this.type = type, 
+    this.context = context
   }
-  
-//   drawNewRect () {
-//    if (this.type === 'h1'){
-//     ctx.strokeStyle = 'green'; 
-//    }
-//    if (this.type === 'img'){
-//     ctx.strokeStyle = 'yellow'; 
-//    }
-//    if (this.type === 'paragraph'){
-//     ctx.strokeStyle = 'blue'; 
-//    }
-//    ctx.lineWidth = 1;
-//    ctx.strokeRect(this.x , this.y, this.width, this.height);
-//    this.drawTab()
-//   }
+
+
+  // drawNewRect () {
+  //   console.log('x: ' + this.x + ' y: ' + this.y + ' width: ' + this.width + ' height: ' + this.height + ' type: ' + this.type + ' context: ' + this.context)
+  //  if (this.type === 'h1'){
+  //   this.context.strokeStyle = 'green'; 
+  //  }
+  //  if (this.type === 'img'){
+  //   this.context.strokeStyle = 'yellow'; 
+  //  }
+  //  if (this.type === 'paragraph'){
+  //   this.context.strokeStyle = 'blue'; 
+  //  }
+  //  this.context.lineWidth = 1;
+  //  this.context.strokeRect(this.x , this.y, this.width, this.height);
+  //  this.drawTab()
+  // }
   
   //creates tab at bottom right of the box to drag and resize
-//   drawTab () {
-//     let x = this.x + this.width - 10
-//     let y = this.y + this.height - 10
-//     ctx.fillRect(x,y,10,10);
-//   }
-  
-  //erased box from canvas, - 1 and +2 account for px width of the border
-  clear (){
-    console.log('clear triggered')
-    ctx.clearRect(this.x - 1 , this.y - 1, this.width + 6, this.height + 6); 
+  drawTab () {
+    let x = this.x + this.width - 10
+    let y = this.y + this.height - 10
+    this.context.fillRect(x,y,10,10);
   }
   
-  // x = left bound
-  // x + width = right bound 
-  // y = top bound
-  // y + height = bottom bound
+  //erased box from canvas, - 1 and +2 account for px width of the border
+  // clear (){
+  //   console.log('clear triggered')
+  //   this.context.clearRect(this.x - 1 , this.y - 1, this.width + 6, this.height + 6); 
+  // }
+  
+//   // x = left bound
+//   // x + width = right bound 
+//   // y = top bound
+//   // y + height = bottom bound
 
-}
+// }
   
 
 
@@ -162,6 +162,6 @@ class Box {
 //     boxClass.y += e.movementY; 
 //   }
 //   drawAll(boxArray);
-// }
+ }
 
-export { Box }; 
+ export default Box;

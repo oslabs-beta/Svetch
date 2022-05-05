@@ -1,17 +1,23 @@
 <script>
-	import { Box } from "../boxClass.js" 
+import { namespace } from "d3";
 
+import Box from "../boxClass.js"
+import drawNewRect from './Canvas.svelte'; 
+import drawAll from '../boxClass.js'; 
+	//import { drawNewRect } from './Canvas.svelte'
 	const htmlElements = [
 		{id: 1, name: "h1"}, 
 		{id: 2, name: "img"}, 
 		{id: 3, name: "paragraph"}
 	]; 
 
-	const createBox = (name) => {
-		const result = new Box(10, 10, 100, 50, name); 
-		result.drawNewRect(); 
-		return result; 
-	}
+
+
+	import createBox from '../routes/index.svelte';
+
+	import context from './Canvas.svelte'; 
+
+	export let boxArray; 
 
 </script>
 
@@ -22,7 +28,7 @@
 	<ul>
 		{#each htmlElements as element}
 		<!-- on:click should trigger DrawNewRect -->
-			<button >{element.name}</button>
+			<button on:click = {() => {boxArray.push(new Box(50,50,100,50, element.name, context)); drawAll(boxArray)}}>{element.name}</button>
 		{/each}
 	</ul>
 </div>
