@@ -23,7 +23,7 @@ d3TreeRenderer.render = (data, el, width) => {
 
   const gLink = svg.append("g")
     .attr("fill", "none")
-    .attr("stroke", "#555")
+    .attr("stroke", "#fefefe")
     .attr("stroke-opacity", 0.4)
     .attr("stroke-width", 1.5);
 
@@ -70,7 +70,7 @@ d3TreeRenderer.render = (data, el, width) => {
 
     nodeEnter.append("circle")
       .attr("r", 5)
-      .attr("fill", d => d._children ? "#555" : "#999")
+      .attr("fill", d => d._children ? "#fefefe" : "#fefefe")
       .attr("stroke-width", 10);
 
     nodeEnter.append("text")
