@@ -10,7 +10,7 @@ import CodeBlock from '../lib/codeBlock.svelte';
 import fileUtility from '../utils/fileUtility';
 import canvasUtility from '../utils/canvasUtility';
 import Directory from '../lib/Directory.svelte'
- 
+
   let toggled = true;
   let selected = 'index';
   let code;

@@ -30,7 +30,7 @@ const getUser = async (token) => {
       Authorization: `bearer ${token}`
     }
   });
-  console.log(response.data);
+
   return response.data;
 }
 
@@ -38,11 +38,32 @@ export async function get (request) {
 
   // get code from Github
   const code = request.url.searchParams.get('code');
+  const exportProject = request.url.searchParams.get('exportProject');
   // get accessToken from Github
   const token = await getToken(code);
   // get user info from Github
   const user = await getUser(token);
+  request.locals.user = user.login;
+  console.log('about to send post to repos');
+  
+  if (exportProject) {
+    console.log('the token is: ', token)
+    const t = token
+    await axios({
+      method: 'post',
+      url: 'http://localhost:3000/exportProject',
+      headers: {
+        token: token
+      },
+      data: {token: token}
+    });
+
+  }
+  
   return {
-    body: JSON.stringify(user, null, 2)
+    status: 302,
+    headers: {
+      location: '/'
+    }
   }
 }

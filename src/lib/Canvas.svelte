@@ -22,7 +22,7 @@ function getDocumentHeight() {
 };
 
 let canvas = document.getElementById('dotCanvas');
-console.log(canvas)
+
 let context = canvas.getContext('2d');
 
 var vw = getDocumentWidth(),
