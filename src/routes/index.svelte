@@ -67,9 +67,11 @@ button {
 <section class="visualizerPanel">
 <Switch bind:checked={toggled} ></Switch>
 {#if toggled}
-  <Canvas bind:toggled={toggled}/>
+  <!-- <Canvas bind:toggled={toggled}/> -->
+  <Canvas/>
 {:else}
-  <Tree bind:toggled={toggled}/>
+  <!-- <Tree bind:toggled={toggled}/> -->
+  <Tree/>
 {/if}
 </section>
 <section class="fileDirectoryPanel">

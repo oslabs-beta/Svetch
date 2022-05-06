@@ -76,6 +76,7 @@ d3TreeRenderer.render = (data, el, width) => {
     nodeEnter.append("text")
       .attr("dy", d => d._children ? "-0.5em" : "0.3em")
       .attr("x", d => d._children ? 0 : '0.5em')
+      .attr("color", "#fefefe")
       .attr("text-anchor", d => d._children ? "middle" : "start")
       .text(d => d.data.name);
 
