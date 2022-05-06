@@ -11,13 +11,13 @@ svg {
 button {
 	border-radius: 5px;
 }
-#header {
+/* #header {
 	display:flex;
 	align-items:center;
-}
+} */
 </style>
 
-<div id='header'>
+<!-- <div id='header'> -->
 	<div style="flex:1;">
 		<button>
 		New Project
@@ -36,7 +36,7 @@ button {
 	</a>
 	{/if}
 	</div>
-	<div style="flex:1;">
+	<div style="display: flex;">
 		<svg enable-background="new 0 0 200 50" version="1.1" viewBox="0 0 200 50" xml:space="preserve" xmlns="http://www.w3.org/2000/svg">
 			<style type="text/css">
 				.st0{fill:#FEFEFE;}
@@ -62,4 +62,4 @@ button {
 		</a>
 	{/if}
 	</div>
-</div>
+<!-- </div> -->

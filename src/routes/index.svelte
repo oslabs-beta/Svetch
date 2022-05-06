@@ -55,18 +55,12 @@ section {
 button {
   border-radius: 5px;
 }
-header {
-  padding: 5px;
-}
 .actionButtonsPanel {
   grid-area: 3 / 3 / 4 / 4;
   padding: 15px;
 }
 </style>
 
-<header>
-  <Header/>
-</header>
 <section class="elementsPanel">
   <Elements/>
 </section>
