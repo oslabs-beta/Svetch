@@ -35,14 +35,14 @@ onMount(() =>{
 //   return Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
 // };
 
-let canvas = document.getElementById('dotCanvas');
-console.log(canvas);
-context = canvas.getContext('2d');
+// let canvas = document.getElementById('dotCanvas');
+// console.log(canvas);
+// context = canvas.getContext('2d');
 
 // var vw = getDocumentWidth(),
 //     vh = getDocumentHeight();
 
-//resize the canvas to fill the browser window
+// //resize the canvas to fill the browser window
 // window.addEventListener('resize', onResize, false);
 // function onResize() {
 //   vw = getDocumentWidth();
@@ -56,6 +56,8 @@ context = canvas.getContext('2d');
 //   drawDots();
 // }
 // resizeCanvas();
+
+
 
 
 // grid
@@ -75,14 +77,14 @@ context = canvas.getContext('2d');
 //       context.lineTo(vw, y);
 //   }
 
-//BOX MOVEMENT EVENT LISTENERS
+// //BOX MOVEMENT EVENT LISTENERS
 
-// const boxArray = [];
-// let moving = false;
-// let selectedBox = null;
-// let resizing = false; 
-// let startX = 0; 
-// let startY = 0; 
+// // const boxArray = [];
+// // let moving = false;
+// // let selectedBox = null;
+// // let resizing = false; 
+// // let startX = 0; 
+// // let startY = 0; 
 
 
 
@@ -197,6 +199,7 @@ const move = (e, boxClass) => {
 
 
 });
+
 //END OF ONMOUNT
 
 
