@@ -1,44 +1,119 @@
-import axios from 'axios';
 import { Octokit } from 'octokit';
-
-const getPrimamryEmail = (emails) => {
-  let primaryEmail;
-  emails.forEach((email) => {
-    if (email.primary === true) primaryEmail = email.email;
-  })
-  return primaryEmail;
-}
-
+import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
+import fs from 'fs';
 
 export async function post({ request }) {
   const body = await request.json();
   const token = body.token;
-  const user = body.user;
-  const octokit = new Octokit({
-    auth: token
-  })
+  const owner = body.user.login;
+  const repo = 'New-Repo'
   
-  const response = await axios.get('http://localhost:3000/zip');
-  const base64Data = await response.data;
-  const repoName = 'New-Repo'
-  const path = 'test.zip';
+  const CustomOctokit = Octokit.plugin(restEndpointMethods);
+  const octokit = new CustomOctokit({ auth: token });
   
-  try {
-    await octokit.request('POST /user/repos', {name: repoName})
-    const emails = await octokit.request('GET /user/emails', {});
-    const email = getPrimamryEmail(emails.data);
+  // GitHub API helper functions
+  const createBlob = async (absolutePath, path) => {
+    const content = fs.readFileSync(absolutePath, { encoding: 'utf8' });
+    const response = await octokit.rest.git.createBlob({
+      owner,
+      repo,
+      content,
+    });
+    return {...response.data, path};
+  }
+  
+  const createCommit = async (commitSha, treeSha) => {
+    const response = await octokit.rest.git.createCommit({
+      owner,
+      repo,
+      message: 'Svetch Initial Commit',
+      parents: [],
+      tree: treeSha,
+    });
+    return response.data.sha;
+  }
+  
+  const createGitTree = async (tree, commitSha) => {
+    const response = await octokit.rest.git.createTree({
+      owner,
+      repo,
+      base_tree: commitSha,
+      tree
+    });
+    return response.data.sha;
+  }
+
+  const createTreeStructure = async (blobs) => {
+    const tree = [];
+    blobs.forEach(({ path, sha }) => tree.push({ 
+      path, 
+      mode: '100644',
+      type: 'blob',
+      sha }));
+    return tree;
+  }
+
+  const getBlobs = async (directory) => {
+    let blobs = [];
+    const dirEntries = fs.readdirSync(directory, {
+      withFileTypes: true,
+    });
     
-    await octokit.request(`PUT /repos/${user.login}/${repoName}/contents/${path}`, {
-        owner: user.login,
-        repo: repoName,
-        path: path,
-        message: 'my commit message',
-        committer: {
-          name: user.login,
-          email: email
-        },
-        content: base64Data
-      })
+    for (let dirEntry of dirEntries) {
+      const { name } = dirEntry;
+      const absolutePath = `${directory}/${name}`;
+      const relativePath = absolutePath.slice(7);
+
+      // If the dirEntry at the absolutePath contains file content, then add it to the repo at its relativePath
+      if (fs.statSync(absolutePath).isFile()) {
+        const newBlob = await createBlob(absolutePath, relativePath);
+        blobs.push(newBlob);
+      }
+
+      // Otherwise get the contents of the dirEntry at the absolutePath
+      else {
+        const newBlobs = await getBlobs(absolutePath);
+        blobs.push(...newBlobs)}
+    }
+    return blobs;
+  };
+
+  const getLastCommitSha = async () => {
+    const branch = await octokit.rest.repos.getBranch({
+      owner,
+      repo,
+      branch: 'main',
+    });
+    return branch.data.commit.sha;
+  }
+  
+  const updateReference = async (commitSha) => {
+    await octokit.rest.git.updateRef({
+      owner,
+      repo,
+      ref: 'heads/main',
+      sha: commitSha,
+      force: true
+    });
+    return;
+  }
+
+  try {
+    // Create new GitHub repo named the value of repo 
+    //await octokit.rest.repos.createForAuthenticatedUser({ name: repo, auto_init: true });
+    // Get git blobs for the commit
+    const blobs = await getBlobs('Export');
+    // Create the tree structure for the blobs
+    const tree = await createTreeStructure(blobs);
+    // Get the sha from the last commit (the inital commit when the repo was created)
+    const commitSha = await getLastCommitSha();
+    // Create a git tree and get the corresponding sha
+    const treeSha = await createGitTree(tree, commitSha);
+    // Create a new commit and get the corresponding sha
+    const newCommitSha = await createCommit(commitSha, treeSha);
+    // Update the reference for the git branch
+    await updateReference(newCommitSha);
+
   } catch (err) {
     console.log('ERROR:', err)
   }
