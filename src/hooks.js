@@ -5,6 +5,7 @@ export async function handle({ event, resolve }) {
   const cookies = cookie.parse(event.request.headers.get('cookie') || '');
   // update the stored user to be the value of the user cookie
   event.locals.user = cookies.user;
+  //event.locals.sessionId = cookies.sessionId
 
   const response = await resolve(event);
   // add the cookie to the response

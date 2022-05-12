@@ -2,6 +2,7 @@ import { canvas } from '../store.js';
 import axios from 'axios';
 import b64ToBlob from "b64-to-blob";
 import fileSaver from "file-saver";
+import { file } from 'jszip';
 
 const fileUtility = {};
 
@@ -100,7 +101,7 @@ fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
 		let {name, data} = template;
 		let folder;
 
-		name == 'index'? folder = 'Export/src/routes' : folder = 'Export/src/lib';
+		name == 'index'? folder = 'src/routes' : folder = 'src/lib';
 
 		let postContent = {
 			name: name,
@@ -115,8 +116,30 @@ fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
 
 	const zipAsBase64 = await axios.get('/zip');
 	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
-	fileSaver.saveAs(blob, `${projectName}.zip`);
+	//fileSaver.saveAs(blob, `${projectName}.zip`);
+
+	axios.post('/fileDelete');
 
 }
+
+fileUtility.newFile = async () => {
+
+
+	let canvasStore = {
+		'index' : {
+			children : [],
+			scriptId : 'main'
+		}
+	};
+	canvas.update(n=> n = canvasStore);
+
+	axios.get('/newProject');
+
+	return
+}
+ fileUtility.userId = async () => {
+	await axios.post('/createId');
+	return
+ }
 	
 export default fileUtility;

@@ -4,6 +4,10 @@
 </script>
 
 <style>
+  #switchCont{
+    
+    align-items: center;
+  }
 .switch {
   position: relative;
   display: inline-block;
@@ -57,7 +61,7 @@ input:checked + .slider:before {
   font-size: xx-small;
 }
 </style>
-<div>
+<div id = 'switchCont'>
   <h1 id="CandT">Tree/Canvas</h1>
   <label class="switch">
     <input type="checkbox" bind:checked />

@@ -8,30 +8,42 @@ import canvasUtility from '../utils/canvasUtility';
 import Directory from '../lib/Directory.svelte';
 import Header from '../lib/Header.svelte';
 import Switch from '../lib/Switch.svelte';
+import { canvas } from '../store.js';
+import axios from "axios";
+import { onMount } from 'svelte';
 
-// let toggled = true;
+
+onMount(async () => fileUtility.userId());
+
 let toggled = true;
 let selected = 'index';
 let code;
+let canvasStore;
+canvas.subscribe((val) => canvasStore = val);
+
+$: {
+  if (canvasStore.index.children.length === 0){
+    updateSelected('index');
+    //console.log(canvasStore.index.children);
+  }
+}
 
 $: {
   code = fileUtility.parse(selected)[0].data;
 }
 
-function toggle() {
-  toggled = !toggled;
-}
 const updateSelected = (newSelection) => {
   if (selected === newSelection) selected = null;
   selected = newSelection;
 }
+
+function toggle() {
+  toggled = !toggled;
+}
+
 </script>
 <style>
-header {
-  display:flex;
-  justify-content: space-between;
-  grid-column: 1 / 4;
-}
+
 .elementsPanel {
   grid-area: 2 / 1 / 3 / 2;
   height: 100%;
@@ -45,6 +57,10 @@ header {
 }
 .codeBlockPanel {
   grid-area: 3 / 2 / 4 / 3;
+}
+#switch{
+  right: 2vw;
+  position: absolute;
 }
 
 section {
@@ -65,7 +81,9 @@ button {
   <Elements/>
 </section>
 <section class="visualizerPanel">
-<Switch bind:checked={toggled} ></Switch>
+<div id = "switch">
+    <Switch bind:checked={toggled} ></Switch>
+</div>
 {#if toggled}
   <!-- <Canvas bind:toggled={toggled}/> -->
   <Canvas/>
@@ -79,6 +97,7 @@ button {
 </section>
 <section class="codeBlockPanel">
   <CodeBlock code={code}/>
+
 </section>
 <section class="actionButtonsPanel">
   <button on:click = {() => {canvasUtility.createChild('div1', 'div', 'index'); updateSelected('div1'); }}>Add div1 </button>
