@@ -13,7 +13,6 @@ import axios from "axios";
 import { onMount } from 'svelte';
 
 
-onMount(async () => fileUtility.userId());
 
 let toggled = true;
 let selected = 'index';
@@ -24,7 +23,6 @@ canvas.subscribe((val) => canvasStore = val);
 $: {
   if (canvasStore.index.children.length === 0){
     updateSelected('index');
-    //console.log(canvasStore.index.children);
   }
 }
 

@@ -116,7 +116,7 @@ fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
 
 	const zipAsBase64 = await axios.get('/zip');
 	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
-	//fileSaver.saveAs(blob, `${projectName}.zip`);
+	fileSaver.saveAs(blob, `${projectName}.zip`);
 
 	axios.post('/fileDelete');
 
@@ -137,9 +137,6 @@ fileUtility.newFile = async () => {
 
 	return
 }
- fileUtility.userId = async () => {
-	await axios.post('/createId');
-	return
- }
+ 
 	
 export default fileUtility;
