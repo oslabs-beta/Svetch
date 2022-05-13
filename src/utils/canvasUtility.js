@@ -16,8 +16,10 @@ export default {
     });
   },
   addChild: (name, parent) => {
+    canvas.update(c => {
     c[parent].children.push(name);
     return c;
+    });
   },
   deleteChild: (name, parent) => {
     canvas.update(c => {
