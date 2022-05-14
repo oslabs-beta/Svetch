@@ -26,6 +26,11 @@ $: {
   }
 }
 
+// let boxes = [
+//   {x : 20 , y : 20, width : 150 , height : 50, type : 'Component 1', color : 'green'},
+//   {x : 20 , y : 80, width : 150 , height : 50, type : 'Component 2', color : 'red'}
+// ]
+//$:{console.log(boxes)}
 $: {
   code = fileUtility.parse(selected)[0].data;
 }
@@ -76,7 +81,7 @@ button {
 </style>
 
 <section class="elementsPanel">
-  <Elements/>
+  <Elements />
 </section>
 <section class="visualizerPanel">
 <div id = "switch">
@@ -84,7 +89,7 @@ button {
 </div>
 {#if toggled}
   <!-- <Canvas bind:toggled={toggled}/> -->
-  <Canvas/>
+  <Canvas />
 {:else}
   <!-- <Tree bind:toggled={toggled}/> -->
   <Tree/>
@@ -107,4 +112,5 @@ button {
   <button on:click = {() => {updateSelected('div1')}}>Show Div1</button>
   <button on:click = {() => {updateSelected('div2')}}>Show Div2</button>
   <button on:click = {() => {() => console.log('all files:', fileUtility.parse('index', true))}}>grab files</button>
+  <!-- <button on:click = {console.log(boxes)}>boxes?</button> -->
 </section>
