@@ -100,7 +100,7 @@ export async function post({ request }) {
 
   try {
     // Create new GitHub repo named the value of repo 
-    //await octokit.rest.repos.createForAuthenticatedUser({ name: repo, auto_init: true });
+    await octokit.rest.repos.createForAuthenticatedUser({ name: repo, auto_init: true });
     // Get git blobs for the commit
     const blobs = await getBlobs('Export');
     // Create the tree structure for the blobs
