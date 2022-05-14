@@ -11,7 +11,11 @@ export default {
   removeChild: (name, parent) => {
     canvas.update(c => {
       const index = c[parent].children.indexOf(name);
+      // remove the child
       c[parent].children.splice(index, 1);
+      // add grandchildren to parent (making them children)
+      c[parent].children.push(...name.children);
+      // -- later -- create customer sort function based on the x coordinate
       return c;
     });
   },
@@ -24,7 +28,12 @@ export default {
   deleteChild: (name, parent) => {
     canvas.update(c => {
       const index = c[parent].children.indexOf(name);
+      // remove the child
       c[parent].children.splice(index, 1);
+      // add grandchildren to parent (making them children)
+      c[parent].children.push(...name.children);
+      // -- later --create customer sort function based on the x coordinate
+      // deleting the child from the canvas
       delete c[name];
       return c;
     });
@@ -60,8 +69,8 @@ export default {
       // });
 
     }
-    console.log(boxes)
+
     return boxes;
-    
+
   }
 }
