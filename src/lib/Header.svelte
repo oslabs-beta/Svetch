@@ -19,7 +19,7 @@ button {
 
 <!-- <div id='header'> -->
 	<div style="flex:1;">
-		<button>
+		<button on:click = {() => fileUtility.newFile()}>
 		New Project
 	</button>
 	<button on:click = {() => fileUtility.createFile()}>
