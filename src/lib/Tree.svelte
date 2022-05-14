@@ -31,10 +31,10 @@ let fakeData = {
 	]
 };
 
-function parseCanvas(component) {	
-	const storeKey = component;		
+function parseCanvas(component) {
+	const storeKey = component;
 	const current = {...$canvas[storeKey]};
-	
+
 	const data = {
 		name: component,
 		children: []
@@ -45,16 +45,16 @@ function parseCanvas(component) {
 	children.forEach(child => {
 		let scriptId = $canvas[child].scriptId;
 		let childName = scriptId;
-		
+
 		if ($canvas[child].children.length) {
 			childName = child;
-		} 
+		}
 		data.children.push(parseCanvas(childName, scriptId));
 	});
 	}
 
 	return data;
-} 
+}
 
 data = parseCanvas('index');
 const renderTree = () => d3TreeRenderer.render(data, el, width);
@@ -66,32 +66,21 @@ onMount(() => {
 
 </script>
 
-<div id = 'tree'>
-    <label id = "switch" >
-        <Switch bind:checked={toggled} ></Switch>
-    </label>
-    <div class="center" >
-        <svg bind:this={el}></svg>	
-    </div>
-</div>               
+<div id="tree">
+	<!-- <Switch bind:checked={toggled} ></Switch> -->
+	<div class="center" >
+		<svg bind:this={el}></svg>
+	</div>
+</div>
 
 <style>
-    #tree{
-       border: 2px solid black;
-        /* height: 40em; */
-        height: 70vh;
-        width: 75vw;
-        margin-left: 2%;
-        border-radius: 15px;
-    }
-    #switch{
-        position: absolute;
-        right: 2vw;
-    }
-    .center {
-        height: 70vh;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-	}
+/* .switch {
+	position: absolute;
+	right: 2vw;
+} */
+.center {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
 </style>

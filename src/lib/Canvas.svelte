@@ -1,20 +1,12 @@
-
-<div class="container">
-    <label id = "switch">
-    <Switch bind:checked={toggled}></Switch>
-    </label>
-    <canvas id='dotCanvas'></canvas>
-</div>
 <script>
 import {onMount} from 'svelte'
 
-import Switch from './Switch.svelte';
 
-export let toggled = true;
+// export let toggled = true;
 
 onMount(() =>{
-  function getDocumentWidth() {
-    return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    function getDocumentWidth() {
+  return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 };
 
 function getDocumentHeight() {
@@ -22,7 +14,7 @@ function getDocumentHeight() {
 };
 
 let canvas = document.getElementById('dotCanvas');
-
+console.log(canvas)
 let context = canvas.getContext('2d');
 
 var vw = getDocumentWidth(),
@@ -64,7 +56,7 @@ function drawGrid(){
   context.strokeStyle = "#cccccc";
   context.stroke();
 }
- drawGrid();
+ //drawGrid();
 
 // // dots
 function drawDots() {
@@ -82,26 +74,19 @@ function drawDots() {
 drawDots();
 });
 </script>
-<style>
-    .container {
-        border: 2px solid black;
-        /* height: 40em; */
-        height: 70vh;
-        width: 75vw;
-        margin-left: 2%;
-        border-radius: 15px;
-}
-#dotCanvas
-    {
-       
-    display: block;
-    height: 100%;
-    width: 100%
-    }
-#switch
-{
-position: absolute;
-right: 2vw;
-}
 
+<div class="canvasParent">
+  <!-- <Switch bind:checked={toggled}></Switch> -->
+  <canvas id="dotCanvas"></canvas>
+</div>
+<style>
+div {
+  width: 100%;
+  height: 100%;
+}
+#dotCanvas {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
 </style>
