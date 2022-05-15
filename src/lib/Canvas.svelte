@@ -1,27 +1,18 @@
 <script>
-import {onMount} from 'svelte'
-import Switch from './Switch.svelte';
+import { onMount } from 'svelte'
 import { canvas } from '../store.js'
 import canvasUtility from '../utils/canvasUtility'
-//import {boxArray} from '../store.js'
-
-// export let toggled = true;
-
-//BUTTON CLASS MUST BE DEFINED IN ADD BUTTON COMPONENT
-
-//Box array must be defined outside of onmount
-// const boxArray = []; 
-  //loop through the store and add 
-import {boxes} from "../store.js"
+import { components } from "../store.js"
 
 
 let borderWidth = 1;
 let boxArr;
 let boxArray = [];
-boxes.subscribe((val) => boxArr = val);
+components.subscribe((val) => boxArr = val);
 
-let buttonStore = []; 
-class Button {
+let componentStore = []; 
+
+class Rect {
   constructor(x, y, width, height, type, color) {
     this.x = x,
     this.y = y, 
@@ -30,81 +21,95 @@ class Button {
     this.type = type, 
     this.color = color
   }
+  contains(x, y) {
+    return (
+      x > this.x &&
+      x < this.x + this.width &&
+      y > this.y + 2 * borderWidth && 
+      y < this.y + this.height + 2 * borderWidth
+    );
+  }
+  draw(ctx) {
+    ctx.strokeStyle = this.color;
+    ctx.strokeRect(this.x , this.y, this.width, this.height);
+  }
+  drawLabel(ctx, font, x, y, maxWidth) {
+    ctx.font = font;
+    ctx.fillStyle = `${this.color}`;
+    ctx.fillText(this.type, x, y, maxWidth)
+    ctx.fillStyle = 'black'; 
+  }
 }
 
-class Box {
+class Box extends Rect {
   constructor(x, y, width, height, type, color, id) {
-    this.x = x,
-    this.y = y, 
-    this.width = width,
-    this.height = height,
-    this.type = type, 
-    this.color = color,
+    super(x, y, width, height, type, color);
     this.parent = null;
     this.id = id;
   }
-}
-let mounted = false;
-let createButton = (boxes) => {
-  buttonStore = [];
-  for (let i = 0; i < boxes.length; i++)
-  { 
-    buttonStore.push(new Button(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height, boxes[i].type, boxes[i].color))
+  containsRect(rect) {
+    return (
+      rect.x > this.x &&
+      rect.x < this.x + this.width &&
+      rect.y > this.y + 2 * borderWidth &&
+      rect.y < this.y + this.height + 2 * borderWidth
+    );
   }
-  return
- }
- //createButton(boxArr);
+  draw(ctx) {
+    super.draw(ctx);
+    super.drawLabel(ctx, '20px serif', this.x + 2, this.y + 20, this.width - 20); 
+    this.drawDeleteTab(ctx);
+    this.drawResizeTab(ctx);
+  }
+  drawDeleteTab(ctx) {
+    ctx.strokeRect(this.x + this.width - 15, this.y, 15, 15); 
+    ctx.fillStyle = 'red';
+    ctx.font = '10px'
+    ctx.fillText('X', this.x + this.width - 15, this.y + 15); 
+    ctx.fillStyle = 'black'; 
+  }
+  drawResizeTab(ctx) {
+    const x = this.x + this.width - 10;
+    const y = this.y + this.height - 10;
+    ctx.fillStyle = 'black'; 
+    ctx.fillRect(x,y,10,10);
+  }
+  resizeTabContains(x,y) {
+    return (
+      x >= this.x + this.width - 10 && 
+      x <= this.x + this.width + 10 && 
+      y >= this.y + this.height - 10 && 
+      this.y + this.height + 10 
+    );
+  }
+}
 
-$:{createButton(boxArr)}
-$:{ if (mounted) {clearButtons(); drawMenu(buttonStore)}}
+let mounted = false;
+let createComponentStore = (boxes) => {
+  componentStore = [];
+  for (let i = 0; i < boxes.length; i++) { 
+    componentStore.push(new Rect(...Object.values(boxes[i])))
+  }
+  return;
+ }
+
+$:{createComponentStore(boxArr)}
+$:{ if (mounted) {clearButtons(); drawMenu(componentStore)}}
 
 let ctx; 
 let template;
-
-
-//FUNCTIONS MOVED OUT OF ONMOUNT
-const drawLabel = (obj) => {
-  ctx.font = '20px serif'
-  ctx.fillStyle = `${obj.color}`;
-  ctx.fillText(obj.type, obj.x + 2, obj.y + 20, obj.width - 20)
-  ctx.fillStyle = 'black'; 
-}
-
-const drawDeleteTab = (obj) => {
-  ctx.strokeRect(obj.x + obj.width - 15, obj.y, 15, 15); 
-  ctx.fillStyle = 'red';
-  ctx.font = '10px'
-  ctx.fillText('X', obj.x + obj.width - 15, obj.y + 15); 
-  ctx.fillStyle = 'black'; 
-
-}
- //Draws iputed box on the canvas
- const drawBox = (obj) => {
-   ctx.strokeStyle = obj.color;
-   //ctx.lineWidth = 3;
-   ctx.strokeRect(obj.x , obj.y, obj.width, obj.height);
-   drawTab(obj);
-   drawLabel(obj); 
-   drawDeleteTab(obj); 
-  }
  
  //Takes in an array of boxes and draws them to the canvas
  //calls drawMenu
  //Should be called whenever box coordinates or sizes change
  const drawAll = (arr) => {
   for (let i = 0; i < arr.length; i++){
-    drawBox(arr[i]); 
+    // drawBox(arr[i]); 
+    const rect = arr[i];
+    rect.draw(ctx);
   };
   //drawMenu()
 };
-  
-  //creates tab at bottom right of the box to drag and resize
-const drawTab = (obj) => {
-  ctx.fillStyle = 'black'; 
-  let x = obj.x + obj.width - 10
-  let y = obj.y + obj.height - 10
-  ctx.fillRect(x,y,10,10);
-}
   
 //erases whole template
 //should be called before updates are drawn
@@ -124,25 +129,14 @@ const drawMenu = () => {
   ctx.moveTo(200, 0);
   ctx.lineTo(200, 600 );
   ctx.stroke(); 
-  
-  //ctx.strokeRect(buttonStore[0].x, buttonStore[0].y, buttonStore[0].width, buttonStore[0].height)
-  //ctx.lineWidth = '1px'; 
+   
   let lineWidth = '1px'
-  for (let i = 0; i < buttonStore.length; i++) {
-    ctx.strokeStyle = buttonStore[i].color
-    ctx.strokeRect(buttonStore[i].x, buttonStore[i].y, buttonStore[i].width, buttonStore[i].height)
-    ctx.font = '30px serif';
-    ctx.fillStyle = `${buttonStore[i].color}`
-    ctx.fillText(buttonStore[i].type, buttonStore[i].x, buttonStore[i].y + 35, 150)
+  for (let i = 0; i < componentStore.length; i++) {
+    // const { x, y, width, height, type, color } = componentStore[i];
+    const rect = new Rect(...Object.values(componentStore[i]));
+    rect.draw(ctx);
+    rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
   } 
-  
-  ctx.strokeStyle = 'black';
-  
-  
-  
-  
-  
-  //loop through buttons here
   
 }
   
@@ -162,33 +156,27 @@ onMount(() => {
 
   //VARIABLES FOR DRAW AND MOVE FUNCTIONS
   template = document.getElementById('dotCanvas');
-  //console.log(template)
-  //let context = canvas.getContext('2d');
   const parent = document.querySelector('.canvasParent');
   template.width = parent.clientWidth;
   template.height = parent.clientHeight;
   ctx = template.getContext('2d'); 
 
-  function drawDots() {
-  var r = 1,
+  const drawDots = () => {
+  let r = 1,
       cw = 18,
       ch = 18;
   
-  for (var x = 200; x < template.width; x+=cw) {
-    for (var y = 20; y < template.height; y+=ch) {
+  for (let x = 200; x < template.width; x+=cw) {
+    for (let y = 20; y < template.height; y+=ch) {
         ctx.fillStyle = '#000000';   
         ctx.fillRect(x-r/2,y-r/2,r,r);
       }
   }
 }
   drawDots();
-  // const template = document.getElementById("dottemplate"); 
-  
-
-//all instances of Box class are stored in this array 
 
 //EVENT LISTENERS
-//
+
 window.addEventListener('resize', () => {
   const boxArray = canvasUtility.parse('index', true); 
   template.width = parent.clientWidth;
@@ -208,30 +196,13 @@ template.addEventListener('mousedown', e => {
   
   //loops through the array of boxes
   for (let i = 0; i < boxArray.length; i++){
-    //if the mouse is within the box boundaries, set selected to current box
-    if (
-      // if mouse x cordinate is greater than the box minX coordinate
-      x > boxArray[i].x && 
-      // if mouse x coordinate is less than the maxX coordinate
-      x < (boxArray[i].x + boxArray[i].width) &&
-      // if mouse y cordinate is greater than the box minY coordinate offset by the upper and lower borderWidth
-      y > boxArray[i].y + 2 * borderWidth && 
-      // if mouse y coordinate is less than the maxY coordinate offset by the upper and lower borderWidth
-      y < (boxArray[i].y + boxArray[i].height + 2 * borderWidth )
-    ) {
-      
-      selected = boxArray[i]; 
+    const rect = boxArray[i];
+    if (rect.contains(x,y)) { 
+      selected = rect;
       moving = true;
-      //if the mouse position is within the resize tab, invoke resize 
-      // if (x >= selected.x + selected.width - 10 && x <= selected.x + selected.width + 10 && y >= selected.y + selected.height - 10 && selected.y + selected.height + 10 ) { 
-      //   moving = false; 
-      //   resizing = true; 
-      //   resize(e, selected);  
-      // }
-      // console.log('selected box is ' + selected.type)
     }
   } 
-  if (selected != null && x >= selected.x + selected.width - 10 && x <= selected.x + selected.width + 10 && y >= selected.y + selected.height - 10 && selected.y + selected.height + 10 ) { 
+  if (selected && selected.resizeTabContains(x,y)) { 
     moving = false; 
     resizing = true; 
     resize(e, selected);  
@@ -240,7 +211,6 @@ template.addEventListener('mousedown', e => {
 
 //invokes move or resize on mouse movement only if a box is selected
 template.addEventListener('mousemove', e => {
-  //console.log('X value is: ' + e.offsetX + ' Y value is: ' + e.offsetY);
   if(selected != null){
     // remove component from parent
     move(e, selected);
@@ -259,39 +229,15 @@ template.addEventListener('mouseup', e => {
     let parent;
     let children = [];
     for (let i = 0; i < boxArray.length; i++){
-      //console.log(boxArray)
-      if (
-        boxArray[i].x < selected.x && 
-        boxArray[i].y < selected.y && 
-        boxArray[i].x + boxArray[i].width > selected.x + selected.width && 
-        boxArray[i].y + boxArray[i].height > selected.y + selected.height 
-      ) {
-        parent = boxArray[i];
-        
-        // the selected is a child of the current box
-        
-      }
-     else if (
-        boxArray[i].x > selected.x && 
-        boxArray[i].y > selected.y && 
-        boxArray[i].x + boxArray[i].width < selected.x + selected.width && 
-        boxArray[i].y + boxArray[i].height < selected.y + selected.height 
-      ) {
-        // the selected is a parent of the current box
+      const rect = boxArray[i];
+      if (rect.containsRect(selected)) parent = rect;
+      else if (selected.containsRect(rect)) {
         let isChild = true;
         children.forEach(child => {
-          // the current box is inside of child
-          if (
-            boxArray[i].x > child.x && 
-            boxArray[i].y > child.y && 
-            boxArray[i].x + boxArray[i].width < child.x + child.width && 
-            boxArray[i].y + boxArray[i].height < child.y + child.height 
-          ) {
-            isChild = false;
-          }
-    
+          // the child contains the current rect
+          if (child.containsRect(rect)) isChild = false;
         })
-        if (isChild) children.push(boxArray[i]);
+        if (isChild) children.push(rect);
       }
     }
     if (parent) console.log('selected component: ' + selected.type + ' is a child of: ' + parent.type);
@@ -303,136 +249,60 @@ template.addEventListener('mouseup', e => {
   selected = null; 
   let x = e.offsetX; 
   let y = e.offsetY; 
-  if (e.offsetX < 200){
-    // console.log('clicked inside menu area'); 
-      for (let i = 0; i < buttonStore.length; i++){
-        if (x > buttonStore[i].x && 
-            x < (buttonStore[i].x + buttonStore[i].width) && 
-            y > buttonStore[i].y + 6 && 
-            y < (buttonStore[i].y + buttonStore[i].height + 6 )) {
-              //boxArray.push(temp); 
-              //drawAll(boxArray); 
-            const id = Object.keys($canvas).length;
-            let temp = new Box (300, 100, 200, 100, buttonStore[i].type, buttonStore[i].color, id); 
-      
-          boxArray = canvasUtility.parse('index', true);
-          let parent = 'index';
-          for (let i = 0; i < boxArray.length; i++) {
-            if (
-            boxArray[i].x < temp.x && 
-            boxArray[i].y < temp.y && 
-            boxArray[i].x + boxArray[i].width > temp.x + temp.width && 
-            boxArray[i].y + boxArray[i].height > temp.y + temp.height 
-            ) {
-              parent = boxArray[i]; 
-            }
-          }
-          temp.parent = parent;
-          console.log(temp.parent)
-          canvasUtility.createChild(id, temp.type, parent.id || 'index', temp);
-          boxArray = canvasUtility.parse('index', true);
-          drawAll(boxArray)
-          console.log(boxArray)
-          console.log($canvas)
-        } 
-      }
+  if (e.offsetX < 200){ 
+    for (let i = 0; i < componentStore.length; i++){
+      const rect = componentStore[i];
+      if (rect.contains(x,y)) { 
+        const id = Object.keys($canvas).length;
+        const newRect = new Box (300, 100, 200, 100, rect.type, rect.color, id); 
+    
+        boxArray = canvasUtility.parse('index', true);
+        let parent = 'index';
+        for (let i = 0; i < boxArray.length; i++) {
+          const rect = boxArray[i];
+          if (rect.containsRect(newRect)) parent = rect;  
+        }
+        newRect.parent = parent;
+        canvasUtility.createChild(id, newRect.type, parent.id || 'index', newRect);
+        boxArray = canvasUtility.parse('index', true);
+        drawAll(boxArray)
+        console.log(boxArray)
+        console.log($canvas)
+      } 
     }
+  }
 });
 
 
 
 //MOVEMENT TRACKING FUNCTIONS
 
-const resize = (e, boxClass, startX, startY) => {
+const resize = (e, rect) => {
   if (resizing === true){
   clear(); 
   drawDots();
-  boxClass.width += e.movementX; 
-  boxClass.height += e.movementY;
+  rect.width += e.movementX; 
+  rect.height += e.movementY;
   drawAll(boxArray); 
   }
 }
 
-const move = (e, boxClass) => {
-  if (moving === true && boxClass.x > 204){
-    //console.log('move triggered')
+const move = (e, rect) => {
+  if (moving === true && rect.x > 204){
     clear();  
-    boxClass.x += e.movementX; 
-    boxClass.y += e.movementY; 
+    rect.x += e.movementX; 
+    rect.y += e.movementY; 
   }
-  else if (boxClass.x <= 204) {
+  else if (rect.x <= 204) {
     clearButtons();
     drawMenu();
-    boxClass.x = 205;
+    rect.x = 205;
   }
   drawDots();
   drawAll(boxArray);
 }
 
-
-//drawMenu(); 
-
-
 mounted = true;
-
-
-
-// export let toggled = true;
-//     function getDocumentWidth() {
-//   return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-// };
-
-// function getDocumentHeight() {
-//   return Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-// };
-
-// // let canvas = document.getElementById('dotCanvas');
-// // console.log(canvas)
-// // let context = canvas.getContext('2d');
-
-// var vw = getDocumentWidth(),
-//     vh = getDocumentHeight();
-
-// //resize the canvas to fill the browser window
-// window.addEventListener('resize', onResize, false);
-// function onResize() {
-//   vw = getDocumentWidth();
-//   vh = getDocumentHeight();
-//   resizeCanvas();
-// }
-
-// function resizeCanvas() {
-//   template.width = 
-//   template.height = vh;
-//   drawDots();
-// }
-// resizeCanvas();
-
-
-// grid
-// function drawGrid(){
-//   var cellW = 10,
-//       cellH = 10;
-  
-//   // vertical lines
-//   for (var x = 0; x <= vw; x += cellW) {
-//       ctx.moveTo(x, 0); // x, y
-//       ctx.lineTo(x, vh);
-//   }
-  
-//   // horizontal lines
-//   for (var y = 0; y <= vh; y += cellH) {
-//       ctx.moveTo(0, y); // x, y
-//       ctx.lineTo(vw, y);
-//   }
-
-//   ctx.strokeStyle = "#cccccc";
-//   ctx.stroke();
-// }
- //drawGrid();
-
-// // dots
-
 
 });
 

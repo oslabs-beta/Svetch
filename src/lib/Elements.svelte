@@ -1,10 +1,10 @@
 <script>
-import {boxes} from "../store.js"
+import {components} from "../store.js"
 
 
 
 let boxArr;
-boxes.subscribe((val) => boxArr = val);
+components.subscribe((val) => boxArr = val);
 
 	
 let boxName = '';
@@ -13,15 +13,15 @@ let newBox = (boxName, boxColor) =>
 {
 let box = {
     x : 20,
-    y : (boxArr[boxArr.length - 1].y + 60) || 20,
+    y : ($components[$components.length - 1].y + 60) || 20,
     width : 150 , 
     height : 50,
     type : boxName,
     color : boxColor
 }
 boxArr.push(box);
-boxes.update(n => boxArr);
-$boxes = $boxes; 
+components.update(n => [...n, box]);
+$components = $components; 
 //console.log(boxes)
 return
 }
