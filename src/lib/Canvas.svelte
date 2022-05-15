@@ -7,7 +7,7 @@ import { components } from "../store.js"
 
 let borderWidth = 1;
 let boxArr;
-let boxArray = [];
+// let boxArray = [];
 components.subscribe((val) => boxArr = val);
 
 let componentStore = []; 
@@ -41,7 +41,7 @@ class Rect {
   }
 }
 
-class Box extends Rect {
+class EditableRect extends Rect {
   constructor(x, y, width, height, type, color, id) {
     super(x, y, width, height, type, color);
     this.parent = null;
@@ -77,9 +77,17 @@ class Box extends Rect {
   resizeTabContains(x,y) {
     return (
       x >= this.x + this.width - 10 && 
-      x <= this.x + this.width + 10 && 
+      x <= this.x + this.width && 
       y >= this.y + this.height - 10 && 
-      this.y + this.height + 10 
+      y <= this.y + this.height 
+    );
+  }
+  deleteTabContains(x,y) {
+    return (
+      x >= this.x + this.width - 15 && 
+      x <= this.x + this.width && 
+      y >= this.y && 
+      y <= this.y + 15 
     );
   }
 }
@@ -197,6 +205,7 @@ template.addEventListener('mousedown', e => {
   //loops through the array of boxes
   for (let i = 0; i < boxArray.length; i++){
     const rect = boxArray[i];
+    console.log(rect.deleteTabContains(x,y));
     if (rect.contains(x,y)) { 
       selected = rect;
       moving = true;
@@ -206,6 +215,15 @@ template.addEventListener('mousedown', e => {
     moving = false; 
     resizing = true; 
     resize(e, selected);  
+  }
+  if (selected && selected.deleteTabContains(x,y)) {
+    moving = false;
+    const parent = selected.parent === 'index' ? 'index' : selected.parent.id;
+    canvasUtility.deleteChild(selected.id, parent);
+    const boxArray = canvasUtility.parse('index', true);
+    clear();
+    drawDots();
+    drawAll(boxArray)
   }
 });
 
@@ -226,11 +244,14 @@ template.addEventListener('mouseup', e => {
   
   //if moving or resizing, trigger conditional that will check the location of the moved/rezized box
   if (moving || resizing) {
-    let parent;
+    let newParent = 'index';
+    const oldParent = selected.parent === 'index' ? 'index' : selected.parent.id;
     let children = [];
+    let boxArray = canvasUtility.parse('index', true); 
+    
     for (let i = 0; i < boxArray.length; i++){
       const rect = boxArray[i];
-      if (rect.containsRect(selected)) parent = rect;
+      if (rect.containsRect(selected)) newParent = rect.id;
       else if (selected.containsRect(rect)) {
         let isChild = true;
         children.forEach(child => {
@@ -240,8 +261,14 @@ template.addEventListener('mouseup', e => {
         if (isChild) children.push(rect);
       }
     }
-    if (parent) console.log('selected component: ' + selected.type + ' is a child of: ' + parent.type);
-    if (children.length) console.log('selected component: ' + selected.type + ' is a parent of: ', children)
+    if (newParent !== oldParent) {
+      canvasUtility.removeChild(selected.id, oldParent);
+      canvasUtility.addChild(selected.id, newParent);
+      boxArray = canvasUtility.parse('index', true);
+      clear();
+      drawDots();
+      drawAll(boxArray)
+    }
   }
 
   moving = false; 
@@ -254,19 +281,19 @@ template.addEventListener('mouseup', e => {
       const rect = componentStore[i];
       if (rect.contains(x,y)) { 
         const id = Object.keys($canvas).length;
-        const newRect = new Box (300, 100, 200, 100, rect.type, rect.color, id); 
+        const newRect = new EditableRect (300, 100, 200, 100, rect.type, rect.color, id); 
     
-        boxArray = canvasUtility.parse('index', true);
+        let boxArray = canvasUtility.parse('index', true);
         let parent = 'index';
         for (let i = 0; i < boxArray.length; i++) {
           const rect = boxArray[i];
           if (rect.containsRect(newRect)) parent = rect;  
         }
         newRect.parent = parent;
+        console.log('parent of new component:', parent);
         canvasUtility.createChild(id, newRect.type, parent.id || 'index', newRect);
         boxArray = canvasUtility.parse('index', true);
         drawAll(boxArray)
-        console.log(boxArray)
         console.log($canvas)
       } 
     }
@@ -283,6 +310,7 @@ const resize = (e, rect) => {
   drawDots();
   rect.width += e.movementX; 
   rect.height += e.movementY;
+  const boxArray = canvasUtility.parse('index', true); 
   drawAll(boxArray); 
   }
 }
@@ -299,6 +327,7 @@ const move = (e, rect) => {
     rect.x = 205;
   }
   drawDots();
+  const boxArray = canvasUtility.parse('index', true); 
   drawAll(boxArray);
 }
 

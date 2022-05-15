@@ -1,31 +1,23 @@
 <script>
-import {components} from "../store.js"
+import { components } from "../store.js"
 
+let name;
+let color;
 
-
-let boxArr;
-components.subscribe((val) => boxArr = val);
-
-	
-let boxName = '';
-let boxColor = '';
-let newBox = (boxName, boxColor) =>
-{
-let box = {
-    x : 20,
-    y : ($components[$components.length - 1].y + 60) || 20,
-    width : 150 , 
-    height : 50,
-    type : boxName,
-    color : boxColor
+const handleSubmission = (name, color) => {
+    const component = {
+        x: 20,
+        y: ($components[$components.length - 1].y + 60) || 20,
+        width: 150 , 
+        height: 50,
+        type: name.value,
+        color: color.value
+    }
+    components.update(n => [...n, component]);
+    name.value = '';
+    color.value = '';
+    return;
 }
-boxArr.push(box);
-components.update(n => [...n, box]);
-$components = $components; 
-//console.log(boxes)
-return
-}
-
 </script>
 
 
@@ -33,10 +25,10 @@ return
 <h1>Create New Component</h1>
 
 <label for="componentName">Component Name</label><br>
-<input type="text" id="componentName" name="componentName" value=""><br>
+<input bind:this={name} type="text" id="componentName" name="componentName" value=""><br>
 
 <label for="color-select">Choose a Color:</label>
-<select name="color" id="color-select">
+<select bind:this={color} name="color" id="color-select">
     <option value="">--Please choose an option--</option>
     <option value="blue">Blue</option>
     <option value="red">Red</option>
@@ -46,7 +38,7 @@ return
     <option value="green">Green</option>
 </select><br>
 
-<button on:click = { () => newBox(document.getElementById("componentName").value, document.getElementById('color-select').value)}>Submit</button>
+<button on:click = { () => handleSubmission(name, color)}>Submit</button>
 
 
 <style>
