@@ -10,6 +10,5 @@ export async function get({request}) {
      fs.rmSync(libPath, { recursive: true, force: true });
      fs.mkdirSync(libPath)
 
-     console.log(request)
 return ({status: 200})
 }

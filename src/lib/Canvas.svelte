@@ -11,7 +11,7 @@ let ctx;
 let template;
 let moving = false;
 let selected = null;
-let resizing = false;
+let resizing = false; 
  
 class Rect {
   constructor(x, y, width, height, type, color) {
@@ -91,14 +91,27 @@ class EditableRect extends Rect {
       y <= this.y + 15 
     );
   }
-} 
+}
 
 $:{ 
   if (mounted) {
     clearButtons(); 
-    drawMenu($options)
+    drawMenu($options);
+    drawComponents();
   }
 }
+
+ 
+ //Takes in an array of boxes and draws them to the canvas
+ //calls drawMenu
+ //Should be called whenever box coordinates or sizes change
+ const drawAll = (arr) => {
+  for (let i = 0; i < arr.length; i++){
+    const rect = arr[i];
+    rect.draw(ctx);
+  };
+
+};
 
 const drawComponents = () => {
   const components = canvasUtility.parse('index', true);
@@ -124,11 +137,12 @@ const drawMenu = () => {
   ctx.stroke(); 
    
   for (let i = 0; i < $options.length; i++) {
-    // create rect from option values
+    // create rect from option value
     const rect = new Rect(...Object.values($options[i]));
     rect.draw(ctx);
     rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
   } 
+  
 }
 
 const drawDots = () => {
@@ -138,9 +152,9 @@ const drawDots = () => {
   
   for (let x = 200; x < template.width; x+=cw) {
     for (let y = 20; y < template.height; y+=ch) {
-      ctx.fillStyle = '#000000';   
+      ctx.fillStyle = '#000000';         
       ctx.fillRect(x-r/2,y-r/2,r,r);
-    }
+    }    
   }
 }
   
@@ -153,14 +167,17 @@ onMount(() => {
   template.height = parent.clientHeight;
   ctx = template.getContext('2d'); 
 
-  drawComponents();
+  drawDots();
 
 //EVENT LISTENERS
 
 window.addEventListener('resize', () => {
+  const components = canvasUtility.parse('index', true); 
   template.width = parent.clientWidth;
   template.height = parent.clientHeight;
-  drawComponents();
+
+  drawDots(); 
+  drawAll(components);
   clearButtons();
   drawMenu(); 
 });
@@ -193,20 +210,21 @@ template.addEventListener('mousedown', e => {
 template.addEventListener('mousemove', e => {
   if(selected != null) move(e, selected); 
   if(resizing === true) resize(e, selected);
-});
+})
 
 //invoked when mouse is released, resets selected component, moving, and resizing variables 
 template.addEventListener('mouseup', e => {
   
   //if moving or resizing, trigger conditional to check location of moved/rezized component
   if (moving || resizing) {
-    const components = canvasUtility.parse('index', true); 
+    console.log('moving or resizing');
+    const componentsBefore = canvasUtility.parse('index', true); 
     const oldChildren = new Set();
-    const newChildren = new Set();
+    const newChildren = [];
     let newParent;
     
-    for (let i = 0; i < components.length; i++){
-      const rect = components[i];
+    for (let i = 0; i < componentsBefore.length; i++){
+      const rect = componentsBefore[i];
       // check if current rect is the parent of selected rect
       if (rect.containsRect(selected)) newParent = rect;
       // check if selected rect is the parent of current rect
@@ -221,7 +239,7 @@ template.addEventListener('mouseup', e => {
         if (isChild) newChildren.push(rect);
       }
       // if current rect has selected as parent based on old position
-      if (rect.parent === rect) {
+      if (rect.parent === selected) {
         oldChildren.add(rect);
       }
     }
@@ -232,9 +250,10 @@ template.addEventListener('mouseup', e => {
         canvasUtility.addChild(newChild.id, selected);
       }
     });
+    const newChildrenSet = new Set(newChildren);
     // remove old children from selected, add them to selected rect's old parent
     oldChildren.forEach(oldChild => {
-      if (!newChildren.has(oldChild)) {
+      if (!newChildrenSet.has(oldChild)) {
         canvasUtility.removeChild(oldChild.id, selected);
         canvasUtility.addChild(oldChild.id, selected.parent);
       }
@@ -244,9 +263,8 @@ template.addEventListener('mouseup', e => {
       canvasUtility.removeChild(selected.id, selected.parent);
       canvasUtility.addChild(selected.id, newParent);
     }
-
+    // redraw updated canvas
     drawComponents();
-
   }
 
   moving = false; 
@@ -254,7 +272,7 @@ template.addEventListener('mouseup', e => {
   selected = null; 
   let x = e.offsetX; 
   let y = e.offsetY; 
-  if (x < 200) { 
+  if (e.offsetX < 200){ 
     for (let i = 0; i < $options.length; i++){
       const rect = new Rect(...Object.values($options[i]));
       if (rect.contains(x,y)) { 
@@ -278,15 +296,17 @@ template.addEventListener('mouseup', e => {
 //MOVEMENT TRACKING FUNCTIONS
 
 const resize = (e, rect) => {
-  if (resizing === true) {
-    rect.width += e.movementX; 
-    rect.height += e.movementY; 
-    drawComponents();
+  if (resizing === true){
+    if (rect.width + e.movementX > 20) rect.width += e.movementX; 
+    if (rect.height + e.movementY > 20) rect.height += e.movementY;
+    const components = canvasUtility.parse('index', true); 
+    drawComponents(); 
   }
 }
 
 const move = (e, rect) => {
-  if (moving === true && rect.x > 204) {  
+  if (moving === true && rect.x > 204){
+    
     rect.x += e.movementX; 
     rect.y += e.movementY; 
   }
