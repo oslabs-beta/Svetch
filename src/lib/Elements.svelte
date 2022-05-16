@@ -1,19 +1,19 @@
 <script>
-import { components } from "../store.js"
+import { options } from "../store.js"
 
 let name;
 let color;
 
 const handleSubmission = (name, color) => {
-    const component = {
+    const option = {
         x: 20,
-        y: ($components[$components.length - 1].y + 60) || 20,
+        y: ($options[$options.length - 1].y + 60) || 20,
         width: 150 , 
         height: 50,
         type: name.value,
         color: color.value
     }
-    components.update(n => [...n, component]);
+    options.update(n => [...n, option]);
     name.value = '';
     color.value = '';
     return;

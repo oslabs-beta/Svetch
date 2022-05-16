@@ -1,6 +1,6 @@
 <script>
 import { onMount } from 'svelte';
-import d3TreeRenderer from '../utils/d3TreeRenderer.js';
+import d3TreeRenderer from '../utils/d3TreeRenderer.js'; 
 import { canvas } from '../store.js';
 export let toggled = false;
 
