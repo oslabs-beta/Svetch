@@ -2,9 +2,9 @@
 	
 </script>
 
-<p>
+<Component 2>
 	
-</p>
+</Component 2>
 
 <style>
 

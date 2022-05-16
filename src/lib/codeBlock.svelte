@@ -1,11 +1,11 @@
 <script>
   import { HighlightSvelte } from "svelte-highlight";
-  import monokai from "svelte-highlight/styles/monokai";
+  import obsidian from "svelte-highlight/styles/obsidian";
   export let code = 'test code';
 </script>
 
 <svelte:head>
-  {@html monokai}
+  {@html obsidian}
 </svelte:head>
 
 <HighlightSvelte {code} />

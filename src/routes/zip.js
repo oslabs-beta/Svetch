@@ -1,5 +1,6 @@
 import JSZip from "jszip";
 import fs from "fs";
+import cookie from 'cookie';
 
 const addFilesFromDirectoryToZip = (directoryPath = "", zip) => {
     const directoryContents = fs.readdirSync(directoryPath, {
@@ -20,11 +21,13 @@ const addFilesFromDirectoryToZip = (directoryPath = "", zip) => {
   };
 
 
-export async function get() {
+export async function get({request}) {
   // for future feature, pass directory path(s) as a paramater on the request
   // if one path is passed in, use existing logic
   // if multiple paths are passed in, create a forEach loop using existing logic
-  directoryPath = 'Export'
+  const cookies = cookie.parse(request.headers.get('cookie') || ''); 
+    let id = cookies.session_id
+  directoryPath = id
     const zip = new JSZip();
     zip.file();
 
