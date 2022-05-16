@@ -11,7 +11,8 @@ let ctx;
 let template;
 let moving = false;
 let selected = null;
-let resizing = false; 
+let resizing = false;
+let optionsArr;
  
 class Rect {
   constructor(x, y, width, height, type, color) {
@@ -51,9 +52,9 @@ class EditableRect extends Rect {
   containsRect(rect) {
     return (
       rect.x > this.x &&
-      rect.x < this.x + this.width &&
+      rect.x + rect.width < this.x + this.width &&
       rect.y > this.y + 2 * borderWidth &&
-      rect.y < this.y + this.height + 2 * borderWidth
+      rect.y + rect.height < this.y + this.height + 2 * borderWidth
     );
   }
   draw(ctx) {
@@ -105,14 +106,7 @@ $:{
  //Takes in an array of boxes and draws them to the canvas
  //calls drawMenu
  //Should be called whenever box coordinates or sizes change
- const drawAll = (arr) => {
-  for (let i = 0; i < arr.length; i++){
-    const rect = arr[i];
-    rect.draw(ctx);
-  };
-
-};
-
+ 
 const drawComponents = () => {
   const components = canvasUtility.parse('index', true);
   clear();
@@ -135,10 +129,12 @@ const drawMenu = () => {
   ctx.moveTo(200, 0);
   ctx.lineTo(200, 600 );
   ctx.stroke(); 
-   
-  for (let i = 0; i < $options.length; i++) {
-    // create rect from option value
-    const rect = new Rect(...Object.values($options[i]));
+  const keys = Object.keys($options);
+  optionsArr = [];
+  for (let key of keys) {
+    const { color, y } = $options[key];
+    const rect = new Rect(20, y, 150, 50, key, color);
+    optionsArr.push(rect);
     rect.draw(ctx);
     rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
   } 
@@ -167,17 +163,13 @@ onMount(() => {
   template.height = parent.clientHeight;
   ctx = template.getContext('2d'); 
 
-  drawDots();
-
 //EVENT LISTENERS
 
 window.addEventListener('resize', () => {
   const components = canvasUtility.parse('index', true); 
   template.width = parent.clientWidth;
   template.height = parent.clientHeight;
-
-  drawDots(); 
-  drawAll(components);
+  drawComponents();
   clearButtons();
   drawMenu(); 
 });
@@ -220,7 +212,7 @@ template.addEventListener('mouseup', e => {
     console.log('moving or resizing');
     const componentsBefore = canvasUtility.parse('index', true); 
     const oldChildren = new Set();
-    const newChildren = [];
+    const newChildren = new Set();
     let newParent;
     
     for (let i = 0; i < componentsBefore.length; i++){
@@ -236,7 +228,7 @@ template.addEventListener('mouseup', e => {
           if (child.containsRect(rect)) isChild = false;
         });
         // if current rect is a direct descendant, add the child to array
-        if (isChild) newChildren.push(rect);
+        if (isChild) newChildren.add(rect);
       }
       // if current rect has selected as parent based on old position
       if (rect.parent === selected) {
@@ -250,19 +242,19 @@ template.addEventListener('mouseup', e => {
         canvasUtility.addChild(newChild.id, selected);
       }
     });
-    const newChildrenSet = new Set(newChildren);
+  
     // remove old children from selected, add them to selected rect's old parent
     oldChildren.forEach(oldChild => {
-      if (!newChildrenSet.has(oldChild)) {
+      if (!newChildren.has(oldChild)) {
         canvasUtility.removeChild(oldChild.id, selected);
         canvasUtility.addChild(oldChild.id, selected.parent);
       }
-    })
-    // if selected rect has parent change
-    if (selected.parent !== newParent) {
-      canvasUtility.removeChild(selected.id, selected.parent);
-      canvasUtility.addChild(selected.id, newParent);
-    }
+    });
+
+    // re-add child so that it is later in array (displayed on top)
+    canvasUtility.removeChild(selected.id, selected.parent);
+    canvasUtility.addChild(selected.id, newParent);
+    
     // redraw updated canvas
     drawComponents();
   }
@@ -273,11 +265,10 @@ template.addEventListener('mouseup', e => {
   let x = e.offsetX; 
   let y = e.offsetY; 
   if (e.offsetX < 200){ 
-    for (let i = 0; i < $options.length; i++){
-      const rect = new Rect(...Object.values($options[i]));
-      if (rect.contains(x,y)) { 
+    for (let option of optionsArr) {
+      if (option.contains(x,y)) { 
         const id = Object.keys($canvas).length;
-        const newRect = new EditableRect(300, 100, 200, 100, rect.type, rect.color, id); 
+        const newRect = new EditableRect(300, 100, 200, 100, option.type, option.color, id); 
         const components = canvasUtility.parse('index', true);
         
         for (let i = 0; i < components.length; i++) {
@@ -285,9 +276,9 @@ template.addEventListener('mouseup', e => {
           if (rect.containsRect(newRect)) newRect.parent = rect;  
         }
         canvasUtility.createChild(id, newRect.type, newRect.parent, newRect);
-        drawComponents();
       } 
     }
+    drawComponents();
   }
 });
 

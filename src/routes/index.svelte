@@ -18,6 +18,7 @@ let toggled = true;
 let selected = 'index';
 let code;
 let canvasStore;
+let treeHeight;
 canvas.subscribe((val) => canvasStore = val);
 
 $: {
@@ -83,16 +84,14 @@ button {
 <section class="elementsPanel">
   <Elements />
 </section>
-<section class="visualizerPanel">
+<section class="visualizerPanel" bind:clientHeight={treeHeight}>
 <div id = "switch">
     <Switch bind:checked={toggled} ></Switch>
 </div>
 {#if toggled}
-  <!-- <Canvas bind:toggled={toggled}/> -->
   <Canvas />
 {:else}
-  <!-- <Tree bind:toggled={toggled}/> -->
-  <Tree/>
+  <Tree height={treeHeight}/>
 {/if}
 </section>
 <section class="fileDirectoryPanel">

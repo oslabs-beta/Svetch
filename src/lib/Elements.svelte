@@ -1,19 +1,24 @@
 <script>
-import { options } from "../store.js"
+import { options } from "../store.js";
+import optionUtility from "../utils/optionUtility.js";
 
 let name;
 let color;
 
-const handleSubmission = (name, color) => {
-    const option = {
-        x: 20,
-        y: ($options[$options.length - 1].y + 60) || 20,
-        width: 150 , 
-        height: 50,
-        type: name.value,
-        color: color.value
-    }
-    options.update(n => [...n, option]);
+const handleSubmission = () => {
+    // const option = {
+    //     x: 20,
+    //     y: ($options[$options.length - 1].y + 60) || 20,
+    //     width: 150 , 
+    //     height: 50,
+    //     type: name.value,
+    //     color: color.value
+    // }
+    const keys = Object.keys($options);
+    const lastOption = $options[keys[keys.length - 1]];
+    const y = (lastOption.y + 60) || 20;
+    // options.update(n => [...n, option]);
+    optionUtility.create(name.value, color.value, y)
     name.value = '';
     color.value = '';
     return;
@@ -38,7 +43,7 @@ const handleSubmission = (name, color) => {
     <option value="green">Green</option>
 </select><br>
 
-<button on:click = { () => handleSubmission(name, color)}>Submit</button>
+<button on:click = { () => handleSubmission()}>Submit</button>
 
 
 <style>

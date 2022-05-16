@@ -2,11 +2,14 @@
 import { onMount } from 'svelte';
 import d3TreeRenderer from '../utils/d3TreeRenderer.js'; 
 import { canvas } from '../store.js';
-export let toggled = false;
+
 
 let el;
 let data;
-const width = document.body.clientWidth * 0.5;
+let width;
+export let height;
+
+// let width = document.body.clientWidth * 0.5;
 let fakeData = {
 	name: 'App.svelte',
 	children: [
@@ -55,10 +58,12 @@ function parseCanvas(component) {
 	return data;
 }
 
+
 data = parseCanvas('index');
 const renderTree = () => d3TreeRenderer.render(data, el, width);
 
 onMount(() => {
+	width = document.getElementById('tree').offsetWidth;
 	renderTree();
 });
 
@@ -67,16 +72,13 @@ onMount(() => {
 
 <div id="tree">
 	<!-- <Switch bind:checked={toggled} ></Switch> -->
-	<div class="center" >
+	<div class="center" style="height:{height}px">
 		<svg bind:this={el}></svg>
 	</div>
 </div>
 
 <style>
-/* .switch {
-	position: absolute;
-	right: 2vw;
-} */
+
 .center {
 	display: flex;
 	flex-direction: column;
