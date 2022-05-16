@@ -1,61 +1,50 @@
 <script>
-	//import H1Element from "./DraggableComponents/H1Element.svelte";
-	//import PElement from "./DraggableComponents/PElement.svelte";
-	//import ImgElement from "./DraggableComponents/ImgElement.svelte";
-	//import Draggable from "./DraggableComponents/Draggable.svelte";
+import { options } from "../store.js"
 
-	const htmlElements = [
-		{id: 1, name: "H1 Header"},
-		{id: 2, name: "Image"},
-		{id: 3, name: "Paragraph"}
-	];
+let name;
+let color;
 
-	//import {flip} from 'svelte/animate';
-	//import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
-
-	let inCanvas = false;
-
-	const dragging = (e) => {
-		//triggered on mousedown of list item
-		e.dataTransfer.dropEffect = "move";
-		e.dataTransfer.setData("text", e.target.getAttribute("id"))
-
-		//grab the current left and top position
-
-		//track left and top position
-			//update dynamically
-	}
-
-	const dropItem = () => {
-		//triggered on mouseup of list item
-
-		//if position of the list item is within canvas
-			//add to canvas
-			//rerender the list of html elements
-
-		//else animate return to
-
-	}
+const handleSubmission = (name, color) => {
+    const option = {
+        x: 20,
+        y: ($options[$options.length - 1].y + 60) || 20,
+        width: 150 , 
+        height: 50,
+        type: name.value,
+        color: color.value
+    }
+    options.update(n => [...n, option]);
+    name.value = '';
+    color.value = '';
+    return;
+}
 </script>
 
 
 <!-- //div contains html elements list declared above -->
-<h1>HTML Elements</h1>
-<ul>
-	<!--loops through the htmlElements array and displays each value as a list item-->
-	{#each htmlElements as element}
-		<li on:mousedown={dragging}>
-			{element.name}
-		</li>
-	{/each}
-</ul>
+<h1>Create New Component</h1>
+
+<label for="componentName">Component Name</label><br>
+<input bind:this={name} type="text" id="componentName" name="componentName" value=""><br>
+
+<label for="color-select">Choose a Color:</label>
+<select bind:this={color} name="color" id="color-select">
+    <option value="">--Please choose an option--</option>
+    <option value="blue">Blue</option>
+    <option value="red">Red</option>
+    <option value="yellow">Yellow</option>
+    <option value="orange">Orange</option>
+    <option value="pink">Pink</option>
+    <option value="green">Green</option>
+</select><br>
+
+<button on:click = { () => handleSubmission(name, color)}>Submit</button>
+
 
 <style>
 h1 {
 	padding-top: 1rem;
 	text-align: center;
 }
-ul {
-	padding: 2.25rem;
-}
+
 </style>

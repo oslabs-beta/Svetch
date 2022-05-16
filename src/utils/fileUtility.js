@@ -92,11 +92,12 @@ fileUtility.sort = files => {
 }
 
 fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
-
+	
 	let exporting = true;
 	const filesTemplates = fileUtility.parse('index', exporting);
 	const requests = [];
-
+	//console.log('start of export')
+	console.log(filesTemplates);
 	filesTemplates.forEach(template => {
 		let {name, data} = template;
 		let folder;
@@ -111,13 +112,14 @@ fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
 		const request = axios.post('/fileCreate', postContent);
 		requests.push(request);
 	});
-
+	//console.log('about to finish promises')
 	await Promise.all(requests);
-
+	//console.log('just finished promises')
 	const zipAsBase64 = await axios.get('/zip');
 	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
 	fileSaver.saveAs(blob, `${projectName}.zip`);
-
+	console.log('test')
+	// comment out below if you dont want to delete file
 	axios.post('/fileDelete');
 
 }
