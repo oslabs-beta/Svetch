@@ -3,15 +3,29 @@ import { options } from "../store.js"
 
 let name;
 let color;
+let enterName = true;
+let y = 20;
+let reset;
+// $:{reset = $options.length}
+// $:console.log(reset)
+$:{ if($options.length) {y = ($options[$options.length - 1].y + 60)}
+else y = 20;}
 
 const handleSubmission = (name, color) => {
+if (name.value === '') 
+{
+    enterName = false;
+    return
+}
+    enterName = true;
     const option = {
         x: 20,
-        y: ($options[$options.length - 1].y + 60) || 20,
+        y: y ,
         width: 150 , 
         height: 50,
         type: name.value,
-        color: color.value
+        color: color.value,
+        deletable : true,
     }
     options.update(n => [...n, option]);
     name.value = '';
@@ -26,6 +40,7 @@ const handleSubmission = (name, color) => {
 
 <label for="componentName">Component Name</label><br>
 <input bind:this={name} type="text" id="componentName" name="componentName" value=""><br>
+<h2 hidden={enterName}> Please enter a name </h2>
 
 <label for="color-select">Choose a Color:</label>
 <select bind:this={color} name="color" id="color-select">
@@ -45,6 +60,9 @@ const handleSubmission = (name, color) => {
 h1 {
 	padding-top: 1rem;
 	text-align: center;
+}
+h2{
+    color: red;
 }
 
 </style>
