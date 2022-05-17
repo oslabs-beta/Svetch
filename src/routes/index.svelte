@@ -11,6 +11,7 @@ import Switch from '../lib/Switch.svelte';
 import { canvas } from '../store.js';
 import axios from "axios";
 import { onMount } from 'svelte';
+import { options } from "../store.js"
 
 
 
@@ -21,18 +22,15 @@ let canvasStore;
 let treeHeight;
 canvas.subscribe((val) => canvasStore = val);
 
+//$:console.log(selected)
 $: {
   if (canvasStore.index.children.length === 0){
     updateSelected('index');
   }
 }
 
-// let boxes = [
-//   {x : 20 , y : 20, width : 150 , height : 50, type : 'Component 1', color : 'green'},
-//   {x : 20 , y : 80, width : 150 , height : 50, type : 'Component 2', color : 'red'}
-// ]
-//$:{console.log(boxes)}
-$: {
+//$: {console.log(canvasStore)}
+$: {canvasStore;
   code = fileUtility.parse(selected)[0].data;
 }
 
@@ -89,7 +87,7 @@ button {
     <Switch bind:checked={toggled} ></Switch>
 </div>
 {#if toggled}
-  <Canvas />
+  <Canvas bind:boxSelected= {selected}/>
 {:else}
   <Tree height={treeHeight}/>
 {/if}
@@ -110,6 +108,6 @@ button {
   <button on:click = {() => {updateSelected('index')}}>Show Index</button>
   <button on:click = {() => {updateSelected('div1')}}>Show Div1</button>
   <button on:click = {() => {updateSelected('div2')}}>Show Div2</button>
-  <button on:click = {() => {() => console.log('all files:', fileUtility.parse('index', true))}}>grab files</button>
+  <button on:click = {() => console.log($options)}>grab files</button>
   <!-- <button on:click = {console.log(boxes)}>boxes?</button> -->
 </section>

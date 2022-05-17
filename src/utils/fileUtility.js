@@ -2,7 +2,6 @@ import { canvas } from '../store.js';
 import axios from 'axios';
 import b64ToBlob from "b64-to-blob";
 import fileSaver from "file-saver";
-
 const fileUtility = {};
 
 
@@ -154,6 +153,7 @@ fileUtility.newFile = async () => {
 	};
 	canvas.update(n=> n = canvasStore);
 
+	options.update(n => n = [])
 	axios.get('/newProject');
 
 	return
