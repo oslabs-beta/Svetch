@@ -11,8 +11,17 @@ let ctx;
 let template;
 let moving = false;
 let selected = null;
+export let boxSelected = 'index';
 let resizing = false; 
- 
+
+let reset = false;
+
+let canvasStore;
+canvas.subscribe((val) => canvasStore = val);
+
+
+
+$:{if (selected != null) {boxSelected = selected.id}}
 class Rect {
   constructor(x, y, width, height, type, color) {
     this.x = x,
@@ -98,10 +107,26 @@ $:{
     clearButtons(); 
     drawMenu($options);
     drawComponents();
+    
   }
 }
 
- 
+$: {if (canvasStore.index.children.length > 0) reset = true;}
+
+$: {if (canvasStore.index.children.length === 0 && mounted && reset) 
+      {
+       clear(); 
+       drawDots(); 
+       clearButtons();
+      // while($options.length)
+      // {
+      //   $options.pop();
+      // }
+      $options = [];
+      reset = false;
+       drawMenu($options)
+      }
+  }
  //Takes in an array of boxes and draws them to the canvas
  //calls drawMenu
  //Should be called whenever box coordinates or sizes change
@@ -204,6 +229,7 @@ template.addEventListener('mousedown', e => {
     canvasUtility.deleteChild(selected.id, selected.parent);
     drawComponents();
   }
+  else boxSelected = 'index'
 });
 
 //invokes move or resize on mouse movement only if a component is selected
@@ -300,38 +326,45 @@ const resize = (e, rect) => {
     if (rect.width + e.movementX > 20) rect.width += e.movementX; 
     if (rect.height + e.movementY > 20) rect.height += e.movementY;
     const components = canvasUtility.parse('index', true); 
+    //console.log(rect.width + " " + rect.height)
     drawComponents(); 
   }
 }
 
 const move = (e, rect) => {
-  if (moving === true && rect.x > 204){
+  if (moving === true && rect.x > 204 && rect.y > 0 && rect.y + rect.height <= template.height && rect.x + rect.width <= template.width){
     
     rect.x += e.movementX; 
     rect.y += e.movementY; 
+    //console.log(template.height, " ", template.width)
   }
   else if (rect.x <= 204) {
     clearButtons();
     drawMenu();
     rect.x = 205;
   }
+  else if (rect.y <= 0) {
+    // clearButtons();
+    // drawMenu();
+    rect.y =1;
+  }
+  else if (rect.y + rect.height >= template.height) {
+    // clearButtons();
+    // drawMenu();
+    rect.y = template.height - rect.height;
+  }
+  else if (rect.x + rect.width >= template.width) {
+    // clearButtons();
+    // drawMenu();
+    rect.x = template.width - rect.width;
+  }
+
   drawComponents();
 }
 
 mounted = true;
 
 });
-<<<<<<< HEAD
-
-//END OF ONMOUNT
-
-
-
-
-
-
-=======
->>>>>>> origin
 
 
 </script>
