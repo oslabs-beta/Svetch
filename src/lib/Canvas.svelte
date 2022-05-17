@@ -269,8 +269,7 @@ template.addEventListener('mouseup', e => {
     for (let option of optionsArr) {
       if (option.contains(x,y)) { 
         const key = option.type;
-        $options[key].quantity++;
-        const id = Object.keys($canvas).length;
+        const id = 'component' + $canvas['index'].counter++;
         const newRect = new EditableRect(300, 100, 200, 100, option.type, option.color, id); 
         const components = canvasUtility.parse('index', true);
         

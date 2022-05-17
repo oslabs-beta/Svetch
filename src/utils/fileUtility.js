@@ -1,9 +1,7 @@
-import { canvas, options } from '../store.js';
+import { canvas } from '../store.js';
 import axios from 'axios';
 import b64ToBlob from "b64-to-blob";
 import fileSaver from "file-saver";
-import { file } from 'jszip';
-import { select_options } from 'svelte/internal';
 
 const fileUtility = {};
 
@@ -15,6 +13,7 @@ fileUtility.parse = (component, exporting = false) => {
 
 	const fileMap = new Map();
 	const queue = [component];
+	const nameCache = {};
 	
 	while(queue.length) {
 		const storeKey = queue.shift();
@@ -22,22 +21,21 @@ fileUtility.parse = (component, exporting = false) => {
 		const name = current.scriptId;
 
 		let fileName = storeKey === 'index' ? storeKey : name;
-		let fileText = `<script>IMPORTS</script>\n\n<${name}>COMPONENTS</${name}>\n\n<style>\n\n</style>`;
+		let fileText = `<script>IMPORTS</script>\n\n${name === 'main' ? '<main>' : ''}COMPONENTS${name === 'main' ? '</main>': ''}\n\n<style>\n\n</style>`;
 
 		const importMap = new Map();
 		const components = [];
 		const childNameCache = {};
-		const nameCache = {};
 		let cacheUpdated = false;
 
 		current.children.forEach(child => {
 			let childName = canvasStore[child].scriptId;
-			if (!cacheUpdated) {
+			// if (!cacheUpdated) {
 				if(nameCache[name]) nameCache[name]++;
 				else nameCache[name] = 1;
 				fileName = name + '_' + nameCache[name];
 				cacheUpdated = true;
-			}
+			// }
 			if (exporting) queue.push(child);
 			if (canvasStore[child].children.length) {
 				if (childNameCache[childName]) childNameCache[childName]++;
@@ -54,9 +52,12 @@ fileUtility.parse = (component, exporting = false) => {
 			imports.push(value);
 		});
 		const importsStr = '\n\t' + imports.join('\n\t') + '\n';
-
-		const componentsStr = '\n\t' + components.join('\n\t') + '\n';
+		let componentsStr;
+		if (name === 'main') componentsStr = '\n\t' + components.join('\n\t') + '\n';
+		else if (!components.length) componentsStr = '<!-- Enter your HTML here -->';
+		else componentsStr = components.join('\n');
 		fileName = fileUtility.formatName(fileName);
+
 		fileText = fileText
 			.replace('IMPORTS', importsStr)
 			.replace('COMPONENTS', componentsStr);
@@ -115,8 +116,7 @@ fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
 	let exporting = true;
 	const filesTemplates = fileUtility.parse('index', exporting);
 	const requests = [];
-	//console.log('start of export')
-	console.log(filesTemplates);
+	
 	filesTemplates.forEach(template => {
 		let {name, data} = template;
 		let folder;
