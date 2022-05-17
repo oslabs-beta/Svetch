@@ -1,16 +1,17 @@
-import { canvas } from '../store.js';
+import { canvas, options } from '../store.js';
 import axios from 'axios';
 import b64ToBlob from "b64-to-blob";
 import fileSaver from "file-saver";
 import { file } from 'jszip';
+import { select_options } from 'svelte/internal';
 
 const fileUtility = {};
 
 
 fileUtility.parse = (component, exporting = false) => {
 	let canvasStore;
-	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
-	unsubscribe();
+	const unsubscribeCanvas = canvas.subscribe((val) => canvasStore = val);
+	unsubscribeCanvas();
 
 	const fileMap = new Map();
 	const queue = [component];
@@ -18,23 +19,34 @@ fileUtility.parse = (component, exporting = false) => {
 	while(queue.length) {
 		const storeKey = queue.shift();
 		const current = canvasStore[storeKey];
-		const tagName = current.scriptId;
+		const name = current.scriptId;
 
-		let fileName = storeKey === 'index' ? storeKey : tagName;
-		let fileText = `<script>IMPORTS</script>\n\n<${tagName}>COMPONENTS</${tagName}>\n\n<style>\n\n</style>`;
+		let fileName = storeKey === 'index' ? storeKey : name;
+		let fileText = `<script>IMPORTS</script>\n\n<${name}>COMPONENTS</${name}>\n\n<style>\n\n</style>`;
 
 		const importMap = new Map();
 		const components = [];
+		const childNameCache = {};
+		const nameCache = {};
+		let cacheUpdated = false;
 
 		current.children.forEach(child => {
-			let newComponent = canvasStore[child].scriptId;
-			fileName = storeKey;
+			let childName = canvasStore[child].scriptId;
+			if (!cacheUpdated) {
+				if(nameCache[name]) nameCache[name]++;
+				else nameCache[name] = 1;
+				fileName = name + '_' + nameCache[name];
+				cacheUpdated = true;
+			}
 			if (exporting) queue.push(child);
 			if (canvasStore[child].children.length) {
-				newComponent = child;
-			} 
-			if (!importMap.has(newComponent)) importMap.set(newComponent,`import ${newComponent} from '../lib/${newComponent}.svelte'`);	
-			components.push(`<${newComponent} />`);
+				if (childNameCache[childName]) childNameCache[childName]++;
+				else childNameCache[childName] = 1;
+				childName = childName + '_' + childNameCache[childName];
+			}
+			childName = fileUtility.formatName(childName);
+			if (!importMap.has(childName)) importMap.set(childName,`import ${childName} from '../lib/${childName}.svelte'`);	
+			components.push(`<${childName} />`);
 		});
 
 		const imports = [];
@@ -44,7 +56,7 @@ fileUtility.parse = (component, exporting = false) => {
 		const importsStr = '\n\t' + imports.join('\n\t') + '\n';
 
 		const componentsStr = '\n\t' + components.join('\n\t') + '\n';
-
+		fileName = fileUtility.formatName(fileName);
 		fileText = fileText
 			.replace('IMPORTS', importsStr)
 			.replace('COMPONENTS', componentsStr);
@@ -89,6 +101,13 @@ fileUtility.sort = files => {
 		return 0;
 	}
 	return files.sort(sortFiles);
+}
+
+fileUtility.formatName = name => {
+	return name.toLowerCase()
+		.split(' ')
+		.map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+		.join('');
 }
 
 fileUtility.createFile = async (projectName = 'example-skeleton', ) => {

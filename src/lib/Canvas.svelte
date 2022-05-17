@@ -166,7 +166,6 @@ onMount(() => {
 //EVENT LISTENERS
 
 window.addEventListener('resize', () => {
-  const components = canvasUtility.parse('index', true); 
   template.width = parent.clientWidth;
   template.height = parent.clientHeight;
   drawComponents();
@@ -193,7 +192,7 @@ template.addEventListener('mousedown', e => {
   }
   else if (selected && selected.deleteTabContains(x,y)) {
     moving = false;
-    canvasUtility.deleteChild(selected.id, selected.parent);
+    canvasUtility.delete(selected);
     drawComponents();
   }
 });
@@ -209,7 +208,6 @@ template.addEventListener('mouseup', e => {
   
   //if moving or resizing, trigger conditional to check location of moved/rezized component
   if (moving || resizing) {
-    console.log('moving or resizing');
     const componentsBefore = canvasUtility.parse('index', true); 
     const oldChildren = new Set();
     const newChildren = new Set();
@@ -238,22 +236,25 @@ template.addEventListener('mouseup', e => {
     // remove new children from their old parents, add them to selected
     newChildren.forEach(newChild => {
       if (!oldChildren.has(newChild)) {
-        canvasUtility.removeChild(newChild.id, newChild.parent);
-        canvasUtility.addChild(newChild.id, selected);
+        canvasUtility.removeParent(newChild);
+        newChild.parent = selected;
+        canvasUtility.updateParent(newChild);
       }
     });
   
     // remove old children from selected, add them to selected rect's old parent
     oldChildren.forEach(oldChild => {
       if (!newChildren.has(oldChild)) {
-        canvasUtility.removeChild(oldChild.id, selected);
-        canvasUtility.addChild(oldChild.id, selected.parent);
+        canvasUtility.removeParent(oldChild);
+        oldChild.parent = selected.parent;
+        canvasUtility.updateParent(oldChild);
       }
     });
 
     // re-add child so that it is later in array (displayed on top)
-    canvasUtility.removeChild(selected.id, selected.parent);
-    canvasUtility.addChild(selected.id, newParent);
+    canvasUtility.removeParent(selected);
+    selected.parent = newParent;
+    canvasUtility.updateParent(selected);
     
     // redraw updated canvas
     drawComponents();
@@ -267,6 +268,8 @@ template.addEventListener('mouseup', e => {
   if (e.offsetX < 200){ 
     for (let option of optionsArr) {
       if (option.contains(x,y)) { 
+        const key = option.type;
+        $options[key].quantity++;
         const id = Object.keys($canvas).length;
         const newRect = new EditableRect(300, 100, 200, 100, option.type, option.color, id); 
         const components = canvasUtility.parse('index', true);
@@ -275,7 +278,7 @@ template.addEventListener('mouseup', e => {
           const rect = components[i];
           if (rect.containsRect(newRect)) newRect.parent = rect;  
         }
-        canvasUtility.createChild(id, newRect.type, newRect.parent, newRect);
+        canvasUtility.create(newRect);
       } 
     }
     drawComponents();
