@@ -5,9 +5,12 @@ let name;
 let color;
 let enterName = true;
 let y = 20;
+let reset;
+// $:{reset = $options.length}
+// $:console.log(reset)
+$:{ if($options.length) {y = ($options[$options.length - 1].y + 60)}
+else y = 20;}
 
-$:{ if($options.length) {y = ($options[$options.length - 1].y + 60)}}
-$:{if ($options.length == 0) {y= 20} }
 const handleSubmission = (name, color) => {
 if (name.value === '') 
 {
@@ -21,7 +24,8 @@ if (name.value === '')
         width: 150 , 
         height: 50,
         type: name.value,
-        color: color.value
+        color: color.value,
+        deletable : true,
     }
     options.update(n => [...n, option]);
     name.value = '';

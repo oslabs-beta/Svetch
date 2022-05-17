@@ -11,6 +11,7 @@ import Switch from '../lib/Switch.svelte';
 import { canvas } from '../store.js';
 import axios from "axios";
 import { onMount } from 'svelte';
+import { options } from "../store.js"
 
 
 
@@ -26,6 +27,7 @@ $: {
     updateSelected('index');
   }
 }
+
 //$: {console.log(canvasStore)}
 $: {canvasStore;
   code = fileUtility.parse(selected)[0].data;
@@ -107,6 +109,6 @@ button {
   <button on:click = {() => {updateSelected('index')}}>Show Index</button>
   <button on:click = {() => {updateSelected('div1')}}>Show Div1</button>
   <button on:click = {() => {updateSelected('div2')}}>Show Div2</button>
-  <button on:click = {() => {() => console.log('all files:', fileUtility.parse('index', true))}}>grab files</button>
+  <button on:click = {() => console.log($options)}>grab files</button>
   <!-- <button on:click = {console.log(boxes)}>boxes?</button> -->
 </section>

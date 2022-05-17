@@ -122,7 +122,7 @@ $: {if (canvasStore.index.children.length === 0 && mounted && reset)
       // {
       //   $options.pop();
       // }
-      $options = [];
+      //$options = [];
       reset = false;
        drawMenu($options)
       }
@@ -166,9 +166,29 @@ const drawMenu = () => {
     const rect = new Rect(...Object.values($options[i]));
     rect.draw(ctx);
     rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
+    let contains = false
+   for (let key in $canvas)
+   {
+    if (rect.type === $canvas[key].scriptId) 
+    {
+      contains = true;
+      
+    }
+    if (contains == true) break
+   }
+   if (contains == false){
+    ctx.strokeRect(rect.x + rect.width - 15, rect.y, 15, 15); 
+    ctx.fillStyle = 'red';
+    ctx.font = '1px'
+    ctx.fillText('x', rect.x + rect.width - 15, rect.y + 15); 
+    ctx.fillStyle = 'black'; 
+    rect.deletable = true
+   }
+   
   } 
   
 }
+
 
 const drawDots = () => {
   const r = 1,
@@ -196,6 +216,39 @@ onMount(() => {
 
 //EVENT LISTENERS
 
+
+template.addEventListener('wheel', (e) => {
+  if ($options.length){
+   let outOfFrame;
+   let topOfFirstButton = $options[0].y;
+   let bottomOfLastButton =  $options[$options.length - 1].y + $options[$options.length - 1].height;
+   let scrollMaxed = false;
+   //Below satement sets outOfFrame to true if first or last button is outside of template boundaries
+   bottomOfLastButton > template.height || topOfFirstButton < 0 ? outOfFrame = true : outOfFrame = false;
+   if (e.offsetX < 200 && outOfFrame) {
+     let j = $options.length;
+   for (let i = 0; i < $options.length; i++){
+       if ($options[0].y > 25){
+         $options[i].y = 20 + (i * 60);
+       }
+       else if (bottomOfLastButton < template.height - 20) {
+         console.log('menu bottomed out');
+         console.log('last button y value is ' + $options[$options.length - 1].y);
+         console.log('template height is ' + template.height);
+         $options[i].y = template.height - 10 - ( j * 60);
+         j--; 
+       }
+       else {
+       $options[i].y -= e.deltaY * .5;
+       }
+       console.log('last button y is now ' + $options[$options.length -1].y)
+       console.log('first button y is now ' + $options[0].y)
+     };
+   };
+  };
+});
+
+
 window.addEventListener('resize', () => {
   const components = canvasUtility.parse('index', true); 
   template.width = parent.clientWidth;
@@ -210,6 +263,7 @@ window.addEventListener('resize', () => {
 template.addEventListener('mousedown', e => { 
   let x = e.offsetX; 
   let y = e.offsetY; 
+  
   const components = canvasUtility.parse('index', true); 
   // Check all components to see if they contain x,y coordinate of mouse event
   for (let i = 0; i < components.length; i++){
@@ -226,8 +280,14 @@ template.addEventListener('mousedown', e => {
   }
   else if (selected && selected.deleteTabContains(x,y)) {
     moving = false;
+    
     canvasUtility.deleteChild(selected.id, selected.parent);
+    
     drawComponents();
+    clearButtons();
+    
+    drawMenu();
+    console.log($options)
   }
   else boxSelected = 'index'
 });
@@ -301,7 +361,33 @@ template.addEventListener('mouseup', e => {
   if (e.offsetX < 200){ 
     for (let i = 0; i < $options.length; i++){
       const rect = new Rect(...Object.values($options[i]));
-      if (rect.contains(x,y)) { 
+      //logic that sees if button has componnet on convas, contains is true if it is
+      let contains = false
+      for (let key in $canvas)
+      {
+        if (rect.type === $canvas[key].scriptId) 
+        {
+          contains = true;
+        }
+        if (contains == true) break
+        }
+        //logic to see if x on button is clicked
+      if (contains == false && x >= rect.x + rect.width - 15 && x <= rect.x + rect.width && y >=rect.y &&  y <= rect.y + 15 )
+      {
+     
+       $options.splice(i,1);
+       $options = $options;
+        for (let j = i; i < $options.length; j++)
+        {
+          $options[j].y -= 60;
+        }
+        //console.log($options)
+        clearButtons();
+        drawMenu();
+        return
+        
+      }
+      else if (rect.contains(x,y)) {  
         const id = Object.keys($canvas).length;
         const newRect = new EditableRect(300, 100, 200, 100, rect.type, rect.color, id); 
         const components = canvasUtility.parse('index', true);
@@ -311,7 +397,10 @@ template.addEventListener('mouseup', e => {
           if (rect.containsRect(newRect)) newRect.parent = rect;  
         }
         canvasUtility.createChild(id, newRect.type, newRect.parent, newRect);
+        //redraw everything after adding a new component
         drawComponents();
+        clearButtons();
+        drawMenu();
       } 
     }
   }
