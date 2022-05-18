@@ -405,7 +405,7 @@ const move = (e, rect) => {
   else if (rect.y <= 0) {
     // clearButtons();
     // drawMenu();
-    rect.y =1;
+    rect.y = 1;
   }
   else if (rect.y + rect.height >= template.height) {
     // clearButtons();

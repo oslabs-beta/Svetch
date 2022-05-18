@@ -3,14 +3,14 @@ import fs from 'fs';
 
 
 export async function post({ request }) {
-    const cookies = cookie.parse(request.headers.get('cookie') || ''); 
-    let id = cookies.session_id
-    console.log("begin deletion")
-    if (fs.existsSync(`${id}`)) 
-    {  
+    const cookies = cookie.parse(request.headers.get('cookie') || '');
+    const body = await request.json();
+    const id = body.sessionId || cookies.session_id;
+
+    
+    if (fs.existsSync(`${id}`)) {  
         fs.rmSync(`${id}`, { recursive: true, force: true });
     }
-    console.log('done deleting')
    
     return {
         status: 200

@@ -1,6 +1,5 @@
 <script>
 import { options } from "../store.js";
-import optionUtility from "../utils/optionUtility.js";
 
 let name;
 let color;
@@ -11,27 +10,6 @@ let reset;
 $:{ if($options.length) {y = ($options[$options.length - 1].y + 60)}
 else y = 20;}
 
-// const handleSubmission = () => {
-// if (name.value === '') 
-// {
-//     enterName = false;
-//     return
-// }
-//     enterName = true;
-//     const option = {
-//         x: 20,
-//         y: y ,
-//         width: 150 , 
-//         height: 50,
-//         type: name.value,
-//         color: color.value,
-//         deletable : true,
-//     }
-//     options.update(n => [...n, option]);
-//     name.value = '';
-//     color.value = '';
-//     return;
-// }
 
 const handleSubmission = () => {
     let errorMessage = document.getElementById("errorMessage");

@@ -22,7 +22,7 @@ button {
 		<button on:click = {() => fileUtility.newFile()}>
 		New Project
 	</button>
-	<button on:click = {() => fileUtility.createFile()}>
+	<button on:click = {() => fileUtility.downloadFiles()}>
 		Download Project
 	</button>
 

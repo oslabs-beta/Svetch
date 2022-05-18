@@ -17,7 +17,6 @@ let treeHeight;
 
 
 $: {
-  console.log('reactivity for selected Component triggered: ',$selectedComponent)
   if ($canvas) $selectedComponent = $selectedComponent;
   code = fileUtility.parse($selectedComponent)[0].data;
 }
@@ -78,7 +77,7 @@ button {
   <CodeBlock code={code}/>
 </section>
 <section class="actionButtonsPanel">
-  <button on:click = {() => {canvasUtility.createChild('div1', 'div', 'index'); updateSelected('div1'); }}>Add div1 </button>
+  <!-- <button on:click = {() => {canvasUtility.createChild('div1', 'div', 'index'); updateSelected('div1'); }}>Add div1 </button>
   <button on:click = {() => {canvasUtility.createChild('div2', 'div', 'index'); updateSelected('div2'); }}>Add div2 </button>
   <!-- <button on:click = {() => {canvasUtility.createChild('button1', 'button', 'index');updateSelected('button1') }}>Add booty </button>  -->
   <button on:click = {() => {canvasUtility.createChild('p1', 'p', 'index');updateSelected('p1')}}>Add p </button>
@@ -86,6 +85,6 @@ button {
   <button on:click = {() => {updateSelected('index')}}>Show Index</button>
   <button on:click = {() => {updateSelected('div1')}}>Show Div1</button>
   <button on:click = {() => {updateSelected('div2')}}>Show Div2</button>
-  <button on:click = {() => console.log($options)}>grab files</button>
+  <button on:click = {() => console.log($options)}>grab files</button> -->
   <!-- <button on:click = {console.log(boxes)}>boxes?</button> -->
 </section>
