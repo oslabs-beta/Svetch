@@ -3,7 +3,8 @@ import { writable } from 'svelte/store';
 export const canvas = writable({
 	'index' : {
 		children : [],
-		scriptId : 'main'
+		scriptId : 'main',
+		counter : 0
 	}
 });
 
@@ -12,5 +13,5 @@ export const options = writable([
 	// {x : 20 , y : 80, width : 150 , height : 50, type : 'Component 2', color : 'red'}
   ])
 
-// export const session = writable({});
+export const selectedComponent = writable('index');
 

@@ -1,60 +1,58 @@
 import { canvas } from '../store.js';
 
 export default {
-  createChild: (target, type, parent, component) => {
+  create: (component) => {
     canvas.update(c => {
       // determine parent key
-      const parentId = parent ? parent.id : 'index';
-      // add child
-      c[parentId].children.push(target);
+      const parentId = component.parent ? component.parent.id : 'index';
+      // add component as child
+      c[parentId].children.push(component.id);
       // create child key in the store and assign default obj
-      c[target] = {children:[], 'scriptId': type, 'component': component};
+      c[component.id] = {children:[], 'scriptId': component.type, 'component': component};
       // return updated store
       return c;
     });
   },
-  removeChild: (target, parent) => {
+  removeParent: (component) => {
     canvas.update(c => {
       // determine parent key
-      const parentId = parent ? parent.id : 'index';
-      // remove target index in children array
-      const index = c[parentId].children.indexOf(target);
+      const parentId = component.parent ? component.parent.id : 'index';
+      // index of component in children array
+      const index = c[parentId].children.indexOf(component.id);
       // remove target 
       c[parentId].children.splice(index, 1);
       // return updated store
       return c;
     });
   },
-  addChild: (target, parent) => {
+  updateParent: (component) => {
     canvas.update(c => {
       // determine parent key
-      const parentId = parent ? parent.id : 'index';
-      // update parent property on component rect
-      c[target].component.parent = parent ? parent : null;
-      // add child
-      c[parentId].children.push(target);
+      const parentId = component.parent ? component.parent.id : 'index';
+      // add component as a child
+      c[parentId].children.push(component.id);
       // return updated store
       return c;
     });
   },
-  deleteChild: (target, parent) => {
+  delete: (component) => {
     canvas.update(c => {
       // determine parent key
-      const parentId = parent ? parent.id : 'index';
-      // determine target indext in children array
-      const index = c[parentId].children.indexOf(target);
-      // remove the target child
+      const parentId = component.parent ? component.parent.id : 'index';
+      // determine component index in children array
+      const index = c[parentId].children.indexOf(component.id);
+      // remove the child
       c[parentId].children.splice(index, 1);
       // add grandchildren to parent (making them children)
-      const grandChildren = c[target].children;
-      // update each grandchilds component rect to new parent component rect
+      const grandChildren = c[component.id].children;
+      // update each grandchild component rect to new parent component rect
       grandChildren.forEach(grandChildId => {
         c[grandChildId].component.parent = c[parentId].component || null;
       });
       // add the grandchildren to the children array
       c[parentId].children.push(...grandChildren);
-      // delete the target
-      delete c[target];
+      // delete the component
+      delete c[component.id];
       // return the store
       return c;
     });

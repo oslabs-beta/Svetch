@@ -1,8 +1,7 @@
 <script>
 import { onMount } from 'svelte'
-import { canvas } from '../store.js'
+import { canvas, options, selectedComponent } from '../store.js'
 import canvasUtility from '../utils/canvasUtility'
-import { options } from "../store.js"
 
 
 let borderWidth = 1;
@@ -11,17 +10,9 @@ let ctx;
 let template;
 let moving = false;
 let selected = null;
-export let boxSelected = 'index';
-let resizing = false; 
+let resizing = false;
+let reset = false; 
 
-let reset = false;
-
-let canvasStore;
-canvas.subscribe((val) => canvasStore = val);
-
-
-
-$:{if (selected != null) {boxSelected = selected.id}}
 class Rect {
   constructor(x, y, width, height, type, color) {
     this.x = x,
@@ -60,9 +51,9 @@ class EditableRect extends Rect {
   containsRect(rect) {
     return (
       rect.x > this.x &&
-      rect.x < this.x + this.width &&
+      rect.x + rect.width < this.x + this.width &&
       rect.y > this.y + 2 * borderWidth &&
-      rect.y < this.y + this.height + 2 * borderWidth
+      rect.y + rect.height < this.y + this.height + 2 * borderWidth
     );
   }
   draw(ctx) {
@@ -105,39 +96,26 @@ class EditableRect extends Rect {
 $:{ 
   if (mounted) {
     clearButtons(); 
-    drawMenu($options);
+    drawMenu($options)
     drawComponents();
-    
   }
 }
 
-$: {if (canvasStore.index.children.length > 0) reset = true;}
+$: {if ($canvas.index.children.length > 0) reset = true;}
 
-$: {if (canvasStore.index.children.length === 0 && mounted && reset) 
-      {
-       clear(); 
-       drawDots(); 
-       clearButtons();
-      // while($options.length)
-      // {
-      //   $options.pop();
-      // }
-      //$options = [];
+$: {
+  if ($canvas.index.children.length === 0 && mounted && reset) {
+      clear(); 
+      drawDots(); 
+      clearButtons();
       reset = false;
-       drawMenu($options)
-      }
+      drawMenu($options);
+    }
   }
  //Takes in an array of boxes and draws them to the canvas
  //calls drawMenu
  //Should be called whenever box coordinates or sizes change
- const drawAll = (arr) => {
-  for (let i = 0; i < arr.length; i++){
-    const rect = arr[i];
-    rect.draw(ctx);
-  };
-
-};
-
+ 
 const drawComponents = () => {
   const components = canvasUtility.parse('index', true);
   clear();
@@ -158,11 +136,10 @@ const clearButtons = () => {
 const drawMenu = () => {
   ctx.strokeStyle = 'black'; 
   ctx.moveTo(200, 0);
-  ctx.lineTo(200, 600 );
+  ctx.lineTo(200, template.height);
   ctx.stroke(); 
-   
+ 
   for (let i = 0; i < $options.length; i++) {
-    // create rect from option value
     const rect = new Rect(...Object.values($options[i]));
     rect.draw(ctx);
     rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
@@ -212,8 +189,6 @@ onMount(() => {
   template.height = parent.clientHeight;
   ctx = template.getContext('2d'); 
 
-  drawDots();
-
 //EVENT LISTENERS
 
 
@@ -250,12 +225,9 @@ template.addEventListener('wheel', (e) => {
 
 
 window.addEventListener('resize', () => {
-  const components = canvasUtility.parse('index', true); 
   template.width = parent.clientWidth;
   template.height = parent.clientHeight;
-
-  drawDots(); 
-  drawAll(components);
+  drawComponents();
   clearButtons();
   drawMenu(); 
 });
@@ -270,6 +242,7 @@ template.addEventListener('mousedown', e => {
     const rect = components[i];
     if (rect.contains(x,y)) { 
       selected = rect;
+      $selectedComponent = selected.id
       moving = true;
     }
   } 
@@ -280,16 +253,13 @@ template.addEventListener('mousedown', e => {
   }
   else if (selected && selected.deleteTabContains(x,y)) {
     moving = false;
-    
-    canvasUtility.deleteChild(selected.id, selected.parent);
-    
+    canvasUtility.delete(selected);
+    $selectedComponent = 'index';
     drawComponents();
     clearButtons();
-    
     drawMenu();
-    console.log($options)
   }
-  else boxSelected = 'index'
+  else if (!selected) $selectedComponent = 'index'
 });
 
 //invokes move or resize on mouse movement only if a component is selected
@@ -303,10 +273,9 @@ template.addEventListener('mouseup', e => {
   
   //if moving or resizing, trigger conditional to check location of moved/rezized component
   if (moving || resizing) {
-    console.log('moving or resizing');
     const componentsBefore = canvasUtility.parse('index', true); 
     const oldChildren = new Set();
-    const newChildren = [];
+    const newChildren = new Set();
     let newParent;
     
     for (let i = 0; i < componentsBefore.length; i++){
@@ -322,7 +291,7 @@ template.addEventListener('mouseup', e => {
           if (child.containsRect(rect)) isChild = false;
         });
         // if current rect is a direct descendant, add the child to array
-        if (isChild) newChildren.push(rect);
+        if (isChild) newChildren.add(rect);
       }
       // if current rect has selected as parent based on old position
       if (rect.parent === selected) {
@@ -332,23 +301,26 @@ template.addEventListener('mouseup', e => {
     // remove new children from their old parents, add them to selected
     newChildren.forEach(newChild => {
       if (!oldChildren.has(newChild)) {
-        canvasUtility.removeChild(newChild.id, newChild.parent);
-        canvasUtility.addChild(newChild.id, selected);
+        canvasUtility.removeParent(newChild);
+        newChild.parent = selected;
+        canvasUtility.updateParent(newChild);
       }
     });
-    const newChildrenSet = new Set(newChildren);
+  
     // remove old children from selected, add them to selected rect's old parent
     oldChildren.forEach(oldChild => {
-      if (!newChildrenSet.has(oldChild)) {
-        canvasUtility.removeChild(oldChild.id, selected);
-        canvasUtility.addChild(oldChild.id, selected.parent);
+      if (!newChildren.has(oldChild)) {
+        canvasUtility.removeParent(oldChild);
+        oldChild.parent = selected.parent;
+        canvasUtility.updateParent(oldChild);
       }
-    })
-    // if selected rect has parent change
-    if (selected.parent !== newParent) {
-      canvasUtility.removeChild(selected.id, selected.parent);
-      canvasUtility.addChild(selected.id, newParent);
-    }
+    });
+
+    // re-add child so that it is later in array (displayed on top)
+    canvasUtility.removeParent(selected);
+    selected.parent = newParent;
+    canvasUtility.updateParent(selected);
+    
     // redraw updated canvas
     drawComponents();
   }
@@ -377,18 +349,17 @@ template.addEventListener('mouseup', e => {
      
        $options.splice(i,1);
        $options = $options;
-        for (let j = i; i < $options.length; j++)
+        for (let j = i; j < $options.length; j++)
         {
           $options[j].y -= 60;
         }
-        //console.log($options)
         clearButtons();
         drawMenu();
         return
         
       }
       else if (rect.contains(x,y)) {  
-        const id = Object.keys($canvas).length;
+        const id = 'component' + $canvas.index.counter++;
         const newRect = new EditableRect(300, 100, 200, 100, rect.type, rect.color, id); 
         const components = canvasUtility.parse('index', true);
         
@@ -396,13 +367,12 @@ template.addEventListener('mouseup', e => {
           const rect = components[i];
           if (rect.containsRect(newRect)) newRect.parent = rect;  
         }
-        canvasUtility.createChild(id, newRect.type, newRect.parent, newRect);
-        //redraw everything after adding a new component
-        drawComponents();
-        clearButtons();
-        drawMenu();
+        canvasUtility.create(newRect);
       } 
     }
+    drawComponents();
+    clearButtons();
+    drawMenu();
   }
 });
 
