@@ -321,17 +321,7 @@ const move = (e, rect) => {
 mounted = true;
 
 });
-<<<<<<< HEAD
-
 //END OF ONMOUNT
-
-
-
-
-
-
-=======
->>>>>>> origin
 
 
 </script>

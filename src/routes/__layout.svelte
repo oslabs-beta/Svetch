@@ -9,20 +9,22 @@
 </script>
 
 <script>
+	import '../app.css';
 	import Header from '../lib/Header.svelte';
 	export let user;
 </script>
 
-<header>
+<!-- <header>
 	<Header user={user}/>
 </header>
-
+ -->
 <slot />
 
-<style>
+<!-- <style>
 header {
   display:flex;
   justify-content: space-between;
   grid-column: 1 / 4;
 }
 </style>
+ -->
