@@ -1,6 +1,5 @@
 <script>
   export let checked = false;
-  //export let color = "#2196F3";
 </script>
 
 <style>

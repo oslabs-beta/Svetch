@@ -1,61 +1,101 @@
 <script>
-	//import H1Element from "./DraggableComponents/H1Element.svelte";
-	//import PElement from "./DraggableComponents/PElement.svelte";
-	//import ImgElement from "./DraggableComponents/ImgElement.svelte";
-	//import Draggable from "./DraggableComponents/Draggable.svelte";
+import { options } from "../store.js";
+import optionUtility from "../utils/optionUtility.js";
 
-	const htmlElements = [
-		{id: 1, name: "H1 Header"},
-		{id: 2, name: "Image"},
-		{id: 3, name: "Paragraph"}
-	];
+let name;
+let color;
+let enterName = true;
+let y = 20;
+let reset;
 
-	//import {flip} from 'svelte/animate';
-	//import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
+$:{ if($options.length) {y = ($options[$options.length - 1].y + 60)}
+else y = 20;}
 
-	let inCanvas = false;
+// const handleSubmission = () => {
+// if (name.value === '') 
+// {
+//     enterName = false;
+//     return
+// }
+//     enterName = true;
+//     const option = {
+//         x: 20,
+//         y: y ,
+//         width: 150 , 
+//         height: 50,
+//         type: name.value,
+//         color: color.value,
+//         deletable : true,
+//     }
+//     options.update(n => [...n, option]);
+//     name.value = '';
+//     color.value = '';
+//     return;
+// }
 
-	const dragging = (e) => {
-		//triggered on mousedown of list item
-		e.dataTransfer.dropEffect = "move";
-		e.dataTransfer.setData("text", e.target.getAttribute("id"))
-
-		//grab the current left and top position
-
-		//track left and top position
-			//update dynamically
-	}
-
-	const dropItem = () => {
-		//triggered on mouseup of list item
-
-		//if position of the list item is within canvas
-			//add to canvas
-			//rerender the list of html elements
-
-		//else animate return to
-
-	}
+const handleSubmission = () => {
+    let errorMessage = document.getElementById("errorMessage");
+    let alreadyExists = false;
+    for (let i = 0; i < $options.length; i++) {
+        if ($options[i].type == name.value) alreadyExists = true;
+    } 
+    if (name.value === '') {   
+        errorMessage.innerText = "Please provide a name"
+        enterName = false;
+        return;
+    } else if (alreadyExists == true) {
+        errorMessage.innerText = "Please provide a unique name"
+        enterName = false;
+        alreadyExists = false;
+        return;   
+    }   
+    enterName = true;
+        const option = {
+        x: 20,
+        y: y ,
+        width: 150 , 
+        height: 50,
+        type: name.value,
+        color: color.value,
+        deletable : true,
+    }
+    options.update(n => [...n, option]);
+    name.value = '';
+    color.value = '';
+    return;
+}
 </script>
 
 
 <!-- //div contains html elements list declared above -->
-<h1>HTML Elements</h1>
-<ul>
-	<!--loops through the htmlElements array and displays each value as a list item-->
-	{#each htmlElements as element}
-		<li on:mousedown={dragging}>
-			{element.name}
-		</li>
-	{/each}
-</ul>
+<h1>Create New Component</h1>
+
+<label for="componentName">Component Name</label><br>
+<input bind:this={name} type="text" id="componentName" name="componentName" value=""><br>
+<!-- <h2 hidden={enterName}> Please enter a name </h2> -->
+<h2 id= "errorMessage" hidden={enterName}> </h2>
+
+<label for="color-select">Choose a Color:</label>
+<select bind:this={color} name="color" id="color-select">
+    <option value="">--Please choose an option--</option>
+    <option value="blue">Blue</option>
+    <option value="red">Red</option>
+    <option value="yellow">Yellow</option>
+    <option value="orange">Orange</option>
+    <option value="pink">Pink</option>
+    <option value="green">Green</option>
+</select><br>
+
+<button on:click = { () => handleSubmission()}>Submit</button>
+
 
 <style>
 h1 {
 	padding-top: 1rem;
 	text-align: center;
 }
-ul {
-	padding: 2.25rem;
+h2{
+    color: red;
 }
+
 </style>

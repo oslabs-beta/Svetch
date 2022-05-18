@@ -3,23 +3,26 @@ const d3TreeRenderer = {};
 
 d3TreeRenderer.render = (data, el, width) => {
   const margin = { top: 50, right: 50, bottom: 50, left: 55};
-  let dy = width / 3;
-  let dx = 50;
+  let depth = 0;
   const linkLayout = linkHorizontal().x(d => d.y).y(d => d.x)
   const svg = select(el)
-    .attr("viewBox", [-margin.left, -margin.top, width, 10])
-    .style("font", "16px sans-serif")
-    .style("user-select", "none");
-
+  .attr("viewBox", [-margin.left, -margin.top, width, 10])
+  .style("font", "16px sans-serif")
+  .style("user-select", "none");
+  
   const root = hierarchy(data);
-
-  root.x0 = -dy / 8;
-  root.y0 = 0;
+  
   root.descendants().forEach((d, i) => {
     d.id = i;
     d._children = d.children;
     if (d.depth && d.depth > 0) d.children = null;
+    if (d.depth && d.depth >= depth) depth = d.depth + 1
   });
+  
+  let dy = width / depth;
+  let dx = 50;
+  root.x0 = 15;
+  root.y0 = 0;
 
   const gLink = svg.append("g")
     .attr("fill", "none")
@@ -70,13 +73,13 @@ d3TreeRenderer.render = (data, el, width) => {
 
     nodeEnter.append("circle")
       .attr("r", 5)
-      .attr("fill", d => d._children ? "#fefefe" : "#fefefe")
+      .attr("fill", d => d._children ? "#fefefe" : "#afafaf")
       .attr("stroke-width", 10);
 
     nodeEnter.append("text")
       .attr("dy", d => d._children ? "-0.5em" : "0.3em")
       .attr("x", d => d._children ? 0 : '0.5em')
-      .attr("color", "#fefefe")
+      .attr("fill", "#fefefe")
       .attr("text-anchor", d => d._children ? "middle" : "start")
       .text(d => d.data.name);
 

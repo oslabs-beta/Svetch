@@ -6,37 +6,20 @@ import CodeBlock from '../lib/codeBlock.svelte';
 import fileUtility from '../utils/fileUtility';
 import canvasUtility from '../utils/canvasUtility';
 import Directory from '../lib/Directory.svelte';
-import Header from '../lib/Header.svelte';
 import Switch from '../lib/Switch.svelte';
-import { canvas } from '../store.js';
-import axios from "axios";
-import { onMount } from 'svelte';
+import { canvas, options, selectedComponent } from '../store.js';
 
 
 
-let toggled = true;
-let selected = 'index';
+let toggled = false;
 let code;
-let canvasStore;
-canvas.subscribe((val) => canvasStore = val);
+let treeHeight;
+
 
 $: {
-  if (canvasStore.index.children.length === 0){
-    updateSelected('index');
-  }
-}
-
-$: {
-  code = fileUtility.parse(selected)[0].data;
-}
-
-const updateSelected = (newSelection) => {
-  if (selected === newSelection) selected = null;
-  selected = newSelection;
-}
-
-function toggle() {
-  toggled = !toggled;
+  console.log('reactivity for selected Component triggered: ',$selectedComponent)
+  if ($canvas) $selectedComponent = $selectedComponent;
+  code = fileUtility.parse($selectedComponent)[0].data;
 }
 
 </script>
@@ -76,26 +59,23 @@ button {
 </style>
 
 <section class="elementsPanel">
-  <Elements/>
+  <Elements />
 </section>
-<section class="visualizerPanel">
-<div id = "switch">
+<section class="visualizerPanel" bind:clientHeight={treeHeight}>
+  <div id = "switch">
     <Switch bind:checked={toggled} ></Switch>
-</div>
-{#if toggled}
-  <!-- <Canvas bind:toggled={toggled}/> -->
-  <Canvas/>
-{:else}
-  <!-- <Tree bind:toggled={toggled}/> -->
-  <Tree/>
-{/if}
+  </div>
+  {#if toggled}
+    <Tree height={treeHeight}/>
+  {:else}
+    <Canvas />
+  {/if}
 </section>
 <section class="fileDirectoryPanel">
   <Directory />
 </section>
 <section class="codeBlockPanel">
   <CodeBlock code={code}/>
-
 </section>
 <section class="actionButtonsPanel">
   <button on:click = {() => {canvasUtility.createChild('div1', 'div', 'index'); updateSelected('div1'); }}>Add div1 </button>
@@ -106,5 +86,6 @@ button {
   <button on:click = {() => {updateSelected('index')}}>Show Index</button>
   <button on:click = {() => {updateSelected('div1')}}>Show Div1</button>
   <button on:click = {() => {updateSelected('div2')}}>Show Div2</button>
-  <button on:click = {() => {() => console.log('all files:', fileUtility.parse('index', true))}}>grab files</button>
+  <button on:click = {() => console.log($options)}>grab files</button>
+  <!-- <button on:click = {console.log(boxes)}>boxes?</button> -->
 </section>
