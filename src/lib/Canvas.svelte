@@ -108,25 +108,19 @@ $:{
     clearButtons(); 
     drawMenu($options);
     drawComponents();
-    
   }
 }
 
-$: {if (canvasStore.index.children.length > 0) reset = true;}
+$: {if ($canvas.index.children.length > 0) reset = true;}
 
-$: {if (canvasStore.index.children.length === 0 && mounted && reset) 
-      {
-       clear(); 
-       drawDots(); 
-       clearButtons();
-      // while($options.length)
-      // {
-      //   $options.pop();
-      // }
-      //$options = [];
+$: {
+  if ($canvas.index.children.length === 0 && mounted && reset) {
+      clear(); 
+      drawDots(); 
+      clearButtons();
       reset = false;
-       drawMenu($options)
-      }
+      drawMenu($options)
+    }
   }
  //Takes in an array of boxes and draws them to the canvas
  //calls drawMenu
@@ -154,12 +148,12 @@ const drawMenu = () => {
   ctx.moveTo(200, 0);
   ctx.lineTo(200, 600 );
   ctx.stroke(); 
-  const keys = Object.keys($options);
-  optionsArr = [];
-  for (let key of keys) {
-    const { color, y } = $options[key];
-    const rect = new Rect(20, y, 150, 50, key, color);
-    optionsArr.push(rect);
+  // const keys = Object.keys($options);
+  // optionsArr = [];
+  for (let i = 0; i < $options.length; i++) {
+    const rect = new Rect(...Object.values($options[i]));
+    // const rect = new Rect(20, y, 150, 50, key, color);
+    // optionsArr.push(rect);
     rect.draw(ctx);
     rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
     let contains = false
@@ -274,9 +268,7 @@ template.addEventListener('mousedown', e => {
     canvasUtility.delete(selected);
     drawComponents();
     clearButtons();
-    
     drawMenu();
-    console.log($options)
   }
   else boxSelected = 'index'
 });
@@ -379,7 +371,7 @@ template.addEventListener('mouseup', e => {
         
       }
       else if (rect.contains(x,y)) {  
-        const id = Object.keys($canvas).length;
+        const id = 'component' + $canvas.index.counter++;
         const newRect = new EditableRect(300, 100, 200, 100, rect.type, rect.color, id); 
         const components = canvasUtility.parse('index', true);
         
@@ -391,6 +383,8 @@ template.addEventListener('mouseup', e => {
       } 
     }
     drawComponents();
+    clearButtons();
+    drawMenu();
   }
 });
 
