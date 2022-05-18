@@ -6,41 +6,19 @@ import CodeBlock from '../lib/codeBlock.svelte';
 import fileUtility from '../utils/fileUtility';
 import canvasUtility from '../utils/canvasUtility';
 import Directory from '../lib/Directory.svelte';
-import Header from '../lib/Header.svelte';
 import Switch from '../lib/Switch.svelte';
-import { canvas } from '../store.js';
-import axios from "axios";
-import { onMount } from 'svelte';
-import { options } from "../store.js"
+import { canvas, options, selectedComponent } from '../store.js';
 
 
 
-let toggled = true;
+let toggled = false;
 let selected = 'index';
 let code;
-let canvasStore;
 let treeHeight;
-canvas.subscribe((val) => canvasStore = val);
 
-//$:console.log(selected)
+
 $: {
-  if (canvasStore.index.children.length === 0){
-    updateSelected('index');
-  }
-}
-
-//$: {console.log(canvasStore)}
-$: {canvasStore;
-  code = fileUtility.parse(selected)[0].data;
-}
-
-const updateSelected = (newSelection) => {
-  if (selected === newSelection) selected = null;
-  selected = newSelection;
-}
-
-function toggle() {
-  toggled = !toggled;
+  code = fileUtility.parse($selectedComponent)[0].data;
 }
 
 </script>
@@ -83,21 +61,20 @@ button {
   <Elements />
 </section>
 <section class="visualizerPanel" bind:clientHeight={treeHeight}>
-<div id = "switch">
+  <div id = "switch">
     <Switch bind:checked={toggled} ></Switch>
-</div>
-{#if toggled}
-  <Canvas bind:boxSelected= {selected}/>
-{:else}
-  <Tree height={treeHeight}/>
-{/if}
+  </div>
+  {#if toggled}
+    <Tree height={treeHeight}/>
+  {:else}
+    <Canvas />
+  {/if}
 </section>
 <section class="fileDirectoryPanel">
   <Directory />
 </section>
 <section class="codeBlockPanel">
   <CodeBlock code={code}/>
-
 </section>
 <section class="actionButtonsPanel">
   <button on:click = {() => {canvasUtility.createChild('div1', 'div', 'index'); updateSelected('div1'); }}>Add div1 </button>

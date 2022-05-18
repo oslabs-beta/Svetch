@@ -1,8 +1,7 @@
 <script>
 import { onMount } from 'svelte'
-import { canvas } from '../store.js'
+import { canvas, options, selectedComponent } from '../store.js'
 import canvasUtility from '../utils/canvasUtility'
-import { options } from "../store.js"
 
 
 let borderWidth = 1;
@@ -12,17 +11,8 @@ let template;
 let moving = false;
 let selected = null;
 let resizing = false;
-let optionsArr;
 let reset = false; 
-export let boxSelected = 'index';
 
-
-let canvasStore;
-canvas.subscribe((val) => canvasStore = val);
-
-
-
-$:{if (selected != null) {boxSelected = selected.id}}
 class Rect {
   constructor(x, y, width, height, type, color) {
     this.x = x,
@@ -106,7 +96,7 @@ class EditableRect extends Rect {
 $:{ 
   if (mounted) {
     clearButtons(); 
-    drawMenu($options);
+    drawMenu($options)
     drawComponents();
   }
 }
@@ -119,7 +109,7 @@ $: {
       drawDots(); 
       clearButtons();
       reset = false;
-      drawMenu($options)
+      drawMenu($options);
     }
   }
  //Takes in an array of boxes and draws them to the canvas
@@ -146,14 +136,11 @@ const clearButtons = () => {
 const drawMenu = () => {
   ctx.strokeStyle = 'black'; 
   ctx.moveTo(200, 0);
-  ctx.lineTo(200, 600 );
+  ctx.lineTo(200, template.height);
   ctx.stroke(); 
-  // const keys = Object.keys($options);
-  // optionsArr = [];
+ 
   for (let i = 0; i < $options.length; i++) {
     const rect = new Rect(...Object.values($options[i]));
-    // const rect = new Rect(20, y, 150, 50, key, color);
-    // optionsArr.push(rect);
     rect.draw(ctx);
     rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
     let contains = false
@@ -255,6 +242,7 @@ template.addEventListener('mousedown', e => {
     const rect = components[i];
     if (rect.contains(x,y)) { 
       selected = rect;
+      $selectedComponent = selected.id
       moving = true;
     }
   } 
@@ -270,7 +258,7 @@ template.addEventListener('mousedown', e => {
     clearButtons();
     drawMenu();
   }
-  else boxSelected = 'index'
+  else if (!selected) $selectedComponent = 'index'
 });
 
 //invokes move or resize on mouse movement only if a component is selected
@@ -360,11 +348,10 @@ template.addEventListener('mouseup', e => {
      
        $options.splice(i,1);
        $options = $options;
-        for (let j = i; i < $options.length; j++)
+        for (let j = i; j < $options.length; j++)
         {
           $options[j].y -= 60;
         }
-        //console.log($options)
         clearButtons();
         drawMenu();
         return

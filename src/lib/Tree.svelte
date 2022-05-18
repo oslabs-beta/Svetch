@@ -9,50 +9,26 @@ let data;
 let width;
 export let height;
 
-// let width = document.body.clientWidth * 0.5;
-let fakeData = {
-	name: 'App.svelte',
-	children: [
-		{
-			name: 'Folder.svelte',
-			children: [
-				{ name: 'File.svelte' },
-				{ name: 'fileIcon.png' }
-			]
-		},
-		{
-			name: 'Charts',
-			children: [
-				{ name: 'ChartContainer.svelte' },
-				{ name: 'Link.svelte' }
-			]
-		},
-		{ name: 'Header.svelte' },
-		{ name: 'Canvas.svelte' },
-		{ name: 'Codebox.svelte' }
-	]
-};
-
-function parseCanvas(component) {
-	const storeKey = component;
-	const current = {...$canvas[storeKey]};
-
+const parseCanvas= (component, name = 'index') => {
+	const current = {...$canvas[component]};
 	const data = {
-		name: component,
+		name: name,
 		children: []
 	}
-
+	const childNameCache = {};
 	const children = current.children;
 	if (children) {
-	children.forEach(child => {
-		let scriptId = $canvas[child].scriptId;
-		let childName = scriptId;
+		children.forEach(child => {
+			
+			const childName = $canvas[child].component.type;
 
-		if ($canvas[child].children.length) {
-			childName = child;
-		}
-		data.children.push(parseCanvas(childName, scriptId));
-	});
+			if ($canvas[child].children.length) {
+				if (childNameCache[childName]) childNameCache[childName]++;
+				else childNameCache[childName] = 1;
+				childName = childName + '_' + childNameCache[childName];
+			}
+			data.children.push(parseCanvas(child, childName));
+		});
 	}
 
 	return data;
@@ -71,7 +47,6 @@ onMount(() => {
 </script>
 
 <div id="tree">
-	<!-- <Switch bind:checked={toggled} ></Switch> -->
 	<div class="center" style="height:{height}px">
 		<svg bind:this={el}></svg>
 	</div>

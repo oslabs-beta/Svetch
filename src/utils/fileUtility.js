@@ -25,16 +25,12 @@ fileUtility.parse = (component, exporting = false) => {
 		const importMap = new Map();
 		const components = [];
 		const childNameCache = {};
-		let cacheUpdated = false;
 
 		current.children.forEach(child => {
 			let childName = canvasStore[child].scriptId;
-			// if (!cacheUpdated) {
-				if(nameCache[name]) nameCache[name]++;
-				else nameCache[name] = 1;
-				fileName = name + '_' + nameCache[name];
-				cacheUpdated = true;
-			// }
+			if(nameCache[name]) nameCache[name]++;
+			else nameCache[name] = 1;
+			fileName = name + '_' + nameCache[name];
 			if (exporting) queue.push(child);
 			if (canvasStore[child].children.length) {
 				if (childNameCache[childName]) childNameCache[childName]++;
@@ -60,11 +56,11 @@ fileUtility.parse = (component, exporting = false) => {
 		fileText = fileText
 			.replace('IMPORTS', importsStr)
 			.replace('COMPONENTS', componentsStr);
-		if (!fileMap.has(fileName)) fileMap.set(fileName, fileText);
+		if (!fileMap.has(fileName)) fileMap.set(fileName, {fileText, id: storeKey});
 	}
 	const files = [];
-	fileMap.forEach((value, key) => {
-		files.push({name: key, data: value});
+	fileMap.forEach(({fileText, id}, key) => {
+		files.push({name: key, data: fileText, id});
 	});
 	return files;
 }
@@ -74,15 +70,15 @@ fileUtility.createFileTree = () => {
 		name: 'src',
 		children: []
 	};
-	fileDirectory.children.push({name:'index'});
+	fileDirectory.children.push({name:'index', id: 'index'});
 	const files = fileUtility.parse('index', true);
 	const lib = {name:'lib', children: []}
 	if (files.length > 1) fileDirectory.children.push(lib);
 	files.shift();
 	const queue = files;
 	while (queue.length) {
-		const current = queue.shift();
-		lib.children.push({name:current.name});
+		const {name, id} = queue.shift();
+		lib.children.push({name, id});
 	}
 	return fileDirectory;
 }
