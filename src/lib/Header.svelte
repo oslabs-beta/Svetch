@@ -1,6 +1,7 @@
 <script>
 	export let user;
 	import fileUtility from '../utils/fileUtility';
+	import Modal, {getModal} from './Modal.svelte'
 </script>
 <style>
 svg {
@@ -19,12 +20,31 @@ button {
 
 <!-- <div id='header'> -->
 	<div style="flex:1;">
-		<button on:click = {() => fileUtility.newFile()}>
-		New Project
-	</button>
-	<button on:click = {() => fileUtility.createFile()}>
+		<!-- <button on:click = {() => fileUtility.newFile()}>
+			New Project
+		</button> -->
+		<button on:click={()=>getModal('newProject').open()}>
+			New Project
+		</button>
+
+
+<!-- the modal without an `id` -->
+<Modal id="newProject">
+	<p>Creating a new project will delete exist project. Are you sure?</p>
+	<button>Yes</button><button>No</button>
+</Modal>
+<Modal id="download">
+	<p>Are you sure you want to download a new project?</p>
+	<button>Confirm</button>
+</Modal>
+<button on:click = {() => getModal('download').open()}>
 		Download Project
-	</button>
+</button>
+
+
+	<!-- <button on:click = {() => fileUtility.createFile()}>
+		Download Project
+	</button> -->
 
 	<!-- conditionally render these two buttons -->
 	{#if user}
