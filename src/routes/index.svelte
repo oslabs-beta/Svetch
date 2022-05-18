@@ -12,12 +12,13 @@ import { canvas, options, selectedComponent } from '../store.js';
 
 
 let toggled = false;
-let selected = 'index';
 let code;
 let treeHeight;
 
 
 $: {
+  console.log('reactivity for selected Component triggered: ',$selectedComponent)
+  if ($canvas) $selectedComponent = $selectedComponent;
   code = fileUtility.parse($selectedComponent)[0].data;
 }
 

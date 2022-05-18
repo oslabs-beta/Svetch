@@ -254,6 +254,7 @@ template.addEventListener('mousedown', e => {
   else if (selected && selected.deleteTabContains(x,y)) {
     moving = false;
     canvasUtility.delete(selected);
+    $selectedComponent = 'index';
     drawComponents();
     clearButtons();
     drawMenu();

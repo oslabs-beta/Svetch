@@ -7,9 +7,9 @@ const fileUtility = {};
 
 fileUtility.parse = (component, exporting = false) => {
 	let canvasStore;
-	const unsubscribeCanvas = canvas.subscribe((val) => canvasStore = val);
-	unsubscribeCanvas();
-
+	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
+	unsubscribe();
+	console.log('component: ', component)
 	const fileMap = new Map();
 	const queue = [component];
 	const nameCache = {};
@@ -17,6 +17,7 @@ fileUtility.parse = (component, exporting = false) => {
 	while(queue.length) {
 		const storeKey = queue.shift();
 		const current = canvasStore[storeKey];
+		console.log('current: ', current);
 		const name = current.scriptId;
 
 		let fileName = storeKey === 'index' ? storeKey : name;

@@ -11,14 +11,46 @@ let reset;
 $:{ if($options.length) {y = ($options[$options.length - 1].y + 60)}
 else y = 20;}
 
+// const handleSubmission = () => {
+// if (name.value === '') 
+// {
+//     enterName = false;
+//     return
+// }
+//     enterName = true;
+//     const option = {
+//         x: 20,
+//         y: y ,
+//         width: 150 , 
+//         height: 50,
+//         type: name.value,
+//         color: color.value,
+//         deletable : true,
+//     }
+//     options.update(n => [...n, option]);
+//     name.value = '';
+//     color.value = '';
+//     return;
+// }
+
 const handleSubmission = () => {
-if (name.value === '') 
-{
-    enterName = false;
-    return
-}
+    let errorMessage = document.getElementById("errorMessage");
+    let alreadyExists = false;
+    for (let i = 0; i < $options.length; i++) {
+        if ($options[i].type == name.value) alreadyExists = true;
+    } 
+    if (name.value === '') {   
+        errorMessage.innerText = "Please provide a name"
+        enterName = false;
+        return;
+    } else if (alreadyExists == true) {
+        errorMessage.innerText = "Please provide a unique name"
+        enterName = false;
+        alreadyExists = false;
+        return;   
+    }   
     enterName = true;
-    const option = {
+        const option = {
         x: 20,
         y: y ,
         width: 150 , 
@@ -40,7 +72,8 @@ if (name.value === '')
 
 <label for="componentName">Component Name</label><br>
 <input bind:this={name} type="text" id="componentName" name="componentName" value=""><br>
-<h2 hidden={enterName}> Please enter a name </h2>
+<!-- <h2 hidden={enterName}> Please enter a name </h2> -->
+<h2 id= "errorMessage" hidden={enterName}> </h2>
 
 <label for="color-select">Choose a Color:</label>
 <select bind:this={color} name="color" id="color-select">
