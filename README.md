@@ -32,7 +32,9 @@ To preview a components code, simply click on its box inside of the canvas, and 
 
 To download your project, simply hit download and provide a project name. You will recieve a downloaded zip file of your project from the browser. Or sign in with github and save to a new repo!
 
-<video src="./static/video.mp4" width= 50% height= 50% alt="export"/>
+<video width= 50% height= 50% alt="export">
+    <source src="./static/video.mp4" >
+</video>
 
 
 # Want to Contribute?
