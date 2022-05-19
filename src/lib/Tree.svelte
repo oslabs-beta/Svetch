@@ -1,6 +1,6 @@
 <script>
 import { onMount } from 'svelte';
-import d3TreeRenderer from '../utils/d3TreeRenderer.js'; 
+import d3TreeRenderer from '../utils/d3TreeRenderer.js';
 import { canvas } from '../store.js';
 
 
@@ -19,7 +19,6 @@ const parseCanvas= (component, name = 'index') => {
 	const children = current.children;
 	if (children) {
 		children.forEach(child => {
-			
 			let childName = $canvas[child].component.type;
 
 			if ($canvas[child].children.length) {
