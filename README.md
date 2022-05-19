@@ -1,9 +1,9 @@
-## Get ready to Svetch! A front end prototyping tool used to create SvelteKit project frameworks.
+## Get ready to Svetch! A frontend prototyping tool used to create SvelteKit project frameworks.
 
 
 # How do I use Svetch?
 ## - Head to the [Svetch.io](https://www.svetch.io/) homepage
-@@ -18,24 +18,25 @@
+
 
 ## - Create any components that you want
 The dotted grid to the right is the canvas, and represents your Index.svelte file.  To add components to the canvas, enter the name of your component and select a color.
@@ -21,6 +21,7 @@ You can also resize your components by clicking down and dragging the small blac
 Svetch will automatically track the heirarchy you create in the canvas and update your component files accordingly.
 
 You can view a tree diagram of your component hierarchy by clicking the toggle button in the upper right corner of the canvas.  Once there, you can click on the name of your components to expand the tree and see the components nested inside.
+
 <img src="./static/tree.png" width= 50% height= 50% alt="tree"/>
 
 ## Code Block previews component code, including the index!
