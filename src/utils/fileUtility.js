@@ -9,7 +9,6 @@ fileUtility.parse = (component, exporting = false) => {
 	let canvasStore;
 	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
 	unsubscribe();
-	//console.log('component: ', component)
 	const fileMap = new Map();
 	const queue = [component];
 	const nameCache = {};
@@ -17,7 +16,6 @@ fileUtility.parse = (component, exporting = false) => {
 	while(queue.length) {
 		const storeKey = queue.shift();
 		const current = canvasStore[storeKey];
-		//console.log('current: ', current);
 		const name = current.scriptId;
 
 		let fileName = storeKey === 'index' ? storeKey : name;
@@ -31,7 +29,7 @@ fileUtility.parse = (component, exporting = false) => {
 			let childName = canvasStore[child].scriptId;
 			if(nameCache[name]) nameCache[name]++;
 			else nameCache[name] = 1;
-			fileName = name + '_' + nameCache[name];
+			if(fileName !== 'index') fileName = name + '_' + nameCache[name];
 			if (exporting) queue.push(child);
 			if (canvasStore[child].children.length) {
 				if (childNameCache[childName]) childNameCache[childName]++;
@@ -52,7 +50,7 @@ fileUtility.parse = (component, exporting = false) => {
 		if (name === 'main') componentsStr = '\n\t' + components.join('\n\t') + '\n';
 		else if (!components.length) componentsStr = '<!-- Enter your HTML here -->';
 		else componentsStr = components.join('\n');
-		fileName = fileUtility.formatName(fileName);
+		if (fileName !== 'index') fileName = fileUtility.formatName(fileName);
 
 		fileText = fileText
 			.replace('IMPORTS', importsStr)
@@ -71,7 +69,7 @@ fileUtility.createFileTree = () => {
 		name: 'src',
 		children: []
 	};
-	fileDirectory.children.push({name:'index', id: 'index'});
+	fileDirectory.children.push({name: 'routes', children: [{name:'index', id: 'index'}]});
 	const files = fileUtility.parse('index', true);
 	const lib = {name:'lib', children: []}
 	if (files.length > 1) fileDirectory.children.push(lib);
@@ -107,53 +105,45 @@ fileUtility.formatName = name => {
 		.join('');
 }
 
-fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
+fileUtility.createFile = async (sessionId) => {
 	
 	let exporting = true;
 	const filesTemplates = fileUtility.parse('index', exporting);
-	const requests = [];
+
+	await axios.all(filesTemplates.map(template => {
+		const { name, data } = template;
+		const folder = name === 'index' ? 'src/routes' : 'src/lib';
+		return axios.post('http://localhost:3000/fileCreate', {name, data, folder, sessionId});
+	}));
 	
-	filesTemplates.forEach(template => {
-		let {name, data} = template;
-		let folder;
-
-		name == 'index'? folder = 'src/routes' : folder = 'src/lib';
-
-		let postContent = {
-			name: name,
-			text : data,
-			folder : folder
-		}
-		const request = axios.post('/fileCreate', postContent);
-		requests.push(request);
-	});
-	//console.log('about to finish promises')
-	await Promise.all(requests);
-	//console.log('just finished promises')
-	const zipAsBase64 = await axios.get('/zip');
-	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
-	fileSaver.saveAs(blob, `${projectName}.zip`);
-	console.log('test')
-	// comment out below if you dont want to delete file
-	axios.post('/fileDelete');
-
+	return;
 }
 
 fileUtility.newFile = async () => {
-
-console.log('test')
-	let canvasStore = {
+	const canvasStore = {
 		'index' : {
 			children : [],
-			scriptId : 'main'
+			scriptId : 'main',
+			counter : 0
 		}
 	};
-	canvas.update(n=> n = canvasStore);
 
+	canvas.update(n => n = canvasStore);
 	options.update(n => n = [])
 	axios.get('/newProject');
+	return;
+}
 
-	return
+fileUtility.downloadFiles = async (projectName = 'example-skeleton') => {
+	await fileUtility.createFile();
+	const zipAsBase64 = await axios.get('/zip');
+	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
+	fileSaver.saveAs(blob, `${projectName}.zip`);
+	axios.post('/fileDelete', {sessionId : null});
+}
+
+fileUtility.deleteCookie = () => {
+	axios.post('/deleteCookie');
 }
  
 	

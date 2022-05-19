@@ -7,7 +7,9 @@ export async function handle({ event, resolve }) {
 
   // update the stored user to be the value of the user cookie
   event.locals.user = cookies.user;
-  event.locals.sessionId = cookies.session_id
+  event.locals.sessionId = cookies.session_id;
+  event.locals.state = cookies.state;
+
   
   // process the HTTP request
   const response = await resolve(event);
@@ -21,7 +23,9 @@ export async function handle({ event, resolve }) {
 
 export async function getSession(event) {
   // client-side exposed information (do not store secure info here)
+  
   return {
-    user: event.locals.user
+    user: event.locals.user,
+    state: event.locals.state
   }
 }
