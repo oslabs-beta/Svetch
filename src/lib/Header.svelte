@@ -49,7 +49,7 @@ button {
 <Modal id="download">
 	<p>Enter a name for your project</p>
 	<input bind:this={projectName} type="text" length = 20 value="" >
-	<button on:click = {() => {fileUtility.createFile(projectName.value); getModal('download').close()}}>Save</button>
+	<button on:click = {() => {fileUtility.downloadFiles(projectName.value); getModal('download').close()}}>Save</button>
 </Modal>
 
 <Modal id="export">

@@ -29,6 +29,7 @@
     "fs-extra": "^10.1.0",
     "jszip": "^3.9.1",
     "octokit": "^1.7.1",
+    "svelte-fa": "^2.4.0",
     "svelte-highlight": "^6.0.1",
     "tedis": "^0.1.12",
     "uuid": "^8.3.2"
