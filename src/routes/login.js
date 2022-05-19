@@ -14,7 +14,7 @@ export async function get(request) {
   const parsedState = JSON.parse(state);
   canvas.set(parsedState.canvas);
   repoName.set(repo);
-  const redirectURL = `${target}?client_id=${clientID}&redirect_uri=http://app.svetch.io/callback/${searchParams ? '?exportProject=true' : ''}&scope=repo%20read:user%20user:email&state=${sessionID}`
+  const redirectURL = `${target}?client_id=${clientID}&redirect_uri=https://app.svetch.io/callback/${searchParams ? '?exportProject=true' : ''}&scope=repo%20read:user%20user:email&state=${sessionID}`
   
   
   return {

@@ -48,7 +48,7 @@ export async function get (request) {
   if (exportProject) {
     await axios({
       method: 'post',
-      url: 'http://app.svetch.io/exportProject',
+      url: 'https://app.svetch.io/exportProject',
       data: {
         token: token,
         user: user,
