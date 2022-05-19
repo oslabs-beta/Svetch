@@ -14,10 +14,9 @@ export async function post({ request }) {
     //     fse.copySync('Export',`${process.execPath}/${id}`);
     // }
     
-    // fs.writeFileSync(`${process.execPath}/${id}/${folder}/${name}.svelte`, `${data}`);
+    fs.writeFileSync(`${process.execPath}/${id}/${folder}/${name}.svelte`, `${data}`);
 
-    const testPath = `${process.execPath}/${id}`;
-    console.log(testPath);
+    // const testPath = `${process.execPath}/${id}`;
 
     return {
         status: 201
