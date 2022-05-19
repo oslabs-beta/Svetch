@@ -1,4 +1,4 @@
-import { canvas } from '../store.js';
+import { canvas, options } from '../store.js';
 import axios from 'axios';
 import b64ToBlob from "b64-to-blob";
 import fileSaver from "file-saver";
@@ -9,7 +9,7 @@ fileUtility.parse = (component, exporting = false) => {
 	let canvasStore;
 	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
 	unsubscribe();
-	console.log('component: ', component)
+	//console.log('component: ', component)
 	const fileMap = new Map();
 	const queue = [component];
 	const nameCache = {};
@@ -17,7 +17,7 @@ fileUtility.parse = (component, exporting = false) => {
 	while(queue.length) {
 		const storeKey = queue.shift();
 		const current = canvasStore[storeKey];
-		console.log('current: ', current);
+		//console.log('current: ', current);
 		const name = current.scriptId;
 
 		let fileName = storeKey === 'index' ? storeKey : name;
@@ -141,7 +141,7 @@ fileUtility.createFile = async (projectName = 'example-skeleton', ) => {
 
 fileUtility.newFile = async () => {
 
-
+console.log('test')
 	let canvasStore = {
 		'index' : {
 			children : [],
