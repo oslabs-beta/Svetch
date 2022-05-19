@@ -2,7 +2,8 @@
 	export async function load({ session }) {
 		return {
 			props: {
-				user: session.user
+				user: session.user,
+				state: session.state
 			}
 		}
 	}
@@ -23,6 +24,6 @@
 header {
   display:flex;
   justify-content: space-between;
-  grid-column: 1 / 4;
+  grid-column: 1 / 5;
 }
 </style>

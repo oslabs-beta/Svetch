@@ -2,8 +2,8 @@ import axios from 'axios';
 const tokenURL = 'https://github.com/login/oauth/access_token';
 const userURL = 'https://api.github.com/user';
 
-const clientId = import.meta.env.VITE_CLIENT_ID;
-const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
+const clientId = import.meta.env.VITE_CLIENT_ID || import.meta.env.VERCEL_CLIENT_ID;
+const clientSecret = import.meta.env.VITE_CLIENT_SECRET || import.meta.env.VERCEL_CLIENT_SECRET;
 
 const getToken = async (code) => {
 
@@ -35,16 +35,15 @@ const getUser = async (token) => {
 }
 
 export async function get (request) {
-
   // get code from Github
   const code = request.url.searchParams.get('code');
+  const sessionId = request.url.searchParams.get('state');
   const exportProject = request.url.searchParams.get('exportProject');
   // get accessToken from Github
   const token = await getToken(code);
   // get user info from Github
   const user = await getUser(token);
   request.locals.user = user.login;
-  // console.log('user received by callback:', user);
   
   if (exportProject) {
     await axios({
@@ -52,10 +51,10 @@ export async function get (request) {
       url: 'http://localhost:3000/exportProject',
       data: {
         token: token,
-        user: user 
+        user: user,
+        sessionId 
       }
     });
-
   }
   
   return {

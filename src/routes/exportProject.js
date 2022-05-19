@@ -1,12 +1,21 @@
 import { Octokit } from 'octokit';
 import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 import fs from 'fs';
+import axios from 'axios';
+import fileUtility from '../utils/fileUtility';
+import { repoName } from '../store.js';
 
+export let myFakeUser = 'fake';
 export async function post({ request }) {
   const body = await request.json();
   const token = body.token;
   const owner = body.user.login;
-  const repo = 'New-Repo'
+  const sessionId = body.sessionId;
+  
+  let repo;
+  const unsubscribe = repoName.subscribe((val) => repo = val);
+	unsubscribe();
+  repo = repo.split(' ').join('-');
   
   const CustomOctokit = Octokit.plugin(restEndpointMethods);
   const octokit = new CustomOctokit({ auth: token });
@@ -62,7 +71,7 @@ export async function post({ request }) {
     for (let dirEntry of dirEntries) {
       const { name } = dirEntry;
       const absolutePath = `${directory}/${name}`;
-      const relativePath = absolutePath.slice(7);
+      const relativePath = absolutePath.slice(sessionId.length + 1);
 
       // If the dirEntry at the absolutePath contains file content, then add it to the repo at its relativePath
       if (fs.statSync(absolutePath).isFile()) {
@@ -101,8 +110,10 @@ export async function post({ request }) {
   try {
     // Create new GitHub repo named the value of repo 
     await octokit.rest.repos.createForAuthenticatedUser({ name: repo, auto_init: true });
+    // Create project files in folder unique to user, copy files from template
+    await fileUtility.createFile(sessionId);
     // Get git blobs for the commit
-    const blobs = await getBlobs('Export');
+    const blobs = await getBlobs(sessionId);
     // Create the tree structure for the blobs
     const tree = await createTreeStructure(blobs);
     // Get the sha from the last commit (the inital commit when the repo was created)
@@ -113,6 +124,8 @@ export async function post({ request }) {
     const newCommitSha = await createCommit(commitSha, treeSha);
     // Update the reference for the git branch
     await updateReference(newCommitSha);
+    // Delete the user folder
+    await axios.post('http://localhost:3000/fileDelete', {sessionId});
 
   } catch (err) {
     console.log('ERROR:', err)

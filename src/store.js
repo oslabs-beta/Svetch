@@ -9,9 +9,8 @@ export const canvas = writable({
 });
 
 export const options = writable([
-	// {x : 20 , y : 20, width : 150 , height : 50, type : 'Component 1', color : 'green'},
-	// {x : 20 , y : 80, width : 150 , height : 50, type : 'Component 2', color : 'red'}
   ])
 
 export const selectedComponent = writable('index');
+export const repoName = writable('New-Repo');
 
