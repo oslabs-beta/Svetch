@@ -2,6 +2,7 @@
 import { onMount } from 'svelte'
 import { canvas, options, selectedComponent } from '../store.js'
 import canvasUtility from '../utils/canvasUtility'
+import fileUtility from '../utils/fileUtility.js';
 
 export let state;
 let borderWidth = 1;
@@ -232,7 +233,9 @@ onMount(() => {
       formattedOptions.push(newOption);
     }
     console.log('pprev: ', formattedCanvas);
+    console.log('document cookie: ', document.cookie);
     state = null;
+    fileUtility.deleteCookie();
     $canvas = previousCanvas;
     $options = formattedOptions;
     drawMenu();

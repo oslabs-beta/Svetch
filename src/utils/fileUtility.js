@@ -152,6 +152,10 @@ fileUtility.downloadFiles = async (projectName = 'example-skeleton') => {
 	fileSaver.saveAs(blob, `${projectName}.zip`);
 	axios.post('/fileDelete', {sessionId : null});
 }
+
+fileUtility.deleteCookie = () => {
+	axios.post('/deleteCookie');
+}
  
 	
 export default fileUtility;

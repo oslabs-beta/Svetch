@@ -17,7 +17,6 @@ export async function handle({ event, resolve }) {
   // add the cookie to the response
   response.headers.append('set-cookie', `user=${event.locals.user || ''};path=/; HttpOnly`)
   response.headers.append('set-cookie', `session_id=${event.locals.sessionId || uuidv4()};path=/; HttpOnly; sameSite=lax`)
-  // response.headers.append('set-cookie', `state=${event.locals.state};path=/; HttpOnly`)
   
   return response;
 }
