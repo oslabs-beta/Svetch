@@ -191,37 +191,32 @@ onMount(() => {
 
 //EVENT LISTENERS
 
-
 template.addEventListener('wheel', (e) => {
   if ($options.length){
-   let outOfFrame;
-   let topOfFirstButton = $options[0].y;
-   let bottomOfLastButton =  $options[$options.length - 1].y + $options[$options.length - 1].height;
-   let scrollMaxed = false;
-   //Below satement sets outOfFrame to true if first or last button is outside of template boundaries
-   bottomOfLastButton > template.height || topOfFirstButton < 0 ? outOfFrame = true : outOfFrame = false;
-   if (e.offsetX < 200 && outOfFrame) {
-     let j = $options.length;
-   for (let i = 0; i < $options.length; i++){
-       if ($options[0].y > 25){
-         $options[i].y = 20 + (i * 60);
-       }
-       else if (bottomOfLastButton < template.height - 20) {
-         console.log('menu bottomed out');
-         console.log('last button y value is ' + $options[$options.length - 1].y);
-         console.log('template height is ' + template.height);
-         $options[i].y = template.height - 10 - ( j * 60);
-         j--; 
-       }
-       else {
-       $options[i].y -= e.deltaY * .5;
-       }
-       console.log('last button y is now ' + $options[$options.length -1].y)
-       console.log('first button y is now ' + $options[0].y)
-     };
-   };
+    let outOfFrame;
+    let topOfFirstButton = $options[0].y; 
+    let bottomOfLastButton =  $options[$options.length - 1].y + $options[$options.length - 1].height;
+    let scrollMaxed = false;
+    //Below satement sets outOfFrame to true if first or last button is outside of template boundaries
+    bottomOfLastButton > template.height || topOfFirstButton < 0 ? outOfFrame = true : outOfFrame = false; 
+    if (e.offsetX < 200 && outOfFrame) {
+      let j = $options.length; 
+    for (let i = 0; i < $options.length; i++){
+        if ($options[0].y > 25){
+          $options[i].y = 20 + (i * 60); 
+        }
+        else if (bottomOfLastButton < template.height - 20) {
+          $options[i].y = template.height - 10 - ( j * 60);
+          j--;  
+        }
+        else {
+        $options[i].y -= e.deltaY * .5;
+        }
+      };
+    };
   };
 });
+
 
 
 window.addEventListener('resize', () => {
@@ -243,12 +238,14 @@ template.addEventListener('mousedown', e => {
     if (rect.contains(x,y)) { 
       selected = rect;
       $selectedComponent = selected.id
+      template.style.cursor = 'none'; 
       moving = true;
     }
   } 
   if (selected && selected.resizeTabContains(x,y)) { 
     moving = false; 
     resizing = true; 
+    template.style.cursor = 'none'; 
     resize(e, selected);  
   }
   else if (selected && selected.deleteTabContains(x,y)) {
@@ -270,7 +267,7 @@ template.addEventListener('mousemove', e => {
 
 //invoked when mouse is released, resets selected component, moving, and resizing variables 
 template.addEventListener('mouseup', e => {
-  
+  template.style.cursor = 'default'; 
   //if moving or resizing, trigger conditional to check location of moved/rezized component
   if (moving || resizing) {
     const componentsBefore = canvasUtility.parse('index', true); 
@@ -434,11 +431,16 @@ mounted = true;
   <canvas id="dotCanvas"></canvas>
 </div>
 <style>
+
+.hideId {
+  cursor: none;
+}
+
 div {
   width: 100%;
   height: 100%;
 }
-#dotCanvas {
+#dotCanvas { 
   display: block;
   height: 100%;
   width: 100%;

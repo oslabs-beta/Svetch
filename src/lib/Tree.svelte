@@ -20,7 +20,7 @@ const parseCanvas= (component, name = 'index') => {
 	if (children) {
 		children.forEach(child => {
 			
-			const childName = $canvas[child].component.type;
+			let childName = $canvas[child].component.type;
 
 			if ($canvas[child].children.length) {
 				if (childNameCache[childName]) childNameCache[childName]++;

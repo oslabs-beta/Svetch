@@ -68,7 +68,7 @@ const handleSubmission = () => {
 
 
 <!-- //div contains html elements list declared above -->
-<h1>Create New Component</h1>
+<h1>Create New Component</h1><br>
 
 <label for="componentName">Component Name</label><br>
 <input bind:this={name} type="text" id="componentName" name="componentName" value=""><br>
@@ -86,13 +86,61 @@ const handleSubmission = () => {
     <option value="green">Green</option>
 </select><br>
 
-<button on:click = { () => handleSubmission()}>Submit</button>
+<button on:click = { () => handleSubmission()}>Submit</button><br>
+<h1 style='text-align: center;'>Quickstart Guide</h1><br>
+  <hr>
+  <br>
+  <div class="quickstart">
+    <h3>Getting Started</h3>
+        <ul style="list-style-type: space-counter;">
+            <li>The dotted grid to the right is the canvas, and represents your Index.svelte file.  To add 
+            components to the canvas, enter the name of your component and select a color.</li> 
+            <li>When you hit the Submit button, the new component will appear in the components menu. 
+            Click the component and it will appear in the canvas, as well as in file structure window.</li>
+        </ul>
+
+  <br>
+    <h3>Arranging Components</h3>
+        <p style='text-indent: 20px'>You can move a component by clicking down 
+        inside of the box and dragging it around the canvas, then release your mouse to finalize it's position.  
+        You can also resize your components by clicking down and dragging the small black tab at the bottom right corner.
+        To remove a component from the canvas click on the "X" in the upper right corner.
+        </p>
+    <br>
+    <h3>Tracking Heirarchy</h3> 
+        <p style='text-indent: 20px'>Svetch will automatically track the heirarchy you create in the canvas 
+        and update your component files accordingly. You can view a tree diagram of your component hierarchy by clicking the toggle button in the upper right corner 
+        of the canvas.  Once there, you can click on the name of your components to expand the tree and see the components nested inside.      
+        </p>
+    <br>
+    <h3>Code</h3>
+  <p style='text-indent: 20px'>
+    To preview a components code, simply click on its box inside of the canvas, and the code
+    block will update (remember that the entire canvas defaults to Index.svelte).  
+  </p>
+  </div>
+  <br>
+  <hr>
+
+
+
+
 
 
 <style>
+
+.quickstart {
+  height: 50%;
+  overflow: hidden;
+  overflow-y: scroll; 
+}
+
 h1 {
 	padding-top: 1rem;
 	text-align: center;
+}
+ul {
+  padding-left: 10px;
 }
 h2{
     color: red;
