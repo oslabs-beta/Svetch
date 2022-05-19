@@ -113,7 +113,7 @@ fileUtility.createFile = async (sessionId) => {
 	await axios.all(filesTemplates.map(template => {
 		const { name, data } = template;
 		const folder = name === 'index' ? 'src/routes' : 'src/lib';
-		return axios.post('http://localhost:3000/fileCreate', {name, data, folder, sessionId});
+		return axios.post('https://localhost:3000/fileCreate', {name, data, folder, sessionId});
 	}));
 	
 	return;
