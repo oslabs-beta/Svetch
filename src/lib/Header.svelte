@@ -2,6 +2,7 @@
 	export let user;
 	import fileUtility from '../utils/fileUtility';
 	import Modal, {getModal} from './Modal.svelte'
+	let projectName;
 </script>
 <style>
 svg {
@@ -23,23 +24,25 @@ button {
 		<!-- <button on:click = {() => fileUtility.newFile()}>
 			New Project
 		</button> -->
-		<button on:click={()=>getModal('newProject').open()}>
-			New Project
-		</button>
+<button on:click={()=>getModal('newProject').open()}>
+	New Project
+</button>
 
 
 <!-- the modal without an `id` -->
 <Modal id="newProject">
 	<p>Creating a new project will delete exist project. Are you sure?</p>
-	<button>Yes</button><button>No</button>
+	<button on:click = {() => {fileUtility.newFile(); getModal('newProject').close()}} >Confirm</button>
 </Modal>
-<Modal id="download">
-	<p>Are you sure you want to download a new project?</p>
-	<button>Confirm</button>
-</Modal>
+
 <button on:click = {() => getModal('download').open()}>
 		Download Project
 </button>
+<Modal id="download">
+	<p>Are you sure you want to download a new project?</p>
+	<input bind:this={projectName} type="text" length = 20 value="" >
+	<button on:click = {() => {fileUtility.createFile(projectName.value); getModal('download').close()}}>Confirm</button>
+</Modal>
 
 
 	<!-- <button on:click = {() => fileUtility.createFile()}>

@@ -101,11 +101,18 @@ $:{
   }
 }
 
-$: {if ($canvas.index.children.length > 0) reset = true;}
+$: {if ($canvas.index.children.length > 0 && mounted) reset = true;}
 
+// $:{if ($options.length == 0) 
+//     {
+//       clearButtons();
+//       //reset = false;
+//       drawMenu($options); 
+//     }
+//   }
 $: {
-  if ($canvas.index.children.length === 0 && mounted && reset) {
-      clear(); 
+  if ($canvas.index.children.length === 0 && mounted && reset == true) { 
+    clear(); 
       drawDots(); 
       clearButtons();
       reset = false;
