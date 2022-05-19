@@ -27,6 +27,7 @@
     "express": "^4.18.1",
     "file-saver": "^2.0.5",
     "fs-extra": "^10.1.0",
+    "fse": "^4.0.1",
     "jszip": "^3.9.1",
     "octokit": "^1.7.1",
     "svelte-fa": "^2.4.0",
