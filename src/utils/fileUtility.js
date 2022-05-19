@@ -151,7 +151,6 @@ console.log('test')
 	canvas.update(n=> n = canvasStore);
 
 	options.update(n => n = [])
-	console.log(options)
 	axios.get('/newProject');
 
 	return
