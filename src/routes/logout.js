@@ -1,7 +1,7 @@
 export async function get(request) {
   request.locals.user = null;
   const state = request.url.searchParams.get('state');
-  console.log('state in logout: ', state);
+  
   return {
     status: 302,
     headers: {

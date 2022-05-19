@@ -167,7 +167,6 @@ const drawMenu = () => {
  
   for (let i = 0; i < $options.length; i++) {
     const rect = new Rect(...Object.values($options[i]));
-    console.log('rect: ', rect);
     rect.draw(ctx);
     rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
     let contains = false
@@ -223,17 +222,10 @@ onMount(() => {
     const formattedCanvas = buildCanvas(previousCanvas);
     const formattedOptions = [];
     
-    // for(let entry in previousCanvas) {
-    //   const current = previousCanvas[entry];
-    //   const { x, y, width, height, type, color } = {...current.component};
-    //   if (entry !== 'index') current.component = new EditableRect(x, y, width, height, type, color, entry);
-    // }
     for(let option in previousOptions) {
       const newOption = new Rect(...Object.values(previousOptions[option]))
       formattedOptions.push(newOption);
     }
-    console.log('pprev: ', formattedCanvas);
-    console.log('document cookie: ', document.cookie);
     state = null;
     fileUtility.deleteCookie();
     $canvas = previousCanvas;
@@ -259,17 +251,12 @@ template.addEventListener('wheel', (e) => {
          $options[i].y = 20 + (i * 60);
        }
        else if (bottomOfLastButton < template.height - 20) {
-         console.log('menu bottomed out');
-         console.log('last button y value is ' + $options[$options.length - 1].y);
-         console.log('template height is ' + template.height);
          $options[i].y = template.height - 10 - ( j * 60);
          j--; 
        }
        else {
        $options[i].y -= e.deltaY * .5;
        }
-       console.log('last button y is now ' + $options[$options.length -1].y)
-       console.log('first button y is now ' + $options[0].y)
      };
    };
   };
@@ -287,18 +274,16 @@ window.addEventListener('resize', () => {
 template.addEventListener('mousedown', e => { 
   let x = e.offsetX; 
   let y = e.offsetY; 
-  console.log('mousedown triggered')
+  
   const components = canvasUtility.parse('index', true); 
-  console.log('components in canvas: ', components);
+  
   // Check all components to see if they contain x,y coordinate of mouse event
   for (let i = 0; i < components.length; i++){
     const rect = components[i];
     if (rect.contains(x,y)) { 
       selected = rect;
-      console.log('selected rect inside canvas: ', selected);
       $selectedComponent = selected.id
       moving = true;
-      console.log('selected!');
     }
   } 
   if (selected && selected.resizeTabContains(x,y)) { 
@@ -325,7 +310,6 @@ template.addEventListener('mousemove', e => {
 
 //invoked when mouse is released, resets selected component, moving, and resizing variables 
 template.addEventListener('mouseup', e => {
-  console.log('mouse up triggered');
   //if moving or resizing, trigger conditional to check location of moved/rezized component
   if (moving || resizing) {
     const componentsBefore = canvasUtility.parse('index', true); 
@@ -428,7 +412,6 @@ template.addEventListener('mouseup', e => {
     drawComponents();
     clearButtons();
     drawMenu();
-    console.log('canvas after component added: ', $canvas);
   }
 });
 
@@ -441,7 +424,6 @@ const resize = (e, rect) => {
     if (rect.width + e.movementX > 20) rect.width += e.movementX; 
     if (rect.height + e.movementY > 20) rect.height += e.movementY;
     const components = canvasUtility.parse('index', true); 
-    //console.log(rect.width + " " + rect.height)
     drawComponents(); 
   }
 }
@@ -451,7 +433,6 @@ const move = (e, rect) => {
     
     rect.x += e.movementX; 
     rect.y += e.movementY; 
-    //console.log(template.height, " ", template.width)
   }
   else if (rect.x <= 204) {
     clearButtons();

@@ -69,7 +69,7 @@ fileUtility.createFileTree = () => {
 		name: 'src',
 		children: []
 	};
-	fileDirectory.children.push({name:'index', id: 'index'});
+	fileDirectory.children.push({name: 'routes', children: [{name:'index', id: 'index'}]});
 	const files = fileUtility.parse('index', true);
 	const lib = {name:'lib', children: []}
 	if (files.length > 1) fileDirectory.children.push(lib);
@@ -109,18 +109,7 @@ fileUtility.createFile = async (sessionId) => {
 	
 	let exporting = true;
 	const filesTemplates = fileUtility.parse('index', exporting);
-	// const requests = [];
-	
-	// filesTemplates.forEach(template => {
-	// 	const { name, data } = template;
-	// 	const folder = name === 'index' ? 'src/routes' : 'src/lib';
 
-	// 	const request = axios.post('/fileCreate', {name, data, folder});
-	// 	requests.push(request);
-	// 	console.log(request);
-	// });
-	
-	// await Promise.all(requests);
 	await axios.all(filesTemplates.map(template => {
 		const { name, data } = template;
 		const folder = name === 'index' ? 'src/routes' : 'src/lib';

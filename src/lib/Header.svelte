@@ -8,7 +8,6 @@
 		const state = {};
 		state.canvas = {...$canvas};
 		state.options = {...$options};
-		console.log('before: ', $canvas);
 		if (url === '/login?exportProject=true') goto(url+'&state='+JSON.stringify(state));
 		else goto(url+'?state='+JSON.stringify(state));
 	}
