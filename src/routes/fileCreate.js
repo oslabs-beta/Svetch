@@ -9,12 +9,15 @@ export async function post({ request }) {
     const {name, data, folder, sessionId} = requestData;
     const id = sessionId || cookies.session_id;
     
-    if (!fs.existsSync(`${process.execPath}/${id}`)) {   
-        fs.mkdirSync(`${process.execPath}/${id}`);
-        fse.copySync('Export',`${process.execPath}/${id}`);
-    }
+    // if (!fs.existsSync(`${process.execPath}/${id}`)) {   
+    //     fs.mkdirSync(`${process.execPath}/${id}`);
+    //     fse.copySync('Export',`${process.execPath}/${id}`);
+    // }
     
-    fs.writeFileSync(`${process.execPath}/${id}/${folder}/${name}.svelte`, `${data}`);
+    // fs.writeFileSync(`${process.execPath}/${id}/${folder}/${name}.svelte`, `${data}`);
+
+    const testPath = `${process.execPath}/${id}`;
+    console.log(testPath);
 
     return {
         status: 201
