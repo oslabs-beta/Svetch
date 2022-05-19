@@ -3,7 +3,7 @@ import { canvas, repoName } from '../store.js';
 
 
 const target = 'https://github.com/login/oauth/authorize';
-const clientID = process.env.VERCEL_CLIENT_ID;
+const clientID = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID;
 
 
 export async function get(request) {
