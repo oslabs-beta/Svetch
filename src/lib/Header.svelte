@@ -8,9 +8,12 @@
 		const state = {};
 		state.canvas = {...$canvas};
 		state.options = {...$options};
-		if (url === '/login?exportProject=true') goto(url+'&state='+JSON.stringify(state));
+		if (url === `/login?exportProject=true&repoName=${repoName.value}`) goto(url+'&state='+JSON.stringify(state));
 		else goto(url+'?state='+JSON.stringify(state));
 	}
+	import Modal, {getModal} from './Modal.svelte'
+	let projectName;
+	let repoName;
 </script>
 <style>
 svg {
@@ -29,17 +32,42 @@ button {
 
 <!-- <div id='header'> -->
 	<div style="flex:1;">
-		<button on:click = {() => fileUtility.newFile()}>
-		New Project
-	</button>
-	<button on:click = {() => fileUtility.downloadFiles()}>
+<button on:click={()=>getModal('newProject').open()}>
+	New Project
+</button>
+
+
+<!-- the modal without an `id` -->
+<Modal id="newProject">
+	<p>Creating a new project will delete the current project. Are you sure?</p>
+	<button on:click = {() => {fileUtility.newFile(); getModal('newProject').close()}} >Confirm</button>
+</Modal>
+
+<button on:click = {() => getModal('download').open()}>
 		Download Project
-	</button>
+</button>
+<Modal id="download">
+	<p>Enter a name for your project</p>
+	<input bind:this={projectName} type="text" length = 20 value="" >
+	<button on:click = {() => {fileUtility.createFile(projectName.value); getModal('download').close()}}>Save</button>
+</Modal>
+
+<Modal id="export">
+	<p>Enter a name for your new repository</p>
+	<input bind:this={repoName} type="text" length = 20 value="" >
+	<button on:click = {() => {saveState(`/login?exportProject=true&repoName=${repoName.value}`); getModal('download').close()}}>Export</button>
+</Modal>
+
+
+	<!-- <button on:click = {() => fileUtility.createFile()}>
+		Download Project
+	</button> -->
 
 	<!-- conditionally render these two buttons -->
 	{#if user}
 	<!-- <a href='/login?exportProject=true'> -->
-	<button on:click = {() => saveState('/login?exportProject=true')}>Export</button>
+	<!-- <button on:click = {() => saveState('/login?exportProject=true')}>Export</button> -->
+	<button on:click = {() => getModal('export').open()}>Export</button>
 	{/if}
 	</div>
 	<a href="https:/svetch.io">

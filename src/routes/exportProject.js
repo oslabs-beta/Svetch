@@ -3,6 +3,7 @@ import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 import fs from 'fs';
 import axios from 'axios';
 import fileUtility from '../utils/fileUtility';
+import { repoName } from '../store.js';
 
 export let myFakeUser = 'fake';
 export async function post({ request }) {
@@ -11,8 +12,10 @@ export async function post({ request }) {
   const owner = body.user.login;
   const sessionId = body.sessionId;
   
-  const repo = 'New-Repo';
- 
+  let repo;
+  const unsubscribe = repoName.subscribe((val) => repo = val);
+	unsubscribe();
+  repo = repo.split(' ').join('-');
   
   const CustomOctokit = Octokit.plugin(restEndpointMethods);
   const octokit = new CustomOctokit({ auth: token });
