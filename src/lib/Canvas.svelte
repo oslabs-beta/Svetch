@@ -123,6 +123,10 @@ const drawComponents = () => {
   components.forEach(rect => {
     rect.draw(ctx)});
 }
+const getParent = (component) => {
+  const {x, y, width, height, type, color} = component;
+  return new EditableRect(x, y, width, height, type, color);
+}
 const buildCanvas = (obj) => {
   const updateChildren = (key, parent) => {
     if (obj[key].children.length) {
@@ -133,7 +137,9 @@ const buildCanvas = (obj) => {
     const {x, y, width, height, type, color} = obj[key].component;
     obj[key].component = null;
     let newRect = new EditableRect(x, y, width, height, type, color, key);
-    newRect.parent = parent === 'index' ? null : parent;
+    
+    newRect.parent = parent === 'index' ? null : obj[parent].component;
+    if (parent !== 'index') Object.setPrototypeOf(newRect.parent, EditableRect.prototype)
     obj[key].component = newRect;
     return;
   }
@@ -213,19 +219,19 @@ onMount(() => {
     const previousState = JSON.parse(state);
     const previousCanvas = previousState.canvas;
     const previousOptions = previousState.options;
-    // const formattedCanvas = buildCanvas(previousCanvas);
+    const formattedCanvas = buildCanvas(previousCanvas);
     const formattedOptions = [];
     
-    for(let entry in previousCanvas) {
-      const current = previousCanvas[entry];
-      const { x, y, width, height, type, color } = {...current.component};
-      if (entry !== 'index') current.component = new EditableRect(x, y, width, height, type, color, entry);
-    }
+    // for(let entry in previousCanvas) {
+    //   const current = previousCanvas[entry];
+    //   const { x, y, width, height, type, color } = {...current.component};
+    //   if (entry !== 'index') current.component = new EditableRect(x, y, width, height, type, color, entry);
+    // }
     for(let option in previousOptions) {
       const newOption = new Rect(...Object.values(previousOptions[option]))
       formattedOptions.push(newOption);
     }
-    console.log('pprev: ', previousCanvas);
+    console.log('pprev: ', formattedCanvas);
     state = null;
     $canvas = previousCanvas;
     $options = formattedOptions;
