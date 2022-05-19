@@ -4,8 +4,20 @@
   export let code = 'test code';
 </script>
 
+ 
 <svelte:head>
+
   {@html obsidian}
+ 
 </svelte:head>
 
-<HighlightSvelte {code} />
+<div id = "codeBlock">
+  <HighlightSvelte {code} style="overflow: hidden" />
+</div>
+
+<style>
+  #codeBlock {
+    overflow: hidden;
+  
+  }
+</style>

@@ -34,18 +34,24 @@ $: {
 <style>
 
 .elementsPanel {
-  grid-area: 2 / 1 / 3 / 2;
+  grid-area: 2 / 1 / 4 / 2;
+  padding-left: 10px;
+  padding-right: 10px;
   height: 100%;
 }
 .visualizerPanel {
-  grid-area: 2 / 2 / 3 / 4;
+  grid-area: 2 / 2 / 3 / 5;
+  box-shadow: 5px 5px 4px #003659;
+  background-color: #7E858C;
 }
-.fileDirectoryPanel {
+.quickStartPanel {
   grid-area: 3 / 1 / 4 / 2;
   padding: 2.25rem;
 }
 .codeBlockPanel {
-  grid-area: 3 / 2 / 4 / 3;
+  grid-area: 3 / 2 / 4 / 4;
+  background: #292929;
+  overflow: scroll;
 }
 #switch{
   right: 2vw;
@@ -53,21 +59,33 @@ $: {
 }
 
 section {
-  background: #282b2e;
+  /* background: #707A81;  */
+  background: #6B737B; 
   color: #fefefe;
+  /* color: #070707; */
+  border: 1px solid #003659;
   border-radius: 20px;
+  box-shadow: 5px 5px 4px #003659;
 }
+
 button {
   border-radius: 5px;
 }
-.actionButtonsPanel {
-  grid-area: 3 / 3 / 4 / 4;
-  padding: 15px;
+.fileDirectoryPanel {
+  grid-area: 3 / 4 / 4 / 4;
+  padding-top: 15px;
+  padding-left: 30px;
+  box-shadow: 5px 5px 4px #003659;
+}
+
+.elementsPanel {
+  box-shadow: 5px 5px 4px #003659;
+  overflow: hidden; 
 }
 </style>
 
 <section class="elementsPanel">
-  <Elements />
+  <Elements /><br>
 </section>
 <section class="visualizerPanel" bind:clientHeight={treeHeight}>
   <div id = "switch">
@@ -79,12 +97,13 @@ button {
     <Canvas state={state}/>
   {/if}
 </section>
-<section class="fileDirectoryPanel">
-  <Directory />
-</section>
+<!-- <section class="quickStartPanel">
+  <h1>Quick Start will go here</h1>
+</section> -->
 <section class="codeBlockPanel">
+  <br>
   <CodeBlock code={code}/>
 </section>
-<section class="actionButtonsPanel">
-
+<section class="fileDirectoryPanel">
+  <Directory />
 </section>

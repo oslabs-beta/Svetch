@@ -24,6 +24,6 @@
 header {
   display:flex;
   justify-content: space-between;
-  grid-column: 1 / 4;
+  grid-column: 1 / 5;
 }
 </style>
