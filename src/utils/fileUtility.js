@@ -16,7 +16,6 @@ fileUtility.parse = (component, exporting = false) => {
 	while(queue.length) {
 		const storeKey = queue.shift();
 		const current = canvasStore[storeKey];
-		console.log('current: ', current);
 		const name = current.scriptId;
 
 		let fileName = storeKey === 'index' ? storeKey : name;
@@ -124,8 +123,6 @@ fileUtility.createFile = async (sessionId) => {
 	// await Promise.all(requests);
 	await axios.all(filesTemplates.map(template => {
 		const { name, data } = template;
-		console.log('name: ', name);
-		console.log(name === 'index');
 		const folder = name === 'index' ? 'src/routes' : 'src/lib';
 		return axios.post('http://localhost:3000/fileCreate', {name, data, folder, sessionId});
 	}));
@@ -137,7 +134,8 @@ fileUtility.newFile = async () => {
 	const canvasStore = {
 		'index' : {
 			children : [],
-			scriptId : 'main'
+			scriptId : 'main',
+			counter : 0
 		}
 	};
 

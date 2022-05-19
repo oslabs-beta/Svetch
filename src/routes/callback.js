@@ -44,9 +44,6 @@ export async function get (request) {
   // get user info from Github
   const user = await getUser(token);
   request.locals.user = user.login;
-  request.locals.sessionId = sessionId;
-  
-  // console.log('user received by callback:', user);
   
   if (exportProject) {
     await axios({
@@ -58,7 +55,6 @@ export async function get (request) {
         sessionId 
       }
     });
-
   }
   
   return {

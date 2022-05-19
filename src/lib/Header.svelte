@@ -1,6 +1,17 @@
 <script>
 	export let user;
 	import fileUtility from '../utils/fileUtility';
+	import { goto } from '$app/navigation';
+	import { canvas, options } from '../store.js';
+
+	const saveState = async (url) => {
+		const state = {};
+		state.canvas = {...$canvas};
+		state.options = {...$options};
+		console.log('before: ', $canvas);
+		if (url === '/login?exportProject=true') goto(url+'&state='+JSON.stringify(state));
+		else goto(url+'?state='+JSON.stringify(state));
+	}
 </script>
 <style>
 svg {
@@ -28,12 +39,8 @@ button {
 
 	<!-- conditionally render these two buttons -->
 	{#if user}
-	<button>
-			Import
-	</button>
-	<a href='/login?exportProject=true'>
-		<button>Export</button>
-	</a>
+	<!-- <a href='/login?exportProject=true'> -->
+	<button on:click = {() => saveState('/login?exportProject=true')}>Export</button>
 	{/if}
 	</div>
 	<div style="display: flex;">
@@ -53,13 +60,9 @@ button {
 	</div>
 	<div style="display: flex; justify-content: flex-end; gap: 0.5rem; flex: 1;">
 	{#if user}
-		<a href="/logout">
-			<button>Sign out</button>
-		</a>
+		<button on:click = {() => saveState('/logout')}>Sign out</button>
 	{:else}
-		<a href="/login">
-			<button>Sign In with GitHub</button>
-		</a>
+		<button on:click = {() => saveState('/login')}>Sign In with GitHub</button>
 	{/if}
 	</div>
 <!-- </div> -->

@@ -1,3 +1,12 @@
+<script context="module" >
+	export async function load({ session }) {
+		return {
+			props: {
+				state: session.state
+			}
+		}
+	}
+</script>
 <script>
 import Elements from "../lib/Elements.svelte";
 import Canvas from '../lib/Canvas.svelte'
@@ -14,7 +23,8 @@ import { canvas, options, selectedComponent } from '../store.js';
 let toggled = false;
 let code;
 let treeHeight;
-
+export let state;
+console.log('state before on mount: ', state);
 
 $: {
   if ($canvas) $selectedComponent = $selectedComponent;
@@ -67,7 +77,7 @@ button {
   {#if toggled}
     <Tree height={treeHeight}/>
   {:else}
-    <Canvas />
+    <Canvas state={state}/>
   {/if}
 </section>
 <section class="fileDirectoryPanel">

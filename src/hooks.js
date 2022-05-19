@@ -7,7 +7,9 @@ export async function handle({ event, resolve }) {
 
   // update the stored user to be the value of the user cookie
   event.locals.user = cookies.user;
-  event.locals.sessionId = cookies.session_id
+  event.locals.sessionId = cookies.session_id;
+  event.locals.state = cookies.state;
+  // console.log('cookie stored in cookies: ', cookie.state);
   
   // process the HTTP request
   const response = await resolve(event);
@@ -15,13 +17,16 @@ export async function handle({ event, resolve }) {
   // add the cookie to the response
   response.headers.append('set-cookie', `user=${event.locals.user || ''};path=/; HttpOnly`)
   response.headers.append('set-cookie', `session_id=${event.locals.sessionId || uuidv4()};path=/; HttpOnly; sameSite=lax`)
+  // response.headers.append('set-cookie', `state=${event.locals.state};path=/; HttpOnly`)
   
   return response;
 }
 
 export async function getSession(event) {
   // client-side exposed information (do not store secure info here)
+  const cookies = cookie.parse(event.request.headers.get('cookie') || '');
   return {
-    user: event.locals.user
+    user: event.locals.user,
+    state: event.locals.state
   }
 }

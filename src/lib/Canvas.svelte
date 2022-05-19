@@ -3,7 +3,7 @@ import { onMount } from 'svelte'
 import { canvas, options, selectedComponent } from '../store.js'
 import canvasUtility from '../utils/canvasUtility'
 
-
+export let state;
 let borderWidth = 1;
 let mounted = false;
 let ctx; 
@@ -42,7 +42,7 @@ class Rect {
   }
 }
 
-class EditableRect extends Rect {
+export class EditableRect extends Rect {
   constructor(x, y, width, height, type, color, id) {
     super(x, y, width, height, type, color);
     this.parent = null;
@@ -120,7 +120,26 @@ const drawComponents = () => {
   const components = canvasUtility.parse('index', true);
   clear();
   drawDots();
-  components.forEach(rect => rect.draw(ctx));
+  components.forEach(rect => {
+    rect.draw(ctx)});
+}
+const buildCanvas = (obj) => {
+  const updateChildren = (key, parent) => {
+    if (obj[key].children.length) {
+      obj[key].children.forEach(child => {
+        updateChildren(child, key);
+      });
+    }
+    const {x, y, width, height, type, color} = obj[key].component;
+    obj[key].component = null;
+    let newRect = new EditableRect(x, y, width, height, type, color, key);
+    newRect.parent = parent === 'index' ? null : parent;
+    obj[key].component = newRect;
+    return;
+  }
+  const children = obj['index'].children;
+  children.forEach(child => updateChildren(child, 'index'));
+  return obj;
 }
   
 //erases whole template
@@ -141,6 +160,7 @@ const drawMenu = () => {
  
   for (let i = 0; i < $options.length; i++) {
     const rect = new Rect(...Object.values($options[i]));
+    console.log('rect: ', rect);
     rect.draw(ctx);
     rect.drawLabel(ctx, '30px serif', rect.x, rect.y + 35, 150);
     let contains = false
@@ -188,6 +208,29 @@ onMount(() => {
   template.width = parent.clientWidth;
   template.height = parent.clientHeight;
   ctx = template.getContext('2d'); 
+  
+  if (state) {
+    const previousState = JSON.parse(state);
+    const previousCanvas = previousState.canvas;
+    const previousOptions = previousState.options;
+    // const formattedCanvas = buildCanvas(previousCanvas);
+    const formattedOptions = [];
+    
+    for(let entry in previousCanvas) {
+      const current = previousCanvas[entry];
+      const { x, y, width, height, type, color } = {...current.component};
+      if (entry !== 'index') current.component = new EditableRect(x, y, width, height, type, color, entry);
+    }
+    for(let option in previousOptions) {
+      const newOption = new Rect(...Object.values(previousOptions[option]))
+      formattedOptions.push(newOption);
+    }
+    console.log('pprev: ', previousCanvas);
+    state = null;
+    $canvas = previousCanvas;
+    $options = formattedOptions;
+    drawMenu();
+  }
 
 //EVENT LISTENERS
 
@@ -235,15 +278,18 @@ window.addEventListener('resize', () => {
 template.addEventListener('mousedown', e => { 
   let x = e.offsetX; 
   let y = e.offsetY; 
-  
+  console.log('mousedown triggered')
   const components = canvasUtility.parse('index', true); 
+  console.log('components in canvas: ', components);
   // Check all components to see if they contain x,y coordinate of mouse event
   for (let i = 0; i < components.length; i++){
     const rect = components[i];
     if (rect.contains(x,y)) { 
       selected = rect;
+      console.log('selected rect inside canvas: ', selected);
       $selectedComponent = selected.id
       moving = true;
+      console.log('selected!');
     }
   } 
   if (selected && selected.resizeTabContains(x,y)) { 
@@ -270,7 +316,7 @@ template.addEventListener('mousemove', e => {
 
 //invoked when mouse is released, resets selected component, moving, and resizing variables 
 template.addEventListener('mouseup', e => {
-  
+  console.log('mouse up triggered');
   //if moving or resizing, trigger conditional to check location of moved/rezized component
   if (moving || resizing) {
     const componentsBefore = canvasUtility.parse('index', true); 
@@ -373,6 +419,7 @@ template.addEventListener('mouseup', e => {
     drawComponents();
     clearButtons();
     drawMenu();
+    console.log('canvas after component added: ', $canvas);
   }
 });
 
