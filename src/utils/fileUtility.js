@@ -142,7 +142,6 @@ fileUtility.downloadFiles = async (projectName = 'example-skeleton') => {
 	await fileUtility.createFile();
 	const zipAsBase64 = await axios.get('/zip');
 	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
-	// const blob = b64ToBlob('zipAsBase64.data', "application/zip");
 	fileSaver.saveAs(blob, `${projectName}.zip`);
 	axios.post('/fileDelete', {sessionId : null});
 }
