@@ -110,11 +110,15 @@ fileUtility.createFile = async (sessionId) => {
 	let exporting = true;
 	const filesTemplates = fileUtility.parse('index', exporting);
 
-	await axios.all(filesTemplates.map(template => {
+	try {
+		await axios.all(filesTemplates.map(template => {
 		const { name, data } = template;
 		const folder = name === 'index' ? 'src/routes' : 'src/lib';
 		return axios.post('https://app.svetch.io/fileCreate', {name, data, folder, sessionId});
 	}));
+} catch(error) {
+	console.log(error);
+}
 	
 	return;
 }
