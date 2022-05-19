@@ -105,10 +105,10 @@ export async function post({ request }) {
   }
 
   try {
-    // Create project files in folder unique to user, copy files from template
-    await fileUtility.createFile(sessionId);
     // Create new GitHub repo named the value of repo 
     await octokit.rest.repos.createForAuthenticatedUser({ name: repo, auto_init: true });
+    // Create project files in folder unique to user, copy files from template
+    await fileUtility.createFile(sessionId);
     // Get git blobs for the commit
     const blobs = await getBlobs(sessionId);
     // Create the tree structure for the blobs
