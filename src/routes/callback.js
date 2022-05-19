@@ -2,8 +2,8 @@ import axios from 'axios';
 const tokenURL = 'https://github.com/login/oauth/access_token';
 const userURL = 'https://api.github.com/user';
 
-const clientId = import.meta.env.VITE_CLIENT_ID;
-const clientSecret = import.meta.env.VITE_CLIENT_SECRET;
+const clientId = import.meta.env.VITE_CLIENT_ID || import.meta.env.VERCEL_CLIENT_ID;
+const clientSecret = import.meta.env.VITE_CLIENT_SECRET || import.meta.env.VERCEL_CLIENT_SECRET;
 
 const getToken = async (code) => {
 
