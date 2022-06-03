@@ -110,11 +110,15 @@ fileUtility.createFile = async (sessionId) => {
 	let exporting = true;
 	const filesTemplates = fileUtility.parse('index', exporting);
 
-	await axios.all(filesTemplates.map(template => {
-		const { name, data } = template;
-		const folder = name === 'index' ? 'src/routes' : 'src/lib';
-		return axios.post('http://localhost:3000/fileCreate', {name, data, folder, sessionId});
-	}));
+	try {
+		await axios.all(filesTemplates.map(template => {
+			const { name, data } = template;
+			const folder = name === 'index' ? 'src/routes' : 'src/lib';
+			return axios.post('/fileCreate', {name, data, folder, sessionId});
+		}));
+} catch(error) {
+	console.log(error);
+}
 	
 	return;
 }
@@ -138,6 +142,7 @@ fileUtility.downloadFiles = async (projectName = 'example-skeleton') => {
 	await fileUtility.createFile();
 	const zipAsBase64 = await axios.get('/zip');
 	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
+	// const blob = b64ToBlob('zipAsBase64.data', "application/zip");
 	fileSaver.saveAs(blob, `${projectName}.zip`);
 	axios.post('/fileDelete', {sessionId : null});
 }

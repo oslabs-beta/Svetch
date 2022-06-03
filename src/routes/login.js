@@ -3,7 +3,7 @@ import { canvas, repoName } from '../store.js';
 
 
 const target = 'https://github.com/login/oauth/authorize';
-const clientID = import.meta.env.VITE_CLIENT_ID || import.meta.env.VERCEL_CLIENT_ID;
+const clientID = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID;
 
 
 export async function get(request) {
@@ -14,7 +14,7 @@ export async function get(request) {
   const parsedState = JSON.parse(state);
   canvas.set(parsedState.canvas);
   repoName.set(repo);
-  const redirectURL = `${target}?client_id=${clientID}&redirect_uri=http://localhost:3000/callback/${searchParams ? '?exportProject=true' : ''}&scope=repo%20read:user%20user:email&state=${sessionID}`
+  const redirectURL = `${target}?client_id=${clientID}&redirect_uri=https://app.svetch.io/callback/${searchParams ? '?exportProject=true' : ''}&scope=repo%20read:user%20user:email&state=${sessionID}`
   
   
   return {

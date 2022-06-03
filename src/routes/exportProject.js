@@ -125,7 +125,7 @@ export async function post({ request }) {
     // Update the reference for the git branch
     await updateReference(newCommitSha);
     // Delete the user folder
-    await axios.post('http://localhost:3000/fileDelete', {sessionId});
+    await axios.post('/fileDelete', {sessionId});
 
   } catch (err) {
     console.log('ERROR:', err)
