@@ -1,5 +1,6 @@
 import cookie from 'cookie';
 import fs from 'fs';
+import path from 'path';
 import fse from 'fs-extra'
 
 export async function post({ request }) {
