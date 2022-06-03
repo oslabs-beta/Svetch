@@ -15,9 +15,9 @@ export async function post({ request }) {
     //     fse.copySync('Export',`${process.execPath}/${id}`);
     // }
     
-    //const ROUTE_CACHE_PATH = path.resolve(path.join(process.cwd(), 'routes'));
+    const ROUTE_CACHE_PATH = path.resolve(path.join(process.cwd(), '/'));
 
-    fs.writeFileSync(`${process.execPath}/${id}/${folder}/${name}.svelte`, `${data}`);
+    fs.writeFileSync(`${ROUTE_CACHE_PATH}/${id}/${folder}/${name}.svelte`, `${data}`);
 
     // const testPath = `${process.execPath}/${id}`;
 
