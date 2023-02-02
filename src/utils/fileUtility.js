@@ -1,9 +1,11 @@
-import { canvas, options } from '../store.js';
 import axios from 'axios';
 import b64ToBlob from "b64-to-blob";
 import fileSaver from "file-saver";
-const fileUtility = {};
+import JSZip from "jszip";
+import { canvas, options } from '../store.js';
 
+
+const fileUtility = {};
 
 fileUtility.parse = (component, exporting = false) => {
 	let canvasStore;
@@ -139,12 +141,33 @@ fileUtility.newFile = async () => {
 }
 
 fileUtility.downloadFiles = async (projectName = 'example-skeleton') => {
-	await fileUtility.createFile();
-	const zipAsBase64 = await axios.get('/zip');
-	const blob = b64ToBlob(zipAsBase64.data, "application/zip");
-	// const blob = b64ToBlob('zipAsBase64.data', "application/zip");
+	// Get the user's protoyped component data
+	const files = fileUtility.createFile();
+
+	// Store new JSZip instance
+	const zip = new JSZip();
+
+	// Iterate through the file data and add each to the JSZip instance
+	for (const { relativePath, fileContent } of files) {
+		// Store the file content after converting it to a Uint8Array
+		zip.file(`${relativePath}`, Uint8Array.from(fileContent, x => x.charCodeAt(0)));
+	}
+
+	// Get the static project files from the api
+	const projectFiles = await axios.get('api/projectFiles')
+		.then(({ data }) => JSON.parse(data)).then(({ zippedFiles }) => zippedFiles);
+	
+	// Add the static files to the  JSZip instance
+	await zip.loadAsync(projectFiles, { base64: true });
+
+	// Store the JSZip data as a base64 string
+	const zipAsBase64 = await zip.generateAsync({ type: "base64" });
+
+	// Create and store a blob from the base64 string
+	const blob = b64ToBlob(zipAsBase64, "application/zip");
+
+	// Use the fileSaver to present the file for download in the browser window
 	fileSaver.saveAs(blob, `${projectName}.zip`);
-	axios.post('/fileDelete', {sessionId : null});
 }
 
 fileUtility.deleteCookie = () => {
