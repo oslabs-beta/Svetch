@@ -6,9 +6,8 @@ export default async function get({ response }) {
     const jsonPath = path.join(process.cwd(), 'json', 'data.json');
   
     //Read content of the data.json file
-    const fileContents = await fs.readFile(jsonPath, { encoding: 'utf8' });
+    const fileContent = await fs.readFile(jsonPath, { encoding: 'utf8' });
   
     //Return the content of the data in json format
-    return response.status(200).json(fileContents);
+    return response.status(200).json(fileContent);
   }
-  
