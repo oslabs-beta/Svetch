@@ -107,22 +107,24 @@ fileUtility.formatName = name => {
 		.join('');
 }
 
-fileUtility.createFile = async (sessionId) => {
-	
-	let exporting = true;
-	const filesTemplates = fileUtility.parse('index', exporting);
+fileUtility.createFile = () => {
+	// Get file template objects frome the parse method
+	const filesTemplates = fileUtility.parse('index', true);
 
-	try {
-		await axios.all(filesTemplates.map(template => {
-			const { name, data } = template;
-			const folder = name === 'index' ? 'src/routes' : 'src/lib';
-			return axios.post('/fileCreate', {name, data, folder, sessionId});
-		}));
-} catch(error) {
-	console.log(error);
-}
-	
-	return;
+	// Create a new array of file objects from the file templates
+	const files = filesTemplates.map(template => {
+		// Store the name and data from the template
+		const { name, data } = template;
+
+		// Index file is stored in routes folder, all others stored in lib 
+		const folder = name === 'index' ? 'src/routes' : 'src/lib';
+
+		// Return the file-like object
+		return { relativePath: `${folder}/${name}.svelte`, fileContent: data }
+	});
+
+	// Return the array of file obejcts
+	return files;
 }
 
 fileUtility.newFile = async () => {
