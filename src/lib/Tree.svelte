@@ -23,9 +23,8 @@ const parseCanvas= (component, name = 'index') => {
 			let childName = $canvas[child].component.type;
 
 			if ($canvas[child].children.length) {
-				if (childNameCache[childName]) childNameCache[childName]++;
-				else childNameCache[childName] = 1;
-				childName = childName + '_' + childNameCache[childName];
+				childNameCache[childName] = (childNameCache[childName] || 0) + 1; 
+				childName = `${childName}_${childNameCache[childName]}`;
 			}
 			data.children.push(parseCanvas(child, childName));
 		});

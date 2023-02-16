@@ -10,7 +10,7 @@
 		const state = {};
 		state.canvas = {...$canvas};
 		state.options = {...$options};
-		if (url === `/login?exportProject=true&repoName=${repoName.value}`) goto(url+'&state='+JSON.stringify(state));
+		if (url === `/login?repoName=${repoName.value}`) goto(url+'&state='+JSON.stringify(state));
 		else goto(url+'?state='+JSON.stringify(state));
 	}
 	import Modal, {getModal} from './Modal.svelte'
@@ -57,7 +57,7 @@ button {
 <Modal id="export">
 	<p>Enter a name for your new repository</p>
 	<input bind:this={repoName} type="text" length = 20 value="" >
-	<button on:click = {() => {saveState(`/login?exportProject=true&repoName=${repoName.value}`); getModal('download').close()}}>Export</button>
+	<button on:click = {() => {saveState(`/login?exportProject=true&repoName=${repoName.value}`); getModal('export').close()}}>Export</button>
 </Modal>
 
 

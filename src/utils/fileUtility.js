@@ -12,34 +12,32 @@ fileUtility.parse = (component, exporting = false) => {
 	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
 	unsubscribe();
 	const fileMap = new Map();
-	const queue = [component];
+	const queue = [ component ];
 	const nameCache = {};
-	
-	while(queue.length) {
+
+	while (queue.length) {
 		const storeKey = queue.shift();
 		const current = canvasStore[storeKey];
 		const name = current.scriptId;
 
 		let fileName = storeKey === 'index' ? storeKey : name;
-		let fileText = `<script>IMPORTS</script>\n\n${name === 'main' ? '<main>' : ''}COMPONENTS${name === 'main' ? '</main>': ''}\n\n<style>\n\n</style>`;
+		let fileText = `<script>IMPORTS</script>\n\n${name === 'main' ? '<main>' : ''}COMPONENTS${name === 'main' ? '</main>' : ''}\n\n<style>\n\n</style>`;
 
 		const importMap = new Map();
 		const components = [];
 		const childNameCache = {};
 
-		current.children.forEach(child => {
+		current.children.forEach((child, index) => {
 			let childName = canvasStore[child].scriptId;
-			if(nameCache[name]) nameCache[name]++;
-			else nameCache[name] = 1;
-			if(fileName !== 'index') fileName = name + '_' + nameCache[name];
+			if (index === 0) nameCache[name] = (nameCache[name] || 0) + 1;
+			if (fileName !== 'index') fileName = `${name}_${nameCache[name]}`;
 			if (exporting) queue.push(child);
 			if (canvasStore[child].children.length) {
-				if (childNameCache[childName]) childNameCache[childName]++;
-				else childNameCache[childName] = 1;
-				childName = childName + '_' + childNameCache[childName];
+				childNameCache[childName] = (childNameCache[childName] || 0) + 1;
+				childName = `${childName}_${childNameCache[childName]}`;
 			}
 			childName = fileUtility.formatName(childName);
-			if (!importMap.has(childName)) importMap.set(childName,`import ${childName} from '../lib/${childName}.svelte'`);	
+			if (!importMap.has(childName)) importMap.set(childName, `import ${childName} from '../lib/${childName}.svelte'`);
 			components.push(`<${childName} />`);
 		});
 
@@ -57,11 +55,11 @@ fileUtility.parse = (component, exporting = false) => {
 		fileText = fileText
 			.replace('IMPORTS', importsStr)
 			.replace('COMPONENTS', componentsStr);
-		if (!fileMap.has(fileName)) fileMap.set(fileName, {fileText, id: storeKey});
+		if (!fileMap.has(fileName)) fileMap.set(fileName, { fileText, id: storeKey });
 	}
 	const files = [];
-	fileMap.forEach(({fileText, id}, key) => {
-		files.push({name: key, data: fileText, id});
+	fileMap.forEach(({ fileText, id }, key) => {
+		files.push({ name: key, data: fileText, id });
 	});
 	return files;
 }
@@ -71,18 +69,19 @@ fileUtility.createFileTree = () => {
 		name: 'src',
 		children: []
 	};
-	fileDirectory.children.push({name: 'routes', children: [{name:'index', id: 'index'}]});
+	fileDirectory.children.push({ name: 'routes', children: [{ name: 'index', id: 'index' }] });
 	const files = fileUtility.parse('index', true);
-	const lib = {name:'lib', children: []}
+	const lib = { name: 'lib', children: [] }
 	if (files.length > 1) fileDirectory.children.push(lib);
 	files.shift();
 	const queue = files;
 	while (queue.length) {
-		const {name, id} = queue.shift();
-		lib.children.push({name, id});
+		const { name, id } = queue.shift();
+		lib.children.push({ name, id });
 	}
 	return fileDirectory;
 }
+
 fileUtility.sort = files => {
 	const sortFiles = (a, b) => {
 		if (a.children && !b.children) {
