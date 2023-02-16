@@ -2,7 +2,7 @@
 	export let user;
 	import fileUtility from '../utils/fileUtility';
 	import canvasUtility from '../utils/canvasUtility';
-	import optionsUtility from '../utils/optionsUtility';
+	import optionsUtility from '../utils/optionsUtility'
 	import { goto } from '$app/navigation';
 	import { canvas, options } from '../store.js';
 
@@ -14,6 +14,7 @@
 		else goto(url+'?state='+JSON.stringify(state));
 	}
 	import Modal, {getModal} from './Modal.svelte'
+
 	let projectName;
 	let repoName;
 </script>
