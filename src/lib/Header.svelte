@@ -1,6 +1,8 @@
 <script>
 	export let user;
 	import fileUtility from '../utils/fileUtility';
+	import canvasUtility from '../utils/canvasUtility';
+	import optionsUtility from '../utils/optionsUtility';
 	import { goto } from '$app/navigation';
 	import { canvas, options } from '../store.js';
 
@@ -40,7 +42,7 @@ button {
 <!-- the modal without an `id` -->
 <Modal id="newProject">
 	<p>Creating a new project will delete the current project. Are you sure?</p>
-	<button on:click = {() => {fileUtility.newFile(); getModal('newProject').close()}} >Confirm</button>
+	<button on:click = {() => {canvasUtility.reset(); optionsUtility.reset(); getModal('newProject').close()}} >Confirm</button>
 </Modal>
 
 <button on:click = {() => getModal('download').open()}>

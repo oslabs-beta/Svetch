@@ -2,7 +2,7 @@ import axios from 'axios';
 import b64ToBlob from "b64-to-blob";
 import fileSaver from "file-saver";
 import JSZip from "jszip";
-import { canvas, options } from '../store.js';
+import { canvas } from '../store.js';
 
 
 const fileUtility = {};
@@ -125,21 +125,6 @@ fileUtility.createFile = () => {
 
 	// Return the array of file obejcts
 	return files;
-}
-
-fileUtility.newFile = async () => {
-	const canvasStore = {
-		'index' : {
-			children : [],
-			scriptId : 'main',
-			counter : 0
-		}
-	};
-
-	canvas.update(n => n = canvasStore);
-	options.update(n => n = [])
-	axios.get('/newProject');
-	return;
 }
 
 fileUtility.downloadFiles = async (projectName = 'example-skeleton') => {

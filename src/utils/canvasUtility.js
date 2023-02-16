@@ -75,8 +75,16 @@ export default {
       });
 
     }
-
     return components;
-
+  },
+  reset: () => {
+    const defaultCanvas = {
+      'index' : {
+        children : [],
+        scriptId : 'main',
+        counter : 0
+      }
+    };
+    canvas.set(defaultCanvas);
   }
 }
