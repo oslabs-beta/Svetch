@@ -130,7 +130,7 @@ export async function post({ request }) {
     const componentFiles = fileUtility.createFile();
 
     // Get the static project files
-    const projectFiles = await axios.get('https://app.svetch.io/api/projectSkeleton')
+    const projectFiles = await axios.get('https://app.svetch.io/api/projectFiles')
       .then(({ data }) => JSON.parse(data))
       .then(({ files }) => files);
 
