@@ -57,7 +57,7 @@ button {
 <Modal id="export">
 	<p>Enter a name for your new repository</p>
 	<input bind:this={repoName} type="text" length = 20 value="" >
-	<button on:click = {() => {saveState(`/login?exportProject=true&repoName=${repoName.value}`); getModal('export').close()}}>Export</button>
+	<button on:click = {() => {saveState(`/login?repoName=${repoName.value}`); getModal('export').close()}}>Export</button>
 </Modal>
 
 

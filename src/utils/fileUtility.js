@@ -160,5 +160,4 @@ fileUtility.deleteCookie = () => {
 	axios.post('/deleteCookie');
 }
  
-	
 export default fileUtility;
