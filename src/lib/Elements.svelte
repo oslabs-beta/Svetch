@@ -1,12 +1,16 @@
 <script>
   import { options } from "../store.js";
+  
   let name;
   let color;
   let enterName = true;
   let y = 20;
   let reset;
+  
   $:{ if($options.length) {y = ($options[$options.length - 1].y + 60)}
   else y = 20;}
+  
+  
   const handleSubmission = () => {
       let errorMessage = document.getElementById("errorMessage");
       let alreadyExists = false;
@@ -116,12 +120,14 @@
   
   
   <style>
+  
   .quickstart {
     height: 50%;
     padding-left: 10px;
     overflow: hidden;
     overflow-y: scroll; 
   }
+  
   h1 {
     padding-top: 1rem;
     text-align: center;
@@ -132,4 +138,5 @@
   h2{
       color: red;
   }
+  
   </style>
