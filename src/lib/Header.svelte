@@ -2,7 +2,7 @@
 	export let user;
 	import fileUtility from '../utils/fileUtility';
 	import canvasUtility from '../utils/canvasUtility';
-	import optionsUtility from '../utils/optionsUtility'
+	import optionsUtility from '../utils/optionsUtility';
 	import { goto } from '$app/navigation';
 	import { canvas, options } from '../store.js';
 
