@@ -1,7 +1,7 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 
-export default async function get({ response }) {
+export default async function get(req, res) {
     //Find the absolute path of the json file
     const jsonPath = path.join(process.cwd(), 'json', 'data.json');
   
@@ -9,5 +9,5 @@ export default async function get({ response }) {
     const fileContent = await fs.readFile(jsonPath, { encoding: 'utf8' });
   
     //Return the content of the data in json format
-    return response.status(200).json(fileContent);
+    return res.status(200).json(fileContent);
   }
