@@ -1,6 +1,8 @@
 <script>
 	export let user;
 	import fileUtility from '../utils/fileUtility';
+	import canvasUtility from '../utils/canvasUtility';
+	import optionsUtility from '../utils/optionsUtility';
 	import { goto } from '$app/navigation';
 	import { canvas, options } from '../store.js';
 
@@ -8,10 +10,11 @@
 		const state = {};
 		state.canvas = {...$canvas};
 		state.options = {...$options};
-		if (url === `/login?exportProject=true&repoName=${repoName.value}`) goto(url+'&state='+JSON.stringify(state));
+		if (url === `/login?repoName=${repoName.value}`) goto(url+'&state='+JSON.stringify(state));
 		else goto(url+'?state='+JSON.stringify(state));
 	}
 	import Modal, {getModal} from './Modal.svelte'
+
 	let projectName;
 	let repoName;
 </script>
@@ -40,7 +43,7 @@ button {
 <!-- the modal without an `id` -->
 <Modal id="newProject">
 	<p>Creating a new project will delete the current project. Are you sure?</p>
-	<button on:click = {() => {fileUtility.newFile(); getModal('newProject').close()}} >Confirm</button>
+	<button on:click = {() => {canvasUtility.reset(); optionsUtility.reset(); getModal('newProject').close()}} >Confirm</button>
 </Modal>
 
 <button on:click = {() => getModal('download').open()}>
@@ -55,7 +58,7 @@ button {
 <Modal id="export">
 	<p>Enter a name for your new repository</p>
 	<input bind:this={repoName} type="text" length = 20 value="" >
-	<button on:click = {() => {saveState(`/login?exportProject=true&repoName=${repoName.value}`); getModal('download').close()}}>Export</button>
+	<button on:click = {() => {saveState(`/login?repoName=${repoName.value}`); getModal('export').close()}}>Export</button>
 </Modal>
 
 

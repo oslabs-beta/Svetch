@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { canvas, repoName } from '../store.js';
+import { canvas } from '../store.js';
 
 
 const target = 'https://github.com/login/oauth/authorize';
@@ -8,13 +8,12 @@ const clientID = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID;
 
 export async function get(request) {
   const sessionID = uuidv4();
-  const searchParams = request.url.searchParams.get('exportProject');
   const state = request.url.searchParams.get('state');
-  const repo = request.url.searchParams.get('repoName');
+  const repoName = request.url.searchParams.get('repoName');
   const parsedState = JSON.parse(state);
   canvas.set(parsedState.canvas);
-  repoName.set(repo);
-  const redirectURL = `${target}?client_id=${clientID}&redirect_uri=https://app.svetch.io/callback/${searchParams ? '?exportProject=true' : ''}&scope=repo%20read:user%20user:email&state=${sessionID}`
+
+  const redirectURL = `${target}?client_id=${clientID}&redirect_uri=https://app.svetch.io/callback/${repoName ? `?repoName=${repoName}` : ''}&scope=repo%20read:user%20user:email&state=${sessionID}`
   
   
   return {

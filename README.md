@@ -44,4 +44,4 @@ The incredibly active, supportive community is one of the best parts of building
 - Daniel Palumbo | [Linkedin](https://www.linkedin.com/in/daniel-palumbo-735715137/) | [GitHub](https://github.com/DRPalumbo17)
 - E Kathuria | [Linkedin](https://linkedin.com/in/ekathuria) | [GitHub](https://github.com/bozoputer)
 - Kevin Wright | [Linkedin](http://www.linkedin.com/in/kwrightt/) | [GitHub](https://github.com/ktw33)
-- Mathew Lapeer | [Linkedin](https://www.linkedin.com/in/matthew-lapeer) | [GitHub](https://github.com/matthewlapeer)
+- Matthew Lapeer | [Linkedin](https://www.linkedin.com/in/matthew-lapeer) | [GitHub](https://github.com/matthewlapeer)

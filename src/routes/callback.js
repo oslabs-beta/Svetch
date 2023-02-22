@@ -37,22 +37,22 @@ const getUser = async (token) => {
 export async function get (request) {
   // get code from Github
   const code = request.url.searchParams.get('code');
-  const sessionId = request.url.searchParams.get('state');
-  const exportProject = request.url.searchParams.get('exportProject');
+  // get the repo name from request search paramaters
+  const repoName = request.url.searchParams.get('repoName');
   // get accessToken from Github
   const token = await getToken(code);
   // get user info from Github
   const user = await getUser(token);
   request.locals.user = user.login;
   
-  if (exportProject) {
+  if (repoName) {
     await axios({
       method: 'post',
       url: 'https://app.svetch.io/exportProject',
       data: {
         token: token,
         user: user,
-        sessionId 
+        repoName 
       }
     });
   }
