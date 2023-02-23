@@ -15,6 +15,9 @@ export async function post({ request }) {
 
   // Store the repo name
   const repo = body.repoName.replace(/\s+/g,'-');
+
+  // Store the canvas state
+  const state = body.state;
   
     // Store a custom Octokit object with rest API plugin
     const CustomOctokit = Octokit.plugin(restEndpointMethods);
@@ -126,8 +129,8 @@ export async function post({ request }) {
     // Create new GitHub repo named the value of repo 
     await octokit.rest.repos.createForAuthenticatedUser({ name: repo, auto_init: true });
    
-    // Create component files from user prototype
-    const componentFiles = fileUtility.createFile();
+    // Create component files from user prototype, passing state from cookies
+    const componentFiles = fileUtility.createFile(state);
 
     // Get the static project files
     const projectFiles = await axios.get('https://app.svetch.io/api/projectFiles')
@@ -135,7 +138,7 @@ export async function post({ request }) {
       .then(({ files }) => files);
 
     // Get git blobs from the project and component files for the commit
-    const blobs = await getBlobs([ ...projectFiles, ... componentFiles ]);
+    const blobs = await getBlobs([ ...projectFiles, ...componentFiles ]);
 
     // Create the tree structure for the blobs
     const tree = await createTreeStructure(blobs);

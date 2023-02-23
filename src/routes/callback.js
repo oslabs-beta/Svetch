@@ -44,6 +44,8 @@ export async function get (request) {
   // get user info from Github
   const user = await getUser(token);
   request.locals.user = user.login;
+  // get canvas state from cookie
+  const state = request.locals.state;
   
   if (repoName) {
     await axios({
@@ -52,7 +54,8 @@ export async function get (request) {
       data: {
         token: token,
         user: user,
-        repoName 
+        repoName,
+        state 
       }
     });
   }

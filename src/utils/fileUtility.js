@@ -106,7 +106,10 @@ fileUtility.formatName = name => {
 		.join('');
 }
 
-fileUtility.createFile = () => {
+fileUtility.createFile = (canvasUpdate = null) => {
+	// If updates needed, update canvas store from argument
+	if (canvasUpdate) canvas.set(JSON.parse(canvasUpdate).canvas);
+	
 	// Get file template objects frome the parse method
 	const filesTemplates = fileUtility.parse('index', true);
 
