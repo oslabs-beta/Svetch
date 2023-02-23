@@ -8,9 +8,6 @@ export const canvas = writable({
 	}
 });
 
-export const options = writable([
-  ])
+export const options = writable([]);
 
 export const selectedComponent = writable('index');
-export const repoName = writable('New-Repo');
-

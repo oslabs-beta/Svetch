@@ -12,5 +12,6 @@ export default {
       delete o[name];
       return o;
     });
-  }
+  },
+  reset: () => options.set([])
 }
