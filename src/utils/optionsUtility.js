@@ -1,17 +1,17 @@
-import { options } from "../store";
+import { options } from '../store';
 
 export default {
   create: (name, color, y) => {
-    options.update(o => {
-      o[name] = {color, quantity: 0, y};
-      return o;
+    options.update((optionsStore) => {
+      optionsStore[name] = { color, quantity: 0, y };
+      return optionsStore;
     });
   },
   delete: (name) => {
-    options.update(o => {
-      delete o[name];
-      return o;
+    options.update((optionsStore) => {
+      delete optionsStore[name];
+      return optionsStore;
     });
   },
-  reset: () => options.set([])
-}
+  reset: () => options.set([]),
+};

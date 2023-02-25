@@ -14,7 +14,9 @@
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
     "d3": "^7.4.4",
-    "eslint": "^7.32.0",
+    "eslint": "^8.34.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-svelte3": "^3.2.1",
     "svelte": "^3.48.0"
   },

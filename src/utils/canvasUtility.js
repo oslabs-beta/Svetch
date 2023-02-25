@@ -1,89 +1,89 @@
-import { canvas } from '../store.js';
+import { canvas } from '../store';
 
 export default {
   create: (component) => {
-    canvas.update(c => {
+    canvas.update((cStore) => {
       // determine parent key
       const parentId = component.parent ? component.parent.id : 'index';
       // add component as child
-      c[parentId].children.push(component.id);
+      cStore[parentId].children.push(component.id);
       // create child key in the store and assign default obj
-      c[component.id] = {children:[], 'scriptId': component.type, 'component': component};
+      cStore[component.id] = { children: [], scriptId: component.type, component };
       // return updated store
-      return c;
+      return cStore;
     });
   },
   removeParent: (component) => {
-    canvas.update(c => {
+    canvas.update((cStore) => {
       // determine parent key
       const parentId = component.parent ? component.parent.id : 'index';
       // index of component in children array
-      const index = c[parentId].children.indexOf(component.id);
-      // remove target 
-      c[parentId].children.splice(index, 1);
+      const index = cStore[parentId].children.indexOf(component.id);
+      // remove target
+      cStore[parentId].children.splice(index, 1);
       // return updated store
-      return c;
+      return cStore;
     });
   },
   updateParent: (component) => {
-    canvas.update(c => {
+    canvas.update((cStore) => {
       // determine parent key
       const parentId = component.parent ? component.parent.id : 'index';
       // add component as a child
-      c[parentId].children.push(component.id);
+      cStore[parentId].children.push(component.id);
       // return updated store
-      return c;
+      return cStore;
     });
   },
   delete: (component) => {
-    canvas.update(c => {
+    canvas.update((cStore) => {
       // determine parent key
       const parentId = component.parent ? component.parent.id : 'index';
       // determine component index in children array
-      const index = c[parentId].children.indexOf(component.id);
+      const index = cStore[parentId].children.indexOf(component.id);
       // remove the child
-      c[parentId].children.splice(index, 1);
+      cStore[parentId].children.splice(index, 1);
       // add grandchildren to parent (making them children)
-      const grandChildren = c[component.id].children;
+      const grandChildren = cStore[component.id].children;
       // update each grandchild component rect to new parent component rect
-      grandChildren.forEach(grandChildId => {
-        c[grandChildId].component.parent = c[parentId].component || null;
+      grandChildren.forEach((grandChildId) => {
+        cStore[grandChildId].component.parent = (cStore[parentId].component || null);
       });
       // add the grandchildren to the children array
-      c[parentId].children.push(...grandChildren);
+      cStore[parentId].children.push(...grandChildren);
       // delete the component
-      delete c[component.id];
+      delete cStore[component.id];
       // return the store
-      return c;
+      return cStore;
     });
   },
   parse: (component, exporting = false) => {
     let canvasStore;
-    const unsubscribe = canvas.subscribe((val) => canvasStore = val);
+    const unsubscribe = canvas.subscribe((val) => { canvasStore = val; });
     unsubscribe();
-  
+
     const components = [];
     const queue = [component];
-    
-    while(queue.length) {
-      const storeKey = queue.shift();
-      const current = canvasStore[storeKey];
-  
-      current.children.forEach(childId => {
-        if (exporting) queue.push(childId);
-        components.push(canvasStore[childId].component)
-      });
 
+    while (queue.length) {
+      const storeKey = queue.shift();
+      const { children } = canvasStore[storeKey];
+
+      for (let i = 0; i < children.length; i += 1) {
+        const childId = children[i];
+        if (exporting) queue.push(childId);
+        components.push(canvasStore[childId].component);
+      }
     }
     return components;
   },
   reset: () => {
     const defaultCanvas = {
-      'index' : {
-        children : [],
-        scriptId : 'main',
-        counter : 0
-      }
+      index: {
+        children: [],
+        scriptId: 'main',
+        counter: 0,
+      },
     };
     canvas.set(defaultCanvas);
   }
