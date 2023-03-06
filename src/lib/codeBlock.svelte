@@ -1,14 +1,13 @@
 <script>
-  import { HighlightSvelte } from "svelte-highlight";
-  import obsidian from "svelte-highlight/styles/obsidian";
-  export let code = 'test code';
+  import { HighlightSvelte } from 'svelte-highlight';
+  import obsidian from 'svelte-highlight/styles/obsidian';
+
+  export let code;
 </script>
 
  
 <svelte:head>
-
   {@html obsidian}
- 
 </svelte:head>
 
 <div id = "codeBlock">
@@ -18,6 +17,5 @@
 <style>
   #codeBlock {
     overflow: hidden;
-  
   }
 </style>

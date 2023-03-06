@@ -11,6 +11,7 @@
 
 <script>
 	import Header from '../lib/Header.svelte';
+	
 	export let user;
 </script>
 

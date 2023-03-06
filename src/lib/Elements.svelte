@@ -1,5 +1,6 @@
 <script>
-  import { options } from "../store.js";
+  import { options } from '../store';
+  import fileUtility from '../utils/fileUtility'
 
   let name;
   let color;
@@ -13,8 +14,9 @@
 
   const handleSubmission = () => {
     errorMessage = '';
+    const safeName = fileUtility.formatName(name.value);
     for (let i = 0; i < $options.length; i++) {
-      if ($options[i].type == name.value) {
+      if ($options[i].type == safeName) {
         errorMessage = 'Please provide a unique name';
         return;
       }
@@ -28,7 +30,7 @@
       y: y,
       width: 150,
       height: 50,
-      type: name.value,
+      type: safeName,
       color: color.value,
       deletable: true,
     };
@@ -139,9 +141,11 @@
     padding-top: 1rem;
     text-align: center;
   }
+
   ul {
     padding-left: 10px;
   }
+  
   h2 {
     color: red;
   }

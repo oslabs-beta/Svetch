@@ -1,6 +1,7 @@
 <script context='module'>
-  let onTop; //keeping track of which open modal is on top
-  const modals = {}; //all modals get registered here for easy future access
+  //keeping track of which open modal is on top
+  let onTop; 
+  const modals = {};
 
   //  returns an object for the modal specified by `id`, which contains the API functions (`open` and `close` )
   export function getModal(id = '') {
@@ -11,15 +12,15 @@
 <script>
   import { onDestroy } from 'svelte';
 
+  export let id = '';
+
   let topDiv;
   let visible = false;
   let prevOnTop;
   let closeCallback;
 
-  export let id = '';
-
   /**  API **/
-  function open(callback) {
+  const open = (callback) => {
     closeCallback = callback;
     if (visible) return;
     prevOnTop = onTop;
@@ -33,7 +34,7 @@
     document.body.appendChild(topDiv);
   }
 
-  function close(retVal) {
+  const close = (retVal) => {
     if (!visible) return;
     onTop = prevOnTop;
     if (onTop == null) document.body.style.overflow = '';
@@ -76,6 +77,7 @@
     align-items: center;
     justify-content: center;
   }
+
   #modal {
     position: relative;
     border-radius: 6px;

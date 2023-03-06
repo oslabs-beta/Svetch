@@ -1,9 +1,11 @@
-export async function post({ request }) {
-    
+// eslint-disable-next-line import/prefer-default-export
+export async function post() {
+  const expiry = new Date(Date.now() - 3600).toUTCString();
   return {
     status: 200,
     headers: {
-      'set-cookie': `state='';path=/; HttpOnly; Max-Age=0`
-    } 
-  }
+      location: '/',
+      'set-cookie': `state='';path=/; HttpOnly; expires=${expiry}`,
+    },
+  };
 }

@@ -34,6 +34,7 @@ const getUser = async (token) => {
   return response.data;
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export async function get(request) {
   // get code from Github
   const code = request.url.searchParams.get('code');

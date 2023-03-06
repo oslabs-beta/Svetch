@@ -1,83 +1,155 @@
 import { canvas } from '../store';
 
 export default {
-  create: (component) => {
+  
+  // create method contains reference to this, cannot use arrow fn syntax
+  create(component) {
+    // Store id and type from component object
+    const { id, type } = component;
+
+    // NOTE: this keyword relies on arrow syntax here (refers to context of 'create' call, not 'update' call)
     canvas.update((cStore) => {
-      // determine parent key
-      const parentId = component.parent ? component.parent.id : 'index';
-      // add component as child
-      cStore[parentId].children.push(component.id);
-      // create child key in the store and assign default obj
-      cStore[component.id] = { children: [], scriptId: component.type, component };
-      // return updated store
+      // Update the component's parent
+      this.updateParent(component);
+
+      // Create child key in the store and assign default obj
+      cStore[id] = { children: [], scriptId: type, component };
+
+      // Return updated store
       return cStore;
     });
   },
-  removeParent: (component) => {
+
+  removeParent: ({ id, parent }) => {
+    // Update the canvas store
     canvas.update((cStore) => {
-      // determine parent key
-      const parentId = component.parent ? component.parent.id : 'index';
-      // index of component in children array
-      const index = cStore[parentId].children.indexOf(component.id);
-      // remove target
+      // Store parent key
+      const parentId = parent ? parent.id : 'index';
+
+      // Store index of component in children array
+      const index = cStore[parentId].children.indexOf(id);
+
+      // Remove target element (child id)
       cStore[parentId].children.splice(index, 1);
-      // return updated store
+
+      // Return updated store
       return cStore;
     });
   },
-  updateParent: (component) => {
+
+  updateParent: ({ id, parent }) => {
+    // Update the canvas store
     canvas.update((cStore) => {
-      // determine parent key
-      const parentId = component.parent ? component.parent.id : 'index';
-      // add component as a child
-      cStore[parentId].children.push(component.id);
-      // return updated store
+      // Store parent key
+      const parentId = parent ? parent.id : 'index';
+
+      // Add component as a child
+      cStore[parentId].children.push(id);
+
+      // Return updated store
       return cStore;
     });
   },
-  delete: (component) => {
+
+  // delete method contains reference to this, cannot use arrow fn syntax
+  delete({ id, parent }) {
+    // Update the canvas store
     canvas.update((cStore) => {
-      // determine parent key
-      const parentId = component.parent ? component.parent.id : 'index';
-      // determine component index in children array
-      const index = cStore[parentId].children.indexOf(component.id);
-      // remove the child
-      cStore[parentId].children.splice(index, 1);
-      // add grandchildren to parent (making them children)
-      const grandChildren = cStore[component.id].children;
-      // update each grandchild component rect to new parent component rect
+      // Store parent key
+      const parentId = parent ? parent.id : 'index';
+
+      // Remove child from parent component
+      this.removeParent({id, parent});
+
+      // Add grandchildren to parent (making them children)
+      const grandChildren = cStore[id].children;
+
+      // Update each grandchild component rect to new parent component rect
       grandChildren.forEach((grandChildId) => {
         cStore[grandChildId].component.parent = (cStore[parentId].component || null);
       });
-      // add the grandchildren to the children array
+
+      // Add the grandchildren to the children array
       cStore[parentId].children.push(...grandChildren);
-      // delete the component
-      delete cStore[component.id];
-      // return the store
+
+      // Delete the component
+      delete cStore[id];
+
+      // Return the store
       return cStore;
     });
   },
-  parse: (component, exporting = false) => {
+
+  parse: () => {
+    // Declare variable to hold canvas store data
     let canvasStore;
+
+    // Store unsubscribe method, and update value of canvasStore
     const unsubscribe = canvas.subscribe((val) => { canvasStore = val; });
+
+    // Unsubscribe from store to prevent changing the data
     unsubscribe();
 
-    const components = [];
-    const queue = [component];
-
-    while (queue.length) {
-      const storeKey = queue.shift();
-      const { children } = canvasStore[storeKey];
-
-      for (let i = 0; i < children.length; i += 1) {
-        const childId = children[i];
-        if (exporting) queue.push(childId);
-        components.push(canvasStore[childId].component);
-      }
-    }
-    return components;
+    // Return a new an array of components, filter out index
+    return Object.values(canvasStore)
+      .filter((element, index) => index !== 0)
+      .map(({ component }) => component);
   },
+
+  createTree: () => {
+    // Declare variable to hold canvas store data
+    let cStore;
+
+    // Store unsubscribe method, and update value of canvasStore
+    const unsubscribe = canvas.subscribe((val) => { cStore = val; });
+
+    // Unsubscribe from store to prevent changing the data
+    unsubscribe();
+
+  // Hash of components (deduplicated if duplicate components exist)
+    const map = new Map();
+
+    // Cache object used to store component name usage (number of times used)
+	  const cache = {
+      increment: function (key) {
+        this[key] = (this[key] || 0) + 1;
+        return this[key];
+      }
+	  };
+
+    // Define helper function to traverse children
+    const parseChildren = (id = 'index', path = '') => {
+      // Store component type or 'index'
+      const { type } = (cStore[id].component || { type: 'index'});
+
+      // Define name as component type, changes if component has children (and deduplication)
+      let componentName = type;
+      
+      // Define children array result of recursing over each child in canvas store
+      const children = cStore[id].children.map(child => parseChildren(child,`${path}_${type}`));
+  
+      // Generate hash string from children array (sort so hash is irrespective of insertion order)
+      const hash = children.map(({ name }) => name).sort().join('');
+      
+      // When current component is not index, and component has children
+      if (children.length && type !== 'index') {
+        // Update the component name to be `type_cache value` (incremented by one)
+        componentName = map.get(`${type}_${hash}`) || `${type}_${cache.increment(type)}`;
+
+        // Update components hash with object for this component
+        map.set(`${type}_${hash}`, componentName);
+      }
+      
+      // Return the component object
+      return { name: componentName, children, id };
+    };
+    
+    // Return the tree created from invoking helper function
+    return parseChildren();
+  },
+
   reset: () => {
+    // Define the default canvas store
     const defaultCanvas = {
       index: {
         children: [],
@@ -85,6 +157,8 @@ export default {
         counter: 0,
       },
     };
+
+    // Set the canvas store value to default
     canvas.set(defaultCanvas);
-  }
-}
+  },
+};

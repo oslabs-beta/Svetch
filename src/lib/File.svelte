@@ -1,5 +1,6 @@
 <script>
-  import { selectedComponent } from '../store.js'
+  import { selectedComponent } from '../store'
+
   export let name, id;
 </script>
   

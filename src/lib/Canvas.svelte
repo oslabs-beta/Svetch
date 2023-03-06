@@ -1,18 +1,19 @@
 <script>
-  import { onMount } from "svelte";
-  import { canvas, options, selectedComponent } from "../store.js";
-  import canvasUtility from "../utils/canvasUtility";
-  import fileUtility from "../utils/fileUtility.js";
+  import { onMount } from 'svelte';
+  import { canvas, options, selectedComponent } from '../store';
+  import canvasUtility from '../utils/canvasUtility';
+  import fileUtility from '../utils/fileUtility';
 
   export let state;
+
   let borderWidth = 1;
   let mounted = false;
-  let ctx;
-  let template;
   let moving = false;
   let selected = null;
   let resizing = false;
   let reset = false;
+  let ctx;
+  let template;
 
   class Rect {
     constructor(x, y, width, height, type, color) {
