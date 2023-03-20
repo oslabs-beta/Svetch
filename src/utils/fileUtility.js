@@ -1,172 +1,166 @@
 import axios from 'axios';
-import b64ToBlob from 'b64-to-blob';
-import fileSaver from 'file-saver';
-import JSZip from 'jszip';
-import { canvas } from '../store';
-import canvasUtility from './canvasUtility';
-import codeUtility from './codeUtility';
+import b64ToBlob from "b64-to-blob";
+import fileSaver from "file-saver";
+import JSZip from "jszip";
+import { canvas } from '../store.js';
 
-export default {
-  // parse method contains reference to this, cannot use arrow fn syntax
-  parse(tree) {
-    // Hash of files (deduplicated if duplicate components exist)
-    const files = new Map();
 
-    // Hash of components (ids map to appropriate values in files hash map)
-    const components = new Map();
+const fileUtility = {};
 
-    const parseChildren = ({ name, children, id }) => {
-      // Store string representing file content for current component
-      const content = codeUtility.process(children, id);
+fileUtility.parse = (component, exporting = false) => {
+	let canvasStore;
+	const unsubscribe = canvas.subscribe((val) => canvasStore = val);
+	unsubscribe();
+	const fileMap = new Map();
+	const queue = [ component ];
+	const nameCache = {};
 
-      // Parse all children
-      children.forEach((child) => parseChildren(child));
+	while (queue.length) {
+		const storeKey = queue.shift();
+		const current = canvasStore[storeKey];
+		const name = current.scriptId;
 
-      // If not a saved object from map (or undefined)
-      if (!files.get(name)) {
-        // Update files hash with object for this component (id used in createFileTree method)
-        files.set(name, {
-          name,
-          children,
-          content,
-          id,
-        });
-      }
+		let fileName = storeKey === 'index' ? storeKey : name;
+		let fileText = `<script>IMPORTS</script>\n\n${name === 'main' ? '<main>' : ''}COMPONENTS${name === 'main' ? '</main>' : ''}\n\n<style>\n\n</style>`;
 
-      // Update component hash with reference to file obejct for this id
-      components.set(id, name);
-    };
+		const importMap = new Map();
+		const components = [];
+		const childNameCache = {};
 
-    // Call helper function to assign files and components hash values
-    parseChildren(tree);
+		current.children.forEach((child, index) => {
+			let childName = canvasStore[child].scriptId;
+			if (index === 0) nameCache[name] = (nameCache[name] || 0) + 1;
+			if (fileName !== 'index') fileName = `${name}_${nameCache[name]}`;
+			if (exporting) queue.push(child);
+			if (canvasStore[child].children.length) {
+				childNameCache[childName] = (childNameCache[childName] || 0) + 1;
+				childName = `${childName}_${childNameCache[childName]}`;
+			}
+			childName = fileUtility.formatName(childName);
+			if (!importMap.has(childName)) importMap.set(childName, `import ${childName} from '../lib/${childName}.svelte'`);
+			components.push(`<${childName} />`);
+		});
 
-    // Return new object containing both hashes
-    return { files, components };
-  },
+		const imports = [];
+		importMap.forEach((value) => {
+			imports.push(value);
+		});
+		const importsStr = '\n\t' + imports.join('\n\t') + '\n';
+		let componentsStr;
+		if (name === 'main') componentsStr = '\n\t' + components.join('\n\t') + '\n';
+		else if (!components.length) componentsStr = '<!-- Enter your HTML here -->';
+		else componentsStr = components.join('\n');
+		if (fileName !== 'index') fileName = fileUtility.formatName(fileName);
 
-  // createFileTree method contains reference to this, cannot use arrow fn syntax
-  createFileTree() {
-    // Define `lib` folder object
-    const libFolder = {
-      name: 'lib',
-      children: [],
-    };
+		fileText = fileText
+			.replace('IMPORTS', importsStr)
+			.replace('COMPONENTS', componentsStr);
+		if (!fileMap.has(fileName)) fileMap.set(fileName, { fileText, id: storeKey });
+	}
+	const files = [];
+	fileMap.forEach(({ fileText, id }, key) => {
+		files.push({ name: key, data: fileText, id });
+	});
+	return files;
+}
 
-    // Define `routes` folder object, which contains index
-    const routesFolder = {
-      name: 'routes',
-      children: [{ name: 'index', id: 'index' }],
-    };
+fileUtility.createFileTree = () => {
+	const fileDirectory = {
+		name: 'src',
+		children: []
+	};
+	fileDirectory.children.push({ name: 'routes', children: [{ name: 'index', id: 'index' }] });
+	const files = fileUtility.parse('index', true);
+	const lib = { name: 'lib', children: [] }
+	if (files.length > 1) fileDirectory.children.push(lib);
+	files.shift();
+	const queue = files;
+	while (queue.length) {
+		const { name, id } = queue.shift();
+		lib.children.push({ name, id });
+	}
+	return fileDirectory;
+}
 
-    // Define file tree return object
-    const fileTree = {
-      name: 'src',
-      children: [routesFolder],
-    };
+fileUtility.sort = files => {
+	const sortFiles = (a, b) => {
+		if (a.children && !b.children) {
+			a.children.sort(sortFiles);
+			return -1
+		}
+		if (b.children && !a.children) {
+			b.children.sort(sortFiles);
+			return 1
+		}
+		if (a.name < b.name) return -1;
+		if (b.name < a.name) return 1;
+		return 0;
+	}
+	return files.sort(sortFiles);
+}
 
-    // Store tree created from current canvas
-    const tree = canvasUtility.createTree();
+fileUtility.formatName = name => {
+	return name.toLowerCase()
+		.split(' ')
+		.map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+		.join('');
+}
 
-    // Iterate over the files hash, filter out index, return name & id for each
-    libFolder.children = [...this.parse(tree).files.values()]
-      .filter(({ name }) => name !== 'index')
-      .map(({ name, id }) => ({ name, id }));
+fileUtility.createFile = (canvasUpdate = null) => {
+	// If updates needed, update canvas store from argument
+	if (canvasUpdate) canvas.set(JSON.parse(canvasUpdate).canvas);
+	
+	// Get file template objects frome the parse method
+	const filesTemplates = fileUtility.parse('index', true);
 
-    // If lib folder has children, then add it to the file tree object
-    if (libFolder.children) fileTree.children.push(libFolder);
+	// Create a new array of file objects from the file templates
+	const files = filesTemplates.map(template => {
+		// Store the name and data from the template
+		const { name, data } = template;
 
-    // Return the file tree object
-    return fileTree;
-  },
+		// Index file is stored in routes folder, all others stored in lib 
+		const folder = name === 'index' ? 'src/routes' : 'src/lib';
 
-  sort: (files) => {
-    // Custom sort method
-    const sortFiles = (a, b) => {
-      // Sort a's children if they exist (key may not exist)
-      if (a.children) a.children.sort(sortFiles);
+		// Return the file-like object
+		return { relativePath: `${folder}/${name}.svelte`, fileContent: data }
+	});
 
-      // Sort b's children if they exist (key may not exist)
-      if (b.children) b.children.sort(sortFiles);
+	// Return the array of file obejcts
+	return files;
+}
 
-      // Use default sort on names (order before)
-      if (a.name < b.name) return -1;
+fileUtility.downloadFiles = async (projectName = 'example-skeleton') => {
+	// Get the user's protoyped component data
+	const files = fileUtility.createFile();
 
-      // Use default sort on names (order after)
-      if (a.name > b.name) return 1;
+	// Store new JSZip instance
+	const zip = new JSZip();
 
-      // Return 0 if default sort logic does not apply
-      return 0;
-    };
-    return files.sort(sortFiles);
-  },
+	// Iterate through the file data and add each to the JSZip instance
+	for (const { relativePath, fileContent } of files) {
+		// Store the file content after converting it to a Uint8Array
+		zip.file(`${relativePath}`, Uint8Array.from(fileContent, x => x.charCodeAt(0)));
+	}
 
-  // Format name to be PascalCase
-  formatName: (name) => name
-    .toLowerCase()
-    .split(' ')
-    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-    .join(''),
+	// Get the static project files from the api
+	const projectFiles = await axios.get('api/projectFiles')
+		.then(({ data }) => JSON.parse(data)).then(({ zippedFiles }) => zippedFiles);
+	
+	// Add the static files to the  JSZip instance
+	await zip.loadAsync(projectFiles, { base64: true });
 
-  // createFiles method contains reference to this, cannot use arrow fn syntax
-  createFiles(_canvasUpdate = null) {
-    // If updates needed, update canvas store from argument
-    if (_canvasUpdate) canvas.set(JSON.parse(_canvasUpdate).canvas);
+	// Store the JSZip data as a base64 string
+	const zipAsBase64 = await zip.generateAsync({ type: "base64" });
 
-    // Store tree from latest canvas version
-    const tree = canvasUtility.createTree();
+	// Create and store a blob from the base64 string
+	const blob = b64ToBlob(zipAsBase64, "application/zip");
 
-    // Get files hash map from the parse method
-    const hash = this.parse(tree).files;
+	// Use the fileSaver to present the file for download in the browser window
+	fileSaver.saveAs(blob, `${projectName}.zip`);
+}
 
-    // Create an array of file-like objects from the files hash map
-    const files = [...hash.values()].map(({ name, content }) => {
-      // Index file is stored in 'routes' folder, all others stored in 'lib'
-      const folder = name === 'index' ? 'src/routes' : 'src/lib';
-
-      // Create path-like string representing a relative path
-      const path = `${folder}/${name}.svelte`;
-
-      // Return the file-like object
-      return { path, content };
-    });
-
-    // Return the array of file obejcts
-    return files;
-  },
-
-  async downloadProject(_name = 'Svetch-Project') {
-    // Get the user's protoyped component data
-    const files = this.createFiles();
-
-    // Store new JSZip instance
-    const zip = new JSZip();
-
-    // Iterate through the file data and add each to the JSZip instance
-    files.forEach(({ path, content }) => {
-      // Store the file content after converting it to a Uint8Array
-      zip.file(`${path}`, Uint8Array.from(content, (x) => x.charCodeAt(0)));
-    });
-
-    // Get the static project files from the api
-    const projectFiles = await axios.get('api/projectFiles')
-      .then(({ data }) => JSON.parse(data)).then(({ zippedFiles }) => zippedFiles);
-
-    // Add the static files to the  JSZip instance
-    await zip.loadAsync(projectFiles, { base64: true });
-
-    // Store the JSZip data as a base64 string
-    const zipAsBase64 = await zip.generateAsync({ type: 'base64' });
-
-    // Create and store a blob from the base64 string
-    const blob = b64ToBlob(zipAsBase64, 'application/zip');
-
-    // Use the fileSaver to present the file for download in the browser window
-    fileSaver.saveAs(blob, `${_name}.zip`);
-  },
-
-  deleteCookie: () => {
-    // Make post request to remove state cookie
-    axios.post('/deleteCookie');
-  },
-
-};
+fileUtility.deleteCookie = () => {
+	axios.post('/deleteCookie');
+}
+ 
+export default fileUtility;

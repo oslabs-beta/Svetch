@@ -1,43 +1,31 @@
 import * as cookie from 'cookie';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export async function handle({ event, resolve }) {
-  // Before each request, get the cookies
+  // before each request, get the cookies
   const cookies = cookie.parse(event.request.headers.get('cookie') || '');
 
-  // Store reference to the locals object
-  const { locals } = event;
+  // update the stored user to be the value of the user cookie
+  event.locals.user = cookies.user;
+  event.locals.sessionId = cookies.session_id;
+  event.locals.state = cookies.state;
 
-  // Update the stored user to be value of the associated cookie
-  locals.user = cookies.user;
-
-  // Update the stored session id to be value of associated cookie
-  locals.sessionId = cookies.session_id;
-
-  // Process the HTTP request
+  
+  // process the HTTP request
   const response = await resolve(event);
-
-  // Add the user cookie to the response
-  response.headers.append('set-cookie', `user=${locals.user || ''};path=/; HttpOnly`);
-
-  // Add the session cookie to the response
-  response.headers.append('set-cookie', `session_id=${locals.sessionId || uuidv4()};path=/; HttpOnly; sameSite=lax`);
-
-  // Return the response object
+  
+  // add the cookie to the response
+  response.headers.append('set-cookie', `user=${event.locals.user || ''};path=/; HttpOnly`)
+  response.headers.append('set-cookie', `session_id=${event.locals.sessionId || uuidv4()};path=/; HttpOnly; sameSite=lax`)
+  
   return response;
 }
 
-/**
- * Expose session pieces of state to the client:
- * @note Exposed on client-side (DO NOT store secure info in function body)
- * @param {string} locals destructured from event object
- * @returns {object} contains user and state data from event object
- */
-
-export async function getSession({ locals }) {
-  // Return user and state values from request event object
+export async function getSession(event) {
+  // client-side exposed information (do not store secure info here)
+  
   return {
-    user: locals.user,
-    state: locals.state,
-  };
+    user: event.locals.user,
+    state: event.locals.state
+  }
 }

@@ -11,7 +11,6 @@
 
 <script>
 	import Header from '../lib/Header.svelte';
-
 	export let user;
 </script>
 
@@ -22,9 +21,9 @@
 <slot />
 
 <style>
-	header {
-		display:flex;
-		justify-content: space-between;
-		grid-column: 1 / 5;
-	}
+header {
+  display:flex;
+  justify-content: space-between;
+  grid-column: 1 / 5;
+}
 </style>

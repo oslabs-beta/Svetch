@@ -1,44 +1,26 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import { canvas } from '../store.js';
 
-// Store the target of OAuth request
+
 const target = 'https://github.com/login/oauth/authorize';
-
-// Obtain clientID from env variables
 const clientID = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID;
 
-// eslint-disable-next-line import/prefer-default-export
-export async function get({ url }) {
-  // Store search params from incoming url object
-  const { searchParams } = url;
 
-  // Store state string from search params
-  const state = searchParams.get('state');
+export async function get(request) {
+  const sessionID = uuidv4();
+  const state = request.url.searchParams.get('state');
+  const repoName = request.url.searchParams.get('repoName');
+  const parsedState = JSON.parse(state);
+  canvas.set(parsedState.canvas);
 
-  // Store repoName string if it exists as a serach param
-  const repoName = searchParams.get('repoName');
-
-  // Store the application URI for redirect URL
-  const redirectURI = 'https://app.svetch.io/callback';
-
-  // Define the OAuth scope to be requested
-  const OAuthScope = 'scope=repo%20read:user%20user:email';
-
-  // Define the OAuth state string
-  const OAuthState = `state=${uuidv4()}`;
-
-  // Construct search params string from repoName, OAuthScope and OAuthState
-  const redirectParams = `${repoName
-    ? `?repoName=${repoName}`
-    : ''}&${OAuthScope}&${OAuthState}`;
-
-  // Construct complete redirectURL
-  const redirectURL = `${target}?client_id=${clientID}&redirect_uri=${redirectURI}/${redirectParams}`;
-
+  const redirectURL = `${target}?client_id=${clientID}&redirect_uri=https://app.svetch.io/callback/${repoName ? `?repoName=${repoName}` : ''}&scope=repo%20read:user%20user:email&state=${sessionID}`
+  
+  
   return {
     status: 302,
     headers: {
       location: redirectURL,
-      'set-cookie': `state=${state};path=/; HttpOnly`,
-    },
-  };
+      'set-cookie': `state=${state};path=/; HttpOnly`
+    }
+  }
 }
