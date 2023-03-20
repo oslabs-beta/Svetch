@@ -53,7 +53,7 @@ export async function get(request) {
   if (repoName) {
     await axios({
       method: 'post',
-      url: 'https://app.svetch.io/exportProject',
+      url: 'https://svetch.vercel.app/exportProject',
       data: {
         token,
         user,
