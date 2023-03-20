@@ -23,6 +23,7 @@
 
   let toggled = false;
   let code;
+  let name;
   let treeHeight;
 
   $: {
@@ -31,12 +32,13 @@
     const { components, files } = fileUtility.parse(tree);
     const key = components.get($selectedComponent);
     code = files.get(key).content;
+    name = `${key}.svelte`
   }
 
 </script>
 
 <section class="elementsPanel">
-  <Elements /><br>
+  <Elements />
 </section>
 <section class="visualizerPanel" bind:clientHeight={treeHeight}>
   <div id = "switch">
@@ -49,8 +51,7 @@
   {/if}
 </section>
 <section class="codeBlockPanel">
-  <br>
-  <CodeBlock code={code}/>
+  <CodeBlock code={code} fileName={name}/>
 </section>
 <section class="fileDirectoryPanel">
   <Directory />
@@ -61,45 +62,47 @@
     grid-area: 2 / 1 / 4 / 2;
     padding-left: 10px;
     padding-right: 10px;
-    height: 100%;
+    overflow: hidden; 
+    background-color: #B0B8BF;
+    color: #001829;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #003659;
   }
 
   .visualizerPanel {
     grid-area: 2 / 2 / 3 / 5;
-    box-shadow: 5px 5px 4px #003659;
-    background-color: #7E858C;
+    background-color: #282b2e;
   }
 
   .codeBlockPanel {
     grid-area: 3 / 2 / 4 / 4;
-    background: #292929;
-    overflow: scroll;
+    background: #282b2e;
+    overflow: hidden;
+    padding-right: 0.75rem;
+    padding-left: 1rem;
+    position: relative;
   }
 
   #switch{
     right: 2vw;
+    top: 2vw;
     position: absolute;
   }
 
   section {
     background: #6B737B; 
     color: #fefefe;
-    border: 1px solid #003659;
-    border-radius: 20px;
-    box-shadow: 5px 5px 4px #003659;
+    border: 1px solid #00274C;
+    border-radius: 12px;
   }
 
   .fileDirectoryPanel {
     grid-area: 3 / 4 / 4 / 4;
-    padding-top: 15px;
-    padding-left: 30px;
-    box-shadow: 5px 5px 4px #003659;
-    overflow: hidden;
-    overflow-y: scroll;
-  }
-
-  .elementsPanel {
-    box-shadow: 5px 5px 4px #003659;
-    overflow: hidden; 
+    padding: 2rem;
+    overflow-y: auto;
+    background-color: #282b2e;
+    color: #d7dce0;
+    position: relative;
   }
 </style>

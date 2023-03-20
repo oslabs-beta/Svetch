@@ -4,6 +4,7 @@ import fileSaver from 'file-saver';
 import JSZip from 'jszip';
 import { canvas } from '../store';
 import canvasUtility from './canvasUtility';
+import codeUtility from './codeUtility';
 
 export default {
   // parse method contains reference to this, cannot use arrow fn syntax
@@ -16,7 +17,7 @@ export default {
 
     const parseChildren = ({ name, children, id }) => {
       // Store string representing file content for current component
-      const content = this.generateContentString(children, id === 'index');
+      const content = codeUtility.process(children, id);
 
       // Parse all children
       children.forEach((child) => parseChildren(child));
@@ -41,36 +42,6 @@ export default {
 
     // Return new object containing both hashes
     return { files, components };
-  },
-
-  generateContentString: (children, isIndex) => {
-    // If no elements are passed, file will not have html content (noContent = true)
-    const noContent = !children.length;
-
-    // Store component names in new array
-    const components = children.map(({ name }) => `<${name} />`);
-
-    // Declare variable to store html string, default value of one component per line
-    let htmlString = `${components.join('\n')}`;
-
-    // If file is 'Index' and no content (noContent = true), overwrite html string
-    if (isIndex && noContent) htmlString = '<main>\n\n</main>';
-
-    // Else, if file is 'Index', wrap default html string in main tags
-    else if (isIndex) htmlString = `<main>\n\t${components.join('\n\t')}\n<main>`;
-
-    // Else, if no content (and not file is not 'Index'), html string is a comment
-    else if (noContent) htmlString = '<!-- Enter your HTML here -->';
-
-    // Create an array of import statements (as strings)
-    const imports = new Set(children
-      .map(({ name }) => `import ${name} from '../lib/${name}.svelte'`));
-
-    // Define imports string to be indented statments (one per line)
-    const importsString = `\n\t${[...imports].join('\n\t')}\n`;
-
-    // Return string with tags: script, html tags (from html string), style
-    return `<script>${importsString}</script>\n\n${htmlString}\n\n<style>\n\n</style>`;
   },
 
   // createFileTree method contains reference to this, cannot use arrow fn syntax
@@ -98,7 +69,7 @@ export default {
 
     // Iterate over the files hash, filter out index, return name & id for each
     libFolder.children = [...this.parse(tree).files.values()]
-      .filter(({ name }) => name !== 'Index')
+      .filter(({ name }) => name !== 'index')
       .map(({ name, id }) => ({ name, id }));
 
     // If lib folder has children, then add it to the file tree object
@@ -150,7 +121,7 @@ export default {
     // Create an array of file-like objects from the files hash map
     const files = [...hash.values()].map(({ name, content }) => {
       // Index file is stored in 'routes' folder, all others stored in 'lib'
-      const folder = name === 'Index' ? 'src/routes' : 'src/lib';
+      const folder = name === 'index' ? 'src/routes' : 'src/lib';
 
       // Create path-like string representing a relative path
       const path = `${folder}/${name}.svelte`;

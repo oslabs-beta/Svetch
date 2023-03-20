@@ -77,20 +77,19 @@
     align-items: center;
     justify-content: center;
   }
-
   #modal {
     position: relative;
     border-radius: 6px;
     background: white;
     border: 2px solid #000;
-    filter: drop-shadow(5px 5px 5px #555);
+    filter: drop-shadow(5px 5px 5px #836e60);
     padding: 1em;
+    margin-bottom: 12rem;
+    margin-left: 12px;
   }
-
   .visible {
     visibility: visible !important;
   }
-
   #close {
     position: absolute;
     top: -12px;
@@ -98,14 +97,12 @@
     width: 24px;
     height: 24px;
     cursor: pointer;
-    fill: #f44;
+    fill: #EB4748;
     transition: transform 0.3s;
   }
-
   #close:hover {
     transform: scale(2);
   }
-
   #close line {
     stroke: #fff;
     stroke-width: 2;
@@ -114,5 +111,9 @@
     max-width: calc(100vw - 20px);
     max-height: calc(100vh - 20px);
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
+  
 </style>

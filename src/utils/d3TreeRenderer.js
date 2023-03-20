@@ -3,13 +3,18 @@ import { tree, hierarchy, select, linkHorizontal } from 'd3';
 export default {
 
   render: (data, el, width) => {
-    const margin = { top: 50, right: 50, bottom: 50, left: 55};
+    const margin = { top: 50, right: 50, bottom: 50, left: 55 };
+
     let depth = 0;
-    const linkLayout = linkHorizontal().x(d => d.y).y(d => d.x)
+
+    const linkLayout = linkHorizontal()
+      .x(d => d.y)
+      .y(d => d.x);
+
     const svg = select(el)
-    .attr("viewBox", [-margin.left, -margin.top, width, 10])
-    .style("font", "16px sans-serif")
-    .style("user-select", "none");
+      .attr("viewBox", [-margin.left, -margin.top, width, 10])
+      .style("font", "16px sans-serif")
+      .style("user-select", "none");
     
     const root = hierarchy(data);
     
@@ -21,8 +26,11 @@ export default {
     });
     
     let dy = width / depth;
+
     let dx = 50;
+
     root.x0 = 15;
+
     root.y0 = 0;
 
     const gLink = svg.append("g")
@@ -37,15 +45,20 @@ export default {
 
     const update = (source) => {
       const duration = 250;
+
       const nodes = root.descendants().reverse();
+
       const links = root.links();
 
       // Compute the new tree layout.
-      const newTree = tree().nodeSize([dx, dy])
+      const newTree = tree().nodeSize([dx, dy]);
+      
       newTree(root);
 
       let left = root;
+
       let right = root;
+
       root.eachBefore(node => {
         if (node.x < left.x) left = node;
         if (node.x > right.x) right = node;
@@ -124,6 +137,7 @@ export default {
         d.y0 = d.y;
       });
     }
+
     update(root);
   }
 };

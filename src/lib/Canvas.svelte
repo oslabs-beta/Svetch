@@ -12,6 +12,8 @@
   let selected = null;
   let resizing = false;
   let reset = false;
+  let offsetX = -20;
+  let offsetY = -20;
   let ctx;
   let template;
 
@@ -39,8 +41,7 @@
     drawLabel(ctx, font, x, y, maxWidth) {
       ctx.font = font;
       ctx.fillStyle = `${this.color}`;
-      ctx.fillText(this.type, x, y, maxWidth);
-      ctx.fillStyle = "black";
+      ctx.fillText(this.type, x + 4.5, y, maxWidth);
     }
   }
 
@@ -49,6 +50,12 @@
       super(x, y, width, height, type, color);
       this.parent = null;
       this.id = id;
+    }
+    addGlow(ctx) {
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 10;
+      ctx.strokeStyle = this.color;
+      ctx.strokeRect(this.x, this.y, this.width, this.height);
     }
     containsRect(rect) {
       return (
@@ -60,10 +67,12 @@
     }
     draw(ctx) {
       super.draw(ctx);
+      ctx.beginPath();
+      ctx.shadowBlur = 0;
       super.drawLabel(
         ctx,
         "20px serif",
-        this.x + 2,
+        this.x,
         this.y + 20,
         this.width - 20
       );
@@ -71,32 +80,33 @@
       this.drawResizeTab(ctx);
     }
     drawDeleteTab(ctx) {
-      ctx.strokeRect(this.x + this.width - 15, this.y, 15, 15);
-      ctx.fillStyle = "red";
+      ctx.strokeRect(this.x + this.width - 20, this.y, 20, 20);
+      ctx.fillStyle = '#282b2e';
+      ctx.fillRect(this.x + this.width - 18, this.y + 2, 16, 16);
+      ctx.fillStyle = "#FA2B2E";
       ctx.font = "10px";
-      ctx.fillText("X", this.x + this.width - 15, this.y + 15);
-      ctx.fillStyle = "black";
+      ctx.fillText("X", this.x + this.width - 17, this.y + 17);
     }
     drawResizeTab(ctx) {
-      const x = this.x + this.width - 10;
-      const y = this.y + this.height - 10;
-      ctx.fillStyle = "black";
-      ctx.fillRect(x, y, 10, 10);
+      const x = this.x + this.width - 12;
+      const y = this.y + this.height - 12;
+      ctx.fillStyle = "#E9ECEE";
+      ctx.fillRect(x, y, 12, 12);
     }
     resizeTabContains(x, y) {
       return (
-        x >= this.x + this.width - 10 &&
+        x >= this.x + this.width - 12 &&
         x <= this.x + this.width &&
-        y >= this.y + this.height - 10 &&
+        y >= this.y + this.height - 12 &&
         y <= this.y + this.height
       );
     }
     deleteTabContains(x, y) {
       return (
-        x >= this.x + this.width - 15 &&
+        x >= this.x + this.width - 20 &&
         x <= this.x + this.width &&
         y >= this.y &&
-        y <= this.y + 15
+        y <= this.y + 20
       );
     }
   }
@@ -109,17 +119,18 @@
     }
   }
 
-  $: {
-    if ($canvas.index.children.length > 0) reset = true;
-  }
+  // $: {
+  //   if ($canvas.index.children.length > 0) reset = true;
+  // }
 
   $: {
-    if ($canvas.index.children.length === 0 && mounted && reset) {
+    if ($canvas.index.children.length === 0 && mounted) {
       clear();
       drawDots();
       clearButtons();
-      reset = false;
+      // reset = false;
       drawMenu($options);
+      drawComponents();
     }
   }
   //Takes in an array of boxes and draws them to the canvas
@@ -127,10 +138,11 @@
   //Should be called whenever box coordinates or sizes change
 
   const drawComponents = () => {
-    const components = canvasUtility.parse("index", true);
+    const components = canvasUtility.parse();
     clear();
     drawDots();
     components.forEach((rect) => {
+      if (rect === selected) rect.addGlow(ctx)
       rect.draw(ctx);
     });
   };
@@ -167,10 +179,16 @@
   };
 
   const drawMenu = () => {
-    ctx.strokeStyle = "black";
-    ctx.moveTo(200, 0);
-    ctx.lineTo(200, template.height);
-    ctx.stroke();
+    ctx.beginPath();
+    ctx.shadowBlur = 0;
+    // ctx.moveTo(200, 0);
+    // ctx.lineTo(200, template.height);
+    ctx.strokeStyle = '#d7dce0';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(200, 0, 1, template.height);
+    // ctx.strokeStyle = "#d7dce0";
+    // ctx.strokeRect(200, 0, 1, template.height);
+    // ctx.stroke();
 
     for (let i = 0; i < $options.length; i++) {
       const rect = new Rect(...Object.values($options[i]));
@@ -178,30 +196,31 @@
       rect.drawLabel(ctx, "30px serif", rect.x, rect.y + 35, 150);
       let contains = false;
       for (let key in $canvas) {
-        if (rect.type === $canvas[key].scriptId) {
+        if (rect.type === $canvas[key].type) {
           contains = true;
         }
         if (contains == true) break;
       }
       if (contains == false) {
-        ctx.strokeRect(rect.x + rect.width - 15, rect.y, 15, 15);
-        ctx.fillStyle = "red";
+        ctx.strokeRect(rect.x + rect.width - 20, rect.y, 20, 20);
+        ctx.fillStyle = "#FA2B2E";
         ctx.font = "1px";
-        ctx.fillText("x", rect.x + rect.width - 15, rect.y + 15);
-        ctx.fillStyle = "black";
+        ctx.fillText("x", rect.x + rect.width - 17, rect.y + 17);
         rect.deletable = true;
       }
     }
   };
 
   const drawDots = () => {
+    ctx.beginPath();
+    ctx.shadowBlur = 0;
     const r = 1,
       cw = 18,
       ch = 18;
 
-    for (let x = 200; x < template.width; x += cw) {
-      for (let y = 20; y < template.height; y += ch) {
-        ctx.fillStyle = "#000000";
+    for (let x = 218; x < template.width; x += cw) {
+      for (let y = 18; y < template.height; y += ch) {
+        ctx.fillStyle = "#d7dce0";
         ctx.fillRect(x - r / 2, y - r / 2, r, r);
       }
     }
@@ -236,6 +255,25 @@
     //EVENT LISTENERS
 
     template.addEventListener("wheel", (e) => {
+      const scroll = (scale) => {
+        for (let i = 0; i < $options.length; i++) {
+              $options[i].y -= e.deltaY * scale;
+          }
+      };
+
+      const scrollToTop = () => {
+        for (let i = 0; i < $options.length; i++) {
+            $options[i].y = 20 + (i * 60);
+          }
+      };
+
+      const scrollToBottom = () => {
+        for (let i = 0; i < $options.length; i++) {
+            const index = $options.length - i;
+            $options[i].y = template.height - 10 - ($options.length - i) * 60;
+          }
+      };
+    
       if ($options.length) {
         let outOfFrame;
         let topOfFirstButton = $options[0].y;
@@ -247,17 +285,10 @@
           ? (outOfFrame = true)
           : (outOfFrame = false);
         if (e.offsetX < 200 && outOfFrame) {
-          let j = $options.length;
-          for (let i = 0; i < $options.length; i++) {
-            if ($options[0].y > 25) {
-              $options[i].y = 20 + i * 60;
-            } else if (bottomOfLastButton < template.height - 20) {
-              $options[i].y = template.height - 10 - j * 60;
-              j--;
-            } else {
-              $options[i].y -= e.deltaY * 0.5;
-            }
-          }
+          e.preventDefault();
+          if (e.deltaY < 0 && topOfFirstButton >= 20) scrollToTop();
+          else if (e.deltaY > 0 && bottomOfLastButton <= template.height - 20) scrollToBottom();
+          else scroll(0.5);
         }
       }
     });
@@ -274,7 +305,7 @@
       let x = e.offsetX;
       let y = e.offsetY;
 
-      const components = canvasUtility.parse("index", true);
+      const components = canvasUtility.parse();
 
       // Check all components to see if they contain x,y coordinate of mouse event
       for (let i = 0; i < components.length; i++) {
@@ -282,23 +313,29 @@
         if (rect.contains(x, y)) {
           selected = rect;
           $selectedComponent = selected.id;
-          template.style.cursor = "none";
+          template.style.cursor = "move";
           moving = true;
         }
       }
+
       if (selected && selected.resizeTabContains(x, y)) {
         moving = false;
         resizing = true;
-        template.style.cursor = "none";
+        template.style.cursor = "nwse-resize";
         resize(e, selected);
       } else if (selected && selected.deleteTabContains(x, y)) {
         moving = false;
+        template.style.cursor = "default";
         canvasUtility.delete(selected);
         $selectedComponent = "index";
-        drawComponents();
         clearButtons();
         drawMenu();
-      } else if (!selected) $selectedComponent = "index";
+        drawComponents();
+      } else {
+        if (!selected) $selectedComponent = "index";
+        if (selected) selected.addGlow(ctx);
+        drawComponents()
+      }
     });
 
     //invokes move or resize on mouse movement only if a component is selected
@@ -312,7 +349,7 @@
       template.style.cursor = "default";
       //if moving or resizing, trigger conditional to check location of moved/rezized component
       if (moving || resizing) {
-        const componentsBefore = canvasUtility.parse("index", true);
+        const componentsBefore = canvasUtility.parse();
         const oldChildren = new Set();
         const newChildren = new Set();
         let newParent;
@@ -361,7 +398,7 @@
         canvasUtility.updateParent(selected);
 
         // redraw updated canvas
-        drawComponents();
+        // drawComponents();
       }
 
       moving = false;
@@ -375,7 +412,7 @@
           //logic that sees if button has componnet on convas, contains is true if it is
           let contains = false;
           for (let key in $canvas) {
-            if (rect.type === $canvas[key].scriptId) {
+            if (rect.type === $canvas[key].type) {
               contains = true;
             }
             if (contains == true) break;
@@ -383,10 +420,10 @@
           //logic to see if x on button is clicked
           if (
             contains == false &&
-            x >= rect.x + rect.width - 15 &&
+            x >= rect.x + rect.width - 20 &&
             x <= rect.x + rect.width &&
             y >= rect.y &&
-            y <= rect.y + 15
+            y <= rect.y + 20
           ) {
             $options.splice(i, 1);
             $options = $options;
@@ -398,16 +435,20 @@
             return;
           } else if (rect.contains(x, y)) {
             const id = "component" + $canvas.index.counter++;
+            offsetX += 20;
+            offsetY += 20;
+            if (offsetX + 500 > template.width) offsetX = 0;
+            if (offsetY + 200 > template.height) offsetY = 0;
             const newRect = new EditableRect(
-              300,
-              100,
+              300 + offsetX,
+              100 + offsetY,
               200,
               100,
               rect.type,
               rect.color,
               id
             );
-            const components = canvasUtility.parse("index", true);
+            const components = canvasUtility.parse();
 
             for (let i = 0; i < components.length; i++) {
               const rect = components[i];
@@ -416,9 +457,9 @@
             canvasUtility.create(newRect);
           }
         }
-        drawComponents();
         clearButtons();
         drawMenu();
+        drawComponents();
       }
     });
 

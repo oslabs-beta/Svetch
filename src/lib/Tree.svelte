@@ -26,9 +26,9 @@
 </div>
 
 <style>
-.center {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
+	.center {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
 </style>
