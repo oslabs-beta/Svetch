@@ -14,6 +14,9 @@ export async function handle({ event, resolve }) {
   // Update the stored session id to be value of associated cookie
   locals.sessionId = cookies.session_id;
 
+  // Update the stored state to be value of associated cookie
+  locals.state = cookies.state;
+
   // Process the HTTP request
   const response = await resolve(event);
 
