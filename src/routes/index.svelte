@@ -10,7 +10,7 @@
 
 <script>
   import Canvas from '../lib/Canvas.svelte'
-  import CodePreview from '../lib/CodePreview.svelte';
+  import CodeBlock from '../lib/CodeBlock.svelte';
   import Directory from '../lib/Directory.svelte';
   import Elements from "../lib/Elements.svelte";
   import Switch from '../lib/Switch.svelte';
@@ -51,7 +51,7 @@
   {/if}
 </section>
 <section class="codeBlockPanel">
-  <CodePreview code={code} fileName={name}/>
+  <CodeBlock code={code} fileName={name}/>
 </section>
 <section class="fileDirectoryPanel">
   <Directory />
