@@ -1,48 +1,22 @@
 <script>
-import { onMount } from 'svelte';
-import d3TreeRenderer from '../utils/d3TreeRenderer.js';
-import { canvas } from '../store.js';
+	import { onMount } from 'svelte';
+	import d3TreeRenderer from '../utils/d3TreeRenderer';
+	import canvasUtility from '../utils/canvasUtility';
 
 
-let el;
-let data;
-let width;
-export let height;
+	export let height;
 
-const parseCanvas= (component, name = 'index') => {
-	const current = {...$canvas[component]};
-	const data = {
-		name: name,
-		children: []
-	}
-	const childNameCache = {};
-	const children = current.children;
-	if (children) {
-		children.forEach(child => {
-			
-			let childName = $canvas[child].component.type;
+	let el;
+	let data;
+	let width;
 
-			if ($canvas[child].children.length) {
-				childNameCache[childName] = (childNameCache[childName] || 0) + 1; 
-				childName = `${childName}_${childNameCache[childName]}`;
-			}
-			data.children.push(parseCanvas(child, childName));
-		});
-	}
+	data = canvasUtility.createTree();
+	const renderTree = () => d3TreeRenderer.render(data, el, width);
 
-	return data;
-}
-
-
-data = parseCanvas('index');
-const renderTree = () => d3TreeRenderer.render(data, el, width);
-
-onMount(() => {
-	width = document.getElementById('tree').offsetWidth;
-	renderTree();
-});
-
-
+	onMount(() => {
+		width = document.getElementById('tree').offsetWidth;
+		renderTree();
+	});
 </script>
 
 <div id="tree">
@@ -52,10 +26,9 @@ onMount(() => {
 </div>
 
 <style>
-
-.center {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
+	.center {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
 </style>
