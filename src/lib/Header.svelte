@@ -70,14 +70,14 @@
 		</Button>
 	</Modal>
 
-	<!-- {#if user} -->
+	{#if user}
 		<Button iconAfter={true} on:click = {() => getModal('export').open()}>
 			<slot slot='text'>Export to</slot>
 			<slot slot='icon'>
 				<Icon faIcon={faGithub} style={'width: 20px; height: 20px;'}></Icon>
 			</slot>
 		</Button>
-	<!-- {/if} -->
+	{/if}
 
 	<Modal id="export">
 		<p>Enter a name for your new repository</p>
