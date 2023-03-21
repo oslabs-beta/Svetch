@@ -11,7 +11,6 @@
   let moving = false;
   let selected = null;
   let resizing = false;
-  let reset = false;
   let offsetX = -20;
   let offsetY = -20;
   let ctx;
@@ -119,16 +118,11 @@
     }
   }
 
-  // $: {
-  //   if ($canvas.index.children.length > 0) reset = true;
-  // }
-
   $: {
     if ($canvas.index.children.length === 0 && mounted) {
       clear();
       drawDots();
       clearButtons();
-      // reset = false;
       drawMenu($options);
       drawComponents();
     }
@@ -181,14 +175,9 @@
   const drawMenu = () => {
     ctx.beginPath();
     ctx.shadowBlur = 0;
-    // ctx.moveTo(200, 0);
-    // ctx.lineTo(200, template.height);
     ctx.strokeStyle = '#d7dce0';
     ctx.lineWidth = 2;
     ctx.strokeRect(200, 0, 1, template.height);
-    // ctx.strokeStyle = "#d7dce0";
-    // ctx.strokeRect(200, 0, 1, template.height);
-    // ctx.stroke();
 
     for (let i = 0; i < $options.length; i++) {
       const rect = new Rect(...Object.values($options[i]));
@@ -230,6 +219,16 @@
     //VARIABLES FOR DRAW AND MOVE FUNCTIONS
     template = document.getElementById("dotCanvas");
     const parent = document.querySelector(".canvasParent");
+    const parentObserver = new ResizeObserver(entries => {
+      entries.forEach(entry => {
+        template.width = entry.contentRect.width;
+        template.height = entry.contentRect.height;
+        drawComponents();
+        clearButtons();
+        drawMenu();
+      });
+    });
+    parentObserver.observe(parent);
     template.width = parent.clientWidth;
     template.height = parent.clientHeight;
     ctx = template.getContext("2d");
@@ -249,7 +248,6 @@
       fileUtility.deleteCookie();
       $canvas = previousCanvas;
       $options = formattedOptions;
-      drawMenu();
     }
 
     //EVENT LISTENERS
@@ -291,14 +289,6 @@
           else scroll(0.5);
         }
       }
-    });
-
-    window.addEventListener("resize", () => {
-      template.width = parent.clientWidth;
-      template.height = parent.clientHeight;
-      drawComponents();
-      clearButtons();
-      drawMenu();
     });
 
     template.addEventListener("mousedown", (e) => {

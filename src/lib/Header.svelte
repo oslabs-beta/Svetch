@@ -22,8 +22,9 @@
 		const state = {};
 		state.canvas = { ...$canvas };
 		state.options = { ...$options };
-		if (url === `/login?repoName=${repoName.value}`) goto(url+'&state='+JSON.stringify(state));
-		else goto(url+'?state='+JSON.stringify(state));
+		const jsonified = JSON.stringify(state);
+		if (url === `/login?repoName=${repoName.value}`) goto(url+'&state='+encodeURIComponent(jsonified));
+		else goto(url+'?state='+encodeURIComponent(jsonified));
 	};
 
 	onMount(() => {
