@@ -230,6 +230,13 @@
     //VARIABLES FOR DRAW AND MOVE FUNCTIONS
     template = document.getElementById("dotCanvas");
     const parent = document.querySelector(".canvasParent");
+    const parentObserver = new ResizeObserver(entries => {
+      entries.forEach(entry => {
+        template.width = entry.contentRect.width;
+        template.height = entry.contentRect.height;
+      });
+    });
+    parentObserver.observe(parent);
     template.width = parent.clientWidth;
     template.height = parent.clientHeight;
     ctx = template.getContext("2d");
@@ -249,7 +256,6 @@
       fileUtility.deleteCookie();
       $canvas = previousCanvas;
       $options = formattedOptions;
-      drawMenu();
     }
 
     //EVENT LISTENERS
@@ -293,13 +299,13 @@
       }
     });
 
-    window.addEventListener("resize", () => {
-      template.width = parent.clientWidth;
-      template.height = parent.clientHeight;
-      drawComponents();
-      clearButtons();
-      drawMenu();
-    });
+    // window.addEventListener("resize", () => {
+    //   template.width = parent.clientWidth;
+    //   template.height = parent.clientHeight;
+    //   drawComponents();
+    //   clearButtons();
+    //   drawMenu();
+    // });
 
     template.addEventListener("mousedown", (e) => {
       let x = e.offsetX;
@@ -515,7 +521,5 @@
   }
   #dotCanvas {
     display: block;
-    height: 100%;
-    width: 100%;
   }
 </style>
