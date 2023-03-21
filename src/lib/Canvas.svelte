@@ -113,39 +113,24 @@
 
   $: {
     if (mounted) {
-      clearButtons();
-      drawMenu($options);
-      drawComponents();
+      rerender($options);
     }
   }
 
-  // $: {
-  //   if ($canvas.index.children.length > 0) reset = true;
-  // }
-
-  $: {
-    if ($canvas.index.children.length === 0 && mounted) {
-      clear();
-      drawDots();
-      clearButtons();
-      // reset = false;
-      drawMenu($options);
-      drawComponents();
-    }
-  }
   //Takes in an array of boxes and draws them to the canvas
   //calls drawMenu
   //Should be called whenever box coordinates or sizes change
 
   const drawComponents = () => {
     const components = canvasUtility.parse();
-    clear();
+    ctx.clearRect(200, 0, template.width, template.height);
     drawDots();
     components.forEach((rect) => {
       if (rect === selected) rect.addGlow(ctx)
       rect.draw(ctx);
     });
   };
+
   const buildCanvas = (obj) => {
     const updateChildren = (key, parent) => {
       if (obj[key].children.length) {
@@ -168,17 +153,8 @@
     return obj;
   };
 
-  //erases whole template
-  //should be called before updates are drawn
-  const clear = () => {
-    ctx.clearRect(200, 0, template.width, template.height);
-  };
-
-  const clearButtons = () => {
-    ctx.clearRect(0, 0, 200, template.height);
-  };
-
   const drawMenu = () => {
+    ctx.clearRect(0, 0, 200, template.height);
     ctx.beginPath();
     ctx.shadowBlur = 0;
     // ctx.moveTo(200, 0);
@@ -226,6 +202,11 @@
     }
   };
 
+  const rerender = () => {
+    drawMenu();
+    drawComponents();
+  };
+
   onMount(() => {
     //VARIABLES FOR DRAW AND MOVE FUNCTIONS
     template = document.getElementById("dotCanvas");
@@ -234,6 +215,7 @@
       entries.forEach(entry => {
         template.width = entry.contentRect.width;
         template.height = entry.contentRect.height;
+        rerender();
       });
     });
     parentObserver.observe(parent);
@@ -334,9 +316,7 @@
         template.style.cursor = "default";
         canvasUtility.delete(selected);
         $selectedComponent = "index";
-        clearButtons();
-        drawMenu();
-        drawComponents();
+        rerender();
       } else {
         if (!selected) $selectedComponent = "index";
         if (selected) selected.addGlow(ctx);
@@ -436,7 +416,6 @@
             for (let j = i; j < $options.length; j++) {
               $options[j].y -= 60;
             }
-            clearButtons();
             drawMenu();
             return;
           } else if (rect.contains(x, y)) {
@@ -463,9 +442,7 @@
             canvasUtility.create(newRect);
           }
         }
-        clearButtons();
-        drawMenu();
-        drawComponents();
+        rerender();
       }
     });
 
@@ -490,7 +467,6 @@
         rect.x += e.movementX;
         rect.y += e.movementY;
       } else if (rect.x <= 204) {
-        clearButtons();
         drawMenu();
         rect.x = 205;
       } else if (rect.y <= 0) {
