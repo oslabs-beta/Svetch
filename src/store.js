@@ -7,6 +7,6 @@ export const canvas = writable({
   },
 });
 
-export const options = writable([]);
+export const library = writable({});
 
 export const selectedComponent = writable('index');

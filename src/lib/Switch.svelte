@@ -3,10 +3,10 @@
 </script>
 
 <div id = 'switchCont'>
-  <h1 id="CandT">Tree/Canvas</h1>
-  <label class="switch">
-    <input type="checkbox" bind:checked />
-    <span class="slider" />
+  <h1 id='CandT'>Tree/Canvas</h1>
+  <label class='switch'>
+    <input type='checkbox' bind:checked />
+    <span class='slider' />
   </label>
 </div>
 

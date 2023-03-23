@@ -18,7 +18,7 @@ export async function get({ url }) {
   const repoName = searchParams.get('repoName');
 
   // Store the application URI for redirect URL
-  const redirectURI = 'https://app.svetch.io/callback';
+  const redirectURI = 'https://svetch.vercel.app/callback';
 
   // Define the OAuth scope to be requested
   const OAuthScope = 'scope=repo%20read:user%20user:email';

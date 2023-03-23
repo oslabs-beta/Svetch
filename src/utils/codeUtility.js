@@ -1,4 +1,5 @@
 export default {
+  // NOTE: method contains reference to this, cannot use arrow fn syntax
   process(children, id) {
     // Declare array to store variable declarations (used in script tag)
     const declarations = [];
@@ -39,6 +40,7 @@ export default {
     return { eachBlock, scriptDeclaration };
   },
 
+  // NOTE: method contains reference to this, cannot use arrow fn syntax
   composeHTML(children, id, declarations) {
     // If no elements are passed, file will not have html content (noContent = true)
     const noContent = !children.length;
@@ -71,6 +73,7 @@ export default {
     return `\n\t${[...imports].join('\n\t')}\n`;
   },
 
+  // NOTE: method contains reference to this, cannot use arrow fn syntax
   composeScript(children, declarations) {
     // Get import statements (as  single string)
     const imports = this.composeImports(children);
@@ -81,6 +84,8 @@ export default {
     // If no declarations, return import statements string
     return imports;
   },
+
+  // NOTE: method contains reference to this, cannot use arrow fn syntax
   composeHTMLStatements(children, id, declarations) {
     // Declare a cache to track name usage
     const cache = {};

@@ -1,4 +1,4 @@
-<script context="module" >
+<script context='module' >
 	export async function load({ session }) {
 		return {
 			props: {
@@ -12,7 +12,7 @@
   import Canvas from '../lib/Canvas.svelte'
   import CodeBlock from '../lib/CodeBlock.svelte';
   import Directory from '../lib/Directory.svelte';
-  import Elements from "../lib/Elements.svelte";
+  import Guide from '../lib/Guide.svelte';
   import Switch from '../lib/Switch.svelte';
   import Tree from '../lib/Tree.svelte'
   import fileUtility from '../utils/fileUtility';
@@ -34,14 +34,13 @@
     code = files.get(key).content;
     name = `${key}.svelte`
   }
-
 </script>
 
-<section class="elementsPanel">
-  <Elements />
+<section id='GuidePane'>
+  <Guide />
 </section>
-<section class="visualizerPanel" bind:clientHeight={treeHeight}>
-  <div id = "switch">
+<section id='CanvasPane' bind:clientHeight={treeHeight}>
+  <div id='switch'>
     <Switch bind:checked={toggled} ></Switch>
   </div>
   {#if toggled}
@@ -50,15 +49,15 @@
     <Canvas state={state}/>
   {/if}
 </section>
-<section class="codeBlockPanel">
+<section id='CodeBlockPane'>
   <CodeBlock code={code} fileName={name}/>
 </section>
-<section class="fileDirectoryPanel">
+<section id='DirectoryPane'>
   <Directory />
 </section>
-<style>
 
-  .elementsPanel {
+<style>
+  #GuidePane {
     grid-area: 2 / 1 / 4 / 2;
     padding-left: 10px;
     padding-right: 10px;
@@ -69,13 +68,11 @@
     flex-direction: column;
     border: 1px solid #003659;
   }
-
-  .visualizerPanel {
+  #CanvasPane {
     grid-area: 2 / 2 / 3 / 5;
     background-color: #282b2e;
   }
-
-  .codeBlockPanel {
+  #CodeBlockPane {
     grid-area: 3 / 2 / 4 / 4;
     background: #282b2e;
     overflow: hidden;
@@ -83,21 +80,18 @@
     padding-left: 1rem;
     position: relative;
   }
-
   #switch{
     right: 2vw;
     top: 2vw;
     position: absolute;
   }
-
   section {
     background: #6B737B; 
     color: #fefefe;
     border: 1px solid #00274C;
     border-radius: 12px;
   }
-
-  .fileDirectoryPanel {
+  #DirectoryPane {
     grid-area: 3 / 4 / 4 / 4;
     padding: 2rem;
     overflow-y: auto;

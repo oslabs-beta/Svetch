@@ -3,14 +3,13 @@
   import Label from './Label.svelte';
   import hlcss from '../../static/hl.css';
 
-
   export let code;
   export let fileName;
+
   let styles = `
     padding-right: 1rem; 
     font-family: 'Courier New', Courier, monospace;
     `;
-
 </script>
 
  
@@ -18,13 +17,13 @@
   {@html `<style>${hlcss}</style>`}
 </svelte:head>
 
-<div id = "codeBlock">
+<div id='CodeBlock'>
   <Label text={fileName} styles={styles}/>
-  <HighlightSvelte {code} style="overflow: auto; tab-size:2; height:100%" />
+  <HighlightSvelte {code} style='overflow: auto; tab-size:2; height:100%;' />
 </div>
 
 <style>
-  #codeBlock {
+  #CodeBlock {
    height: 100%;
    overflow: hidden;
   }
