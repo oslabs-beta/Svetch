@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { library, selectedComponent } from '../store';
   import canvasUtility from '../utils/canvasUtility';
+  import fileUtility from '../utils/fileUtility';
   import libraryUtility from '../utils/libraryUtility';
 
   export let state;
@@ -67,16 +68,11 @@
 
     // Update styles
     ctx.shadowBlur = 0;
-    // ctx.moveTo(200, 0);
-    // ctx.lineTo(200, template.height);
     ctx.strokeStyle = '#d7dce0';
     ctx.lineWidth = 2;
 
     // Render line to divide canvas element (separates library from prototype area of canvas)
     ctx.strokeRect(200, 0, 1, template.height);
-    // ctx.strokeStyle = "#d7dce0";
-    // ctx.strokeRect(200, 0, 1, template.height);
-    // ctx.stroke();
 
     // Render each library item in library store, draw deleteTab if not is use
     Object.values($library).forEach(({ quantity, rect }) => {
