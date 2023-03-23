@@ -170,7 +170,7 @@
       state = null;
 
       // Delete the cookie used to persist the old state
-      // fileUtility.deleteCookie();
+      fileUtility.deleteCookie();
     }
 
     // MOVEMENT FUNCTIONS
