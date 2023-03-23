@@ -1,16 +1,16 @@
 <script>
-	import { onMount } from 'svelte';
-	import fileUtility from '../utils/fileUtility';
-	import canvasUtility from '../utils/canvasUtility';
-	import optionsUtility from '../utils/optionsUtility';
-	import { goto } from '$app/navigation';
-	import { canvas, options } from '../store';
-	import svetchSVG from '../../static/svetch.svg?raw';
-	import Modal, {getModal} from './Modal.svelte';
 	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import { faDownload, faPlus, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-	import Icon from './Icon.svelte';
+	import svetchSVG from '../../static/svetch.svg?raw';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { canvas, library } from '../store';
 	import Button from './Button.svelte';
+	import Icon from './Icon.svelte';
+	import Modal, { getModal } from './Modal.svelte';
+	import fileUtility from '../utils/fileUtility';
+	import canvasUtility from '../utils/canvasUtility';
+	import libraryUtility from '../utils/libraryUtility';
 	
 	export let user;
 
@@ -20,21 +20,20 @@
 
 	const saveState = async (url) => {
 		const state = {};
-		state.canvas = { ...$canvas };
-		state.options = { ...$options };
-		const jsonified = JSON.stringify(state);
-		if (url === `/login?repoName=${repoName.value}`) goto(url+'&state='+encodeURIComponent(jsonified));
-		else goto(url+'?state='+encodeURIComponent(jsonified));
+		state.prevCanvas = { ...$canvas };
+		state.prevLib = { ...$library };
+		if (url === `/login?repoName=${repoName.value}`) goto(url+'&state='+encodeURIComponent(JSON.stringify(state)));
+		else goto(url+'?state='+encodeURIComponent(JSON.stringify(state)));
 	};
 
 	onMount(() => {
 		logo.innerHTML = svetchSVG;
-		logo.children[0].style = "flex: auto; margin: -0.4rem;";
+		logo.children[0].style = 'flex: auto; margin: -0.4rem;';
 	});
 </script>
 
 
-<div style="flex:1; display:flex; gap:0.4rem;" >
+<div style='flex:1; display:flex; gap:0.4rem;' >
 	<Button on:click = {()=> getModal('newProject').open()}>
 		<slot slot='icon' class='icon'>
 			<Icon faIcon={faPlus} style={'width: 18px; height: 18px;'}></Icon>
@@ -44,10 +43,10 @@
 		</slot>
 	</Button>
 
-	<Modal id="newProject">
+	<Modal id='newProject'>
 		<p>Creating a new project will delete the current project.</p>
 		<p>Are you sure?</p>
-		<Button rightAlign={true} on:click = {() => {canvasUtility.reset(); optionsUtility.reset(); getModal('newProject').close()}}>
+		<Button rightAlign={true} on:click = {() => {canvasUtility.reset(); libraryUtility.reset(); getModal('newProject').close()}}>
 			<slot slot='text'>
 				Confirm
 			</slot>
@@ -63,9 +62,9 @@
 		</slot>
 	</Button>
 
-	<Modal id="download">
+	<Modal id='download'>
 		<p>Enter a name for your project</p>
-		<input bind:this={projectName} type="text" length = 20 value="" >
+		<input bind:this={projectName} type='text' length = 20 value='' >
 		<Button rightAlign={true} on:click = {() => {fileUtility.downloadProject(projectName.value); getModal('download').close()}}>
 			<slot slot='text'>Save</slot>
 		</Button>
@@ -80,20 +79,20 @@
 		</Button>
 	{/if}
 
-	<Modal id="export">
+	<Modal id='export'>
 		<p>Enter a name for your new repository</p>
-		<input bind:this={repoName} type="text" length = 20 value="" >
+		<input bind:this={repoName} type='text' length = 20 value='' >
 		<Button rightAlign={true} on:click = {() => {saveState(`/login?repoName=${repoName.value}`); getModal('export').close()}}>
 			<slot slot='text'>Export</slot>
 		</Button>
 	</Modal>
 </div>
 
-<div id="logoContainer" bind:this={logo}>
+<div id='logoContainer' bind:this={logo}>
 	<!-- logo added to div after mounting to the DOM -->
 </div>
 
-<div style="flex: 1; display:flex; flex-direction:row-reverse;">
+<div style='flex: 1; display:flex; flex-direction:row-reverse;'>
 	{#if user}
 		<Button class='right' iconAfter={true} on:click = {() => saveState('/logout')}>
 			<slot slot='text'>Sign out</slot>
