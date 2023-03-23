@@ -3,7 +3,6 @@
 	import d3TreeRenderer from '../utils/d3TreeRenderer';
 	import canvasUtility from '../utils/canvasUtility';
 
-
 	export let height;
 
 	let el;
@@ -19,8 +18,8 @@
 	});
 </script>
 
-<div id="tree">
-	<div class="center" style="height:{height}px">
+<div id='tree'>
+	<div class='center' style='height:{height}px'>
 		<svg bind:this={el}></svg>
 	</div>
 </div>

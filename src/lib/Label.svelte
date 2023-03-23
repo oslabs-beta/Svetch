@@ -4,6 +4,7 @@
 	export let text;
 	export let styles = '';
 	export let fixedPos = null;
+	
 	let label;
 
 	onMount(()=> {

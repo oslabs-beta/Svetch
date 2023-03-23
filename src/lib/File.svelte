@@ -1,10 +1,11 @@
 <script>
   import { selectedComponent } from '../store'
 
-  export let name, id;
+  export let name;
+  export let id;
 </script>
   
-<p on:click="{() => $selectedComponent=id}">{name}</p>
+<p on:click={() => $selectedComponent=id}>{name}</p>
 
 <style>
   p:hover {
