@@ -4,7 +4,6 @@
 	import Folder from './Folder.svelte';
 	import fileUtility from '../utils/fileUtility';
 	
-
 	let root;
 
 	const updateRoot = () => {
@@ -15,7 +14,8 @@
 	$: updateRoot($canvas);
 
 </script>
-<Label text={'Directory'} fixedPos={{ parentSelector: '.fileDirectoryPanel' }}/>
+
+<Label text={'Directory'} fixedPos={{ parentSelector: '#DirectoryPane' }}/>
 <Folder name={root.name} children={root.children} expanded={true}></Folder>
 
 <style>

@@ -12,7 +12,6 @@
   const pathProps = {
     d: `${faIcon.icon[4]}`
   };
-
 </script>
 
 <svg {...svgProps} {style}>

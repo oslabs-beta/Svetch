@@ -1,8 +1,6 @@
 <script>
-
   export let iconAfter = false;
   export let rightAlign = false;
-
 </script>
 
 {#if $$slots.text && $$slots.icon}
@@ -39,10 +37,10 @@
     margin-left: auto;
   }
   button:hover {
-			background-color: #001829;
-			border: 1px solid #836e60;
-			color: #d7dce0;
-		}
+    background-color: #001829;
+    border: 1px solid #836e60;
+    color: #d7dce0;
+	}
   :global(button.icon-button svg) {
     fill: white;
   }

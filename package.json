@@ -13,7 +13,6 @@
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
-    "d3": "^7.4.4",
     "eslint": "^8.34.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
@@ -28,14 +27,12 @@
     "axios": "^0.27.2",
     "b64-to-blob": "^1.2.19",
     "cookie": "^0.5.0",
-    "express": "^4.18.1",
+    "d3": "^7.4.4",
     "file-saver": "^2.0.5",
-    "fs-extra": "^10.1.0",
     "jszip": "^3.9.1",
     "octokit": "^1.7.1",
     "svelte-fa": "^2.4.0",
     "svelte-highlight": "^6.0.1",
-    "tedis": "^0.1.12",
     "uuid": "^8.3.2"
   }
 }
