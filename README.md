@@ -14,6 +14,7 @@ When you click the Submit button, the new component will appear in the component
 You can move a component by clicking down inside of the box and dragging it around the Canvas, then release your mouse to finalize its position.
 
 You can also resize your components by clicking down and dragging the small tab at the bottom right corner. To remove a component from the canvas click on the X in the upper right corner.
+<img src="./static/canvas.png" alt="canvas for designing prototype"/>
 
 ### Track Hierarchy
 Svetch will automatically track the hierarchy you create in the Canvas and update your component files accordingly.
