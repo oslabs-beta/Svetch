@@ -1,4 +1,5 @@
 # Svetch
+
 A frontend prototyping tool used to create SvelteKit projects. Get ready to Svetch! 
 ## How to access the app
 Launch the app from [Svetch.io](https://www.svetch.io/) homepage, directly access it [here](https://app.svetch.io)
@@ -18,7 +19,7 @@ You can also resize your components by clicking down and dragging the small tab 
 Svetch will automatically track the hierarchy you create in the Canvas and update your component files accordingly.
 
 You can view a tree diagram of your component hierarchy by clicking the toggle button in the upper right corner of the Canvas.  Once there, you can click on the name of your components to expand the tree and see the components nested structure.
-
+<img src="./static/tree.png" alt="tree diagram representing the relationships between prototyped components"/>
 
 ### Code Preview
 
