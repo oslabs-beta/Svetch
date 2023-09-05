@@ -27,8 +27,8 @@
 	};
 
 	onMount(() => {
-		logo.innerHTML = svetchSVG;
-		logo.children[0].style = 'flex: auto; margin: -0.4rem;';
+		logo.innerHTML = `<a href="https:/svetch.io">${svetchSVG}</a>`;
+		logo.children[0].style = 'display: flex; margin: -0.4rem;';
 	});
 </script>
 
@@ -115,6 +115,7 @@
 		#logoContainer {
 			display: flex; 
 			flex: 1; 
+			justify-content: center;
 			overflow: hidden;
 			height: 2rem;
 		}

@@ -25,6 +25,7 @@
 	header {
 		display:flex;
 		justify-content: space-between;
+		align-items: center;
 		grid-column: 1 / 5;
 	}
 </style>
