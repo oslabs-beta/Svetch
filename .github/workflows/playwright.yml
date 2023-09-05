@@ -18,9 +18,15 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps\
     - name: Build the app
+      env:
+        VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
+        VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
       run: npm run build
     - name: Run Playwright tests
-      run: npm run test
+      env:
+        USERNAME: ${{ secrets.USERNAME }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+      run: USERNAME=${{ secrets.USERNAME }} PASSWORD=${{ secrets.PASSWORD }} npm run test
     - uses: actions/upload-artifact@v3
       if: always()
       with:
