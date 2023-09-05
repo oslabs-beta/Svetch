@@ -19,14 +19,14 @@ jobs:
       run: npx playwright install --with-deps\
     - name: Build the app
       env:
-        VITE_CLIENT_ID: ${{ secrets.VITE_CLIENT_ID }}
-        VITE_CLIENT_SECRET: ${{ secrets.VITE_CLIENT_SECRET }}
+        VITE_VERCEL_ENV_CLIENT_ID: ${{ secrets.VITE_VERCEL_ENV_CLIENT_ID }}
+        VITE_VERCEL_ENV_CLIENT_SECRET: ${{ secrets.VITE_VERCEL_ENV_CLIENT_SECRET }}
       run: npm run build
     - name: Run Playwright tests
       env:
         USERNAME: ${{ secrets.USERNAME }}
         PASSWORD: ${{ secrets.PASSWORD }}
-      run: USERNAME=${{ secrets.USERNAME }} PASSWORD=${{ secrets.PASSWORD }} npm run test
+      run: npm run test
     - uses: actions/upload-artifact@v3
       if: always()
       with:

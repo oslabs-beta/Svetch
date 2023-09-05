@@ -44,10 +44,9 @@ test('sign in button', async ({ page, baseURL }) => {
   // Click the sign in button.
   await page.getByRole('button', { name: 'Sign in' }).click();
 
-  console.log(page.url())
   // Wait for the redirection to login route.
   await page.waitForURL('https://github.com/login**');
-  console.log('env', env)
+
   // If prompted for GitHub credentials (use url to determine if being prompted)
   if (page.url().match(/return_to=/)) {
     // Fill the stored username from .env.
@@ -64,7 +63,6 @@ test('sign in button', async ({ page, baseURL }) => {
     // Click the authorize button.
     await page.getByRole('button', { name: 'Authorize matthewlapeer' }).click();
   }
-  console.log(page.url())
   // Wait for the redirection back to home.
   await page.waitForURL(baseURL || '');
 
