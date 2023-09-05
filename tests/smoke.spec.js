@@ -24,6 +24,7 @@ test('new project button', async ({ page }) => {
 });
 
 test('download button', async ({ page }) => {
+  // Go to homepage
   await page.goto('/');
 
   // Click the download button.
@@ -34,4 +35,38 @@ test('download button', async ({ page }) => {
 
   // Expects page to have modal displaying save button.
   await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
+});
+
+test('sign in button', async ({ page, baseURL }) => {
+  await page.goto('/');
+
+  // Click the sign in button.
+  await page.getByRole('button', { name: 'Sign in' }).click();
+
+  // Wait for the redirection to login route.
+  await page.waitForURL('https://github.com/login**');
+
+  // If prompted for GitHub credentials (use url to determine if being prompted)
+  if (page.url().match(/return_to=/)) {
+    // Fill the stored username from .env.
+    await page.getByLabel('Username or email address').fill(env.USERNAME || '');
+
+    // Fill the stored password from .env.
+    await page.getByLabel('Password').fill(env.PASSWORD || '');
+
+    // Click the sign in button (on GitHub).
+    await page.click('input[type="submit"]');
+  }
+
+  // If prompted to authorize the application
+  if (await page.getByRole('button', { name: 'Authorize matthewlapeer' }).count()) {
+    // Click the authorize button.
+    await page.getByRole('button', { name: 'Authorize matthewlapeer' }).click();
+  }
+
+  // Wait for the redirection back to home.
+  await page.waitForURL(baseURL || '');
+
+  // Expects page to have sign out button.
+  await expect(page.getByRole('button', { name: 'Sign out' })).toBeVisible();
 });

@@ -3,8 +3,13 @@ import axios from 'axios';
 const tokenURL = 'https://github.com/login/oauth/access_token';
 const userURL = 'https://api.github.com/user';
 
-const clientId = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID;
-const clientSecret = import.meta.env.VITE_VERCEL_ENV_CLIENT_SECRET;
+const clientId = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID || import.meta.env.VITE_CLIENT_ID;
+const clientSecret = import.meta.env.VITE_VERCEL_ENV_CLIENT_SECRET
+  || import.meta.env.VITE_CLIENT_SECRET;
+
+const productionTest = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID == undefined;
+
+const baseURI = productionTest ? 'http://localhost:3000' : 'https://app.svetch.io';
 
 const getToken = async (code) => {
   const requestData = JSON.stringify({
@@ -53,7 +58,7 @@ export async function get(request) {
   if (repoName) {
     await axios({
       method: 'post',
-      url: 'https://svetch.vercel.app/exportProject',
+      url: `${baseURI}/exportProject`,
       data: {
         token,
         user,

@@ -4,7 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 const target = 'https://github.com/login/oauth/authorize';
 
 // Obtain clientID from env variables
-const clientID = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID;
+const clientID = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID || import.meta.env.VITE_CLIENT_ID;
+
+const productionTest = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID == undefined;
+
+const baseURI = productionTest ? 'http://localhost:3000' : 'https://app.svetch.io';
 
 // eslint-disable-next-line import/prefer-default-export
 export async function get({ url }) {
@@ -18,7 +22,7 @@ export async function get({ url }) {
   const repoName = searchParams.get('repoName');
 
   // Store the application URI for redirect URL
-  const redirectURI = 'https://svetch.vercel.app/callback';
+  const redirectURI = `${baseURI}/callback`;
 
   // Define the OAuth scope to be requested
   const OAuthScope = 'scope=repo%20read:user%20user:email';
