@@ -9,7 +9,7 @@
     "prepare": "svelte-kit sync",
     "lint": "eslint --ignore-path .gitignore .",
     "serve": "node server/server.js",
-    "test": "playwright test"
+    "test": "npx playwright test"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
