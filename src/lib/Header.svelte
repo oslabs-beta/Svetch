@@ -33,7 +33,7 @@
 </script>
 
 
-<div style='flex:1; display:flex; gap:0.4rem;' >
+<!-- <div style='flex:1; display:flex; gap:0.4rem;' >
 	<Button on:click = {()=> getModal('newProject').open()}>
 		<slot slot='icon' class='icon'>
 			<Icon faIcon={faPlus} style={'width: 18px; height: 18px;'}></Icon>
@@ -109,7 +109,7 @@
 			</slot>
 		</Button>
 	{/if}
-</div>
+</div> -->
 
 	<style>
 		#logoContainer {
