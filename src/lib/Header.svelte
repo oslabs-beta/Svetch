@@ -1,7 +1,7 @@
 <script>
 	import { faGithub } from '@fortawesome/free-brands-svg-icons';
 	import { faDownload, faPlus, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-	import svetchSVG from '../../static/svetch.svg?raw';
+	import svetchSVG from '../routes/svetch.svg?raw';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { canvas, library } from '../store';

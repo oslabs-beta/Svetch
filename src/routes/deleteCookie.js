@@ -5,7 +5,7 @@ export async function post() {
     status: 200,
     headers: {
       location: '/',
-      'set-cookie': `state='';path=/; HttpOnly; expires=${expiry}`,
-    },
+      'set-cookie': `state='';path=/; HttpOnly; expires=${expiry}`
+    }
   };
 }
