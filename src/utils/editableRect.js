@@ -19,10 +19,10 @@ export default class EditableRect extends Rect {
 
   containsRect(rect) {
     return (
-      rect.x > this.x
-      && rect.x + rect.width < this.x + this.width
-      && rect.y > this.y + 2 * borderWidth
-      && rect.y + rect.height < this.y + this.height + 2 * borderWidth
+      rect.x > this.x &&
+      rect.x + rect.width < this.x + this.width &&
+      rect.y > this.y + 2 * borderWidth &&
+      rect.y + rect.height < this.y + this.height + 2 * borderWidth
     );
   }
 
@@ -30,13 +30,7 @@ export default class EditableRect extends Rect {
     super.draw(ctx);
     ctx.beginPath();
     ctx.shadowBlur = 0;
-    super.drawLabel(
-      ctx,
-      '20px serif',
-      this.x,
-      this.y + 20,
-      this.width - 20,
-    );
+    super.drawLabel(ctx, '20px serif', this.x, this.y + 20, this.width - 20);
     this.drawDeleteTab(ctx);
     this.drawResizeTab(ctx);
   }
@@ -56,10 +50,10 @@ export default class EditableRect extends Rect {
 
   resizeTabContains(x, y) {
     return (
-      x >= this.x + this.width - 12
-      && x <= this.x + this.width
-      && y >= this.y + this.height - 12
-      && y <= this.y + this.height
+      x >= this.x + this.width - 12 &&
+      x <= this.x + this.width &&
+      y >= this.y + this.height - 12 &&
+      y <= this.y + this.height
     );
   }
 }

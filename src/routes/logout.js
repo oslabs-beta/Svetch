@@ -7,7 +7,7 @@ export async function get({ locals, url }) {
     status: 302,
     headers: {
       location: '/',
-      'set-cookie': `state=${state};path=/; HttpOnly`,
-    },
+      'set-cookie': `state=${state};path=/; HttpOnly`
+    }
   };
 }

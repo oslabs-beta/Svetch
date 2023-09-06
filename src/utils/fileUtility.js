@@ -29,7 +29,7 @@ export default {
           name,
           children,
           content,
-          id,
+          id
         });
       }
 
@@ -49,19 +49,19 @@ export default {
     // Define `lib` folder object
     const libFolder = {
       name: 'lib',
-      children: [],
+      children: []
     };
 
     // Define `routes` folder object, which contains index
     const routesFolder = {
       name: 'routes',
-      children: [{ name: 'index', id: 'index' }],
+      children: [{ name: 'index', id: 'index' }]
     };
 
     // Define file tree return object
     const fileTree = {
       name: 'src',
-      children: [routesFolder],
+      children: [routesFolder]
     };
 
     // Store tree created from current canvas
@@ -101,11 +101,12 @@ export default {
   },
 
   // Format name to be PascalCase
-  formatName: (name) => name
-    .toLowerCase()
-    .split(' ')
-    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-    .join(''),
+  formatName: (name) =>
+    name
+      .toLowerCase()
+      .split(' ')
+      .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+      .join(''),
 
   // createFiles method contains reference to this, cannot use arrow fn syntax
   createFiles(_canvasUpdate = null) {
@@ -144,12 +145,17 @@ export default {
     // Iterate through the file data and add each to the JSZip instance
     files.forEach(({ path, content }) => {
       // Store the file content after converting it to a Uint8Array
-      zip.file(`${path}`, Uint8Array.from(content, (x) => x.charCodeAt(0)));
+      zip.file(
+        `${path}`,
+        Uint8Array.from(content, (x) => x.charCodeAt(0))
+      );
     });
 
     // Get the static project files from the api
-    const projectFiles = await axios.get('api/projectFiles')
-      .then(({ data }) => JSON.parse(data)).then(({ zippedFiles }) => zippedFiles);
+    const projectFiles = await axios
+      .get('api/projectFiles')
+      .then(({ data }) => JSON.parse(data))
+      .then(({ zippedFiles }) => zippedFiles);
 
     // Add the static files to the  JSZip instance
     await zip.loadAsync(projectFiles, { base64: true });
@@ -167,6 +173,5 @@ export default {
   deleteCookie: () => {
     // Make post request to remove state cookie
     axios.post('/deleteCookie');
-  },
-
+  }
 };

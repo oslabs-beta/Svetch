@@ -6,12 +6,7 @@ import fileUtility from '../utils/fileUtility';
 // eslint-disable-next-line import/prefer-default-export
 export async function post({ request }) {
   // Parse body of incoming request object
-  const {
-    repoName,
-    state,
-    token,
-    user,
-  } = await request.json();
+  const { repoName, state, token, user } = await request.json();
 
   // Store the repo owner information
   const owner = user.login;
@@ -32,7 +27,7 @@ export async function post({ request }) {
       owner,
       repo,
       content,
-      encoding,
+      encoding
     });
 
     // Return a new object containing the git blob and relative file path
@@ -46,7 +41,7 @@ export async function post({ request }) {
       repo,
       message: 'Svetch Initial Commit',
       parents: [],
-      tree: treeSha,
+      tree: treeSha
     });
 
     // Return the commit sha
@@ -59,7 +54,7 @@ export async function post({ request }) {
       owner,
       repo,
       base_tree: commitSha,
-      tree,
+      tree
     });
 
     // Return the sha for the created git tree
@@ -67,18 +62,17 @@ export async function post({ request }) {
   };
 
   // Return an array of objects specifying hierarchy between files
-  const createTreeStructure = async (blobs) => blobs
-    .map(({ path, sha }) => ({
+  const createTreeStructure = async (blobs) =>
+    blobs.map(({ path, sha }) => ({
       path,
       mode: '100644',
       type: 'blob',
-      sha,
+      sha
     }));
 
   const getBlobs = async (files) => {
     // Store array of blob promises created from passing files to blob helper fn
-    const promises = files
-      .map((file) => createBlob(file, (file.encoding || 'utf-8')));
+    const promises = files.map((file) => createBlob(file, file.encoding || 'utf-8'));
 
     // Await all blob promises to resolve to blob objects
     const blobs = await Promise.all(promises);
@@ -92,7 +86,7 @@ export async function post({ request }) {
     const { data } = await octokit.rest.repos.getBranch({
       owner,
       repo,
-      branch: 'main',
+      branch: 'main'
     });
 
     // Return the sha of previous commit (initial commit from repository creation)
@@ -100,13 +94,14 @@ export async function post({ request }) {
   };
 
   // return promise for API request to update git branch reference
-  const updateReference = async (commitSha) => octokit.rest.git.updateRef({
-    owner,
-    repo,
-    ref: 'heads/main',
-    sha: commitSha,
-    force: true,
-  });
+  const updateReference = async (commitSha) =>
+    octokit.rest.git.updateRef({
+      owner,
+      repo,
+      ref: 'heads/main',
+      sha: commitSha,
+      force: true
+    });
 
   try {
     // Create new GitHub repo named the value of repo
@@ -116,7 +111,8 @@ export async function post({ request }) {
     const componentFiles = fileUtility.createFiles(state);
 
     // Get the static project files
-    const projectFiles = await axios.get('https://svetch.vercel.app/api/projectFiles')
+    const projectFiles = await axios
+      .get('https://svetch.vercel.app/api/projectFiles')
       .then(({ data }) => JSON.parse(data))
       .then(({ files }) => files);
 
@@ -143,6 +139,6 @@ export async function post({ request }) {
   }
 
   return {
-    status: 200,
+    status: 200
   };
 }
