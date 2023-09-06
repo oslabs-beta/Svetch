@@ -116,7 +116,7 @@ export async function post({ request }) {
     const componentFiles = fileUtility.createFiles(state);
 
     // Get the static project files
-    const projectFiles = await axios.get('https://svetch.vercel.app/api/projectFiles')
+    const projectFiles = await axios.get('https://app.svetch.io/data.json')
       .then(({ data }) => JSON.parse(data))
       .then(({ files }) => files);
 

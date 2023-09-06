@@ -148,7 +148,7 @@ export default {
     });
 
     // Get the static project files from the api
-    const projectFiles = await axios.get('api/projectFiles')
+    const projectFiles = await axios.get('/data.json')
       .then(({ data }) => JSON.parse(data)).then(({ zippedFiles }) => zippedFiles);
 
     // Add the static files to the  JSZip instance
