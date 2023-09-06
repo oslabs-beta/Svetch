@@ -5,14 +5,7 @@ export default {
   create: (type, color, y) => {
     // Update the library store value
     library.update((lStore) => {
-      const rect = new Rect(
-        20,
-        y,
-        150,
-        50,
-        type,
-        color,
-      );
+      const rect = new Rect(20, y, 150, 50, type, color);
 
       // Add new library object to store
       lStore[type] = { quantity: 0, rect };
@@ -87,7 +80,7 @@ export default {
       const scrollToTop = () => {
         items.forEach(({ rect }, index) => {
           // eslint-disable-next-line no-param-reassign
-          rect.y = 20 + (index * 60);
+          rect.y = 20 + index * 60;
         });
       };
 
@@ -134,37 +127,22 @@ export default {
         const topOfFirstItem = firstItem.rect.y;
 
         // Store y value for bottom of last library item
-        const bottomOfLastItem = lastItem.rect.y
-          + lastItem.rect.height;
+        const bottomOfLastItem = lastItem.rect.y + lastItem.rect.height;
 
         // Boolean indicates if any items are out of library frame (rendered outside canvas area)
-        const outOfFrame = (
-          bottomOfLastItem > frameHeight
-          || topOfFirstItem < 0
-        );
+        const outOfFrame = bottomOfLastItem > frameHeight || topOfFirstItem < 0;
 
         // Boolean indicates if top and bottom item are in frame, scroll passed start
-        const topOutOfPosition = (
-          bottomOfLastItem < frameHeight
-          && topOfFirstItem < 20
-        );
+        const topOutOfPosition = bottomOfLastItem < frameHeight && topOfFirstItem < 20;
 
         // Boolean indicates a scroll-like event happened on library area of canvas
-        const didScroll = (event && event.offsetX < 200);
+        const didScroll = event && event.offsetX < 200;
 
         // Boolean indicates the scroll event passed starting position
-        const passedStart = (
-          didScroll
-          && event.deltaY < 0
-          && topOfFirstItem >= 20
-        );
+        const passedStart = didScroll && event.deltaY < 0 && topOfFirstItem >= 20;
 
         // Boolean indicates the scroll event passed final position
-        const passedBottom = (
-          didScroll
-          && event.deltaY > 0
-          && bottomOfLastItem <= frameHeight - 20
-        );
+        const passedBottom = didScroll && event.deltaY > 0 && bottomOfLastItem <= frameHeight - 20;
 
         // When scroll event happens and any item is out of frame
         if (didScroll && outOfFrame) {
@@ -212,5 +190,5 @@ export default {
       // Return store value (after scroll-like updates)
       return lStore;
     });
-  },
+  }
 };

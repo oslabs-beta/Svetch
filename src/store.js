@@ -3,8 +3,8 @@ import { writable } from 'svelte/store';
 export const canvas = writable({
   index: {
     children: [],
-    counter: 0,
-  },
+    counter: 0
+  }
 });
 
 export const library = writable({});
