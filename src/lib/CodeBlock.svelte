@@ -1,7 +1,6 @@
 <script>
   import { HighlightSvelte } from 'svelte-highlight';
   import Label from './Label.svelte';
-  import hlcss from '../../static/hl.css?inline';
 
   export let code;
   export let fileName;
@@ -11,11 +10,6 @@
     font-family: 'Courier New', Courier, monospace;
     `;
 </script>
-
- 
-<svelte:head>
-  {@html `<style>${hlcss}</style>`}
-</svelte:head>
 
 <div id='CodeBlock'>
   <Label text={fileName} styles={styles}/>
