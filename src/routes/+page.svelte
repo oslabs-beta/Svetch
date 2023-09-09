@@ -1,13 +1,3 @@
-<script context='module' >
-	export async function load({ session }) {
-		return {
-			props: {
-				state: session.state
-			}
-		}
-	}
-</script>
-
 <script>
   import Canvas from '../lib/Canvas.svelte'
   import CodeBlock from '../lib/CodeBlock.svelte';
@@ -15,20 +5,21 @@
   import Guide from '../lib/Guide.svelte';
   import Switch from '../lib/Switch.svelte';
   import Tree from '../lib/Tree.svelte'
-  import fileUtility from '../utils/fileUtility';
-  import canvasUtility from '../utils/canvasUtility'
-  import { canvas, selectedComponent } from '../store';
+  import fileUtility from '../lib/utils/fileUtility';
+  import canvasUtility from '../lib/utils/canvasUtility'
+  import { canvas, library, selectedComponent } from '../store';
 
-  export let state;
+  export let data;
 
   let toggled = false;
   let code;
   let name;
   let treeHeight;
 
+
   $: {
     if ($canvas) $selectedComponent = $selectedComponent;
-    const tree = canvasUtility.createTree();
+    const tree = canvasUtility.createTree({...$canvas});
     const { components, files } = fileUtility.parse(tree);
     const key = components.get($selectedComponent);
     code = files.get(key).content;
@@ -46,7 +37,7 @@
   {#if toggled}
     <Tree height={treeHeight}/>
   {:else}
-    <Canvas state={state}/>
+    <Canvas state={data.state}/>
   {/if}
 </section>
 <section id='CodeBlockPane'>

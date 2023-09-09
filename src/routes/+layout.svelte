@@ -1,22 +1,11 @@
-<script context="module" >
-	export async function load({ session }) {
-		return {
-			props: {
-				user: session.user,
-				state: session.state
-			}
-		}
-	}
-</script>
-
 <script>
 	import Header from '../lib/Header.svelte';
 
-	export let user;
+	export let data
 </script>
 
 <header>
-	<Header user={user}/>
+	<Header user={data.user}/>
 </header>
 
 <slot />
