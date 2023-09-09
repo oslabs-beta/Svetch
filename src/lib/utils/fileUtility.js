@@ -2,7 +2,7 @@ import axios from 'axios';
 import b64ToBlob from 'b64-to-blob';
 import fileSaver from 'file-saver';
 import JSZip from 'jszip';
-import { canvas } from '../store';
+import { canvas } from '../../store';
 import canvasUtility from './canvasUtility';
 import codeUtility from './codeUtility';
 
@@ -64,6 +64,13 @@ export default {
       children: [routesFolder]
     };
 
+    let cStore;
+    // Store unsubscribe method, and update value of canvasStore
+    const unsubscribe = canvas.subscribe((val) => { cStore = val; });
+
+    // Unsubscribe from store to prevent changing the data
+    unsubscribe();
+    console.log('cStore in fileUtility:', cStore)
     // Store tree created from current canvas
     const tree = canvasUtility.createTree();
 
@@ -111,8 +118,12 @@ export default {
   // createFiles method contains reference to this, cannot use arrow fn syntax
   createFiles(_canvasUpdate = null) {
     // If updates needed, update canvas store from argument
-    if (_canvasUpdate) canvas.set(JSON.parse(_canvasUpdate).canvas);
-
+    if (_canvasUpdate) {
+      console.log('_canvasUpdate')
+      console.log('parsed', JSON.parse(_canvasUpdate))
+      console.log('canvas prop', JSON.parse(_canvasUpdate).prevCanvas)
+      canvas.set(JSON.parse(_canvasUpdate).prevCanvas);
+}
     // Store tree from latest canvas version
     const tree = canvasUtility.createTree();
 
@@ -136,6 +147,7 @@ export default {
   },
 
   async downloadProject(_name = 'Svetch-Project') {
+    
     // Get the user's protoyped component data
     const files = this.createFiles();
 
@@ -153,8 +165,8 @@ export default {
 
     // Get the static project files from the api
     const projectFiles = await axios
-      .get('api/projectFiles')
-      .then(({ data }) => JSON.parse(data))
+      .get('/api/projectFiles')
+      .then(({ data }) => data)
       .then(({ zippedFiles }) => zippedFiles);
 
     // Add the static files to the  JSZip instance

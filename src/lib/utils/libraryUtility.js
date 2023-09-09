@@ -1,4 +1,4 @@
-import { library } from '../store';
+import { library } from '../../store';
 import Rect from './rect';
 
 export default {
