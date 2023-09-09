@@ -155,7 +155,7 @@ export default {
 
     // Unsubscribe from store to prevent changing the data
     unsubscribe();
-    console.log('createTree cStore:', cStore)
+
     // Hash of components (deduplicated if duplicate components exist)
     let map = new Map();
 
