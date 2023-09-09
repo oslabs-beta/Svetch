@@ -1,10 +1,11 @@
 import { Octokit } from 'octokit';
 import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 import axios from 'axios';
-import fileUtility from '../utils/fileUtility';
+import fileUtility from '../../lib/utils/fileUtility';
 
 // eslint-disable-next-line import/prefer-default-export
-export async function post({ request }) {
+export async function POST({ request }) {
+  
   // Parse body of incoming request object
   const { repoName, state, token, user } = await request.json();
 
@@ -112,8 +113,8 @@ export async function post({ request }) {
 
     // Get the static project files
     const projectFiles = await axios
-      .get('https://svetch.vercel.app/api/projectFiles')
-      .then(({ data }) => JSON.parse(data))
+      .get('http://localhost:5173/api/projectFiles')
+      .then(({ data }) => data)
       .then(({ files }) => files);
 
     // Get git blobs from the project and component files for the commit
@@ -138,7 +139,5 @@ export async function post({ request }) {
     console.log('ERROR:', err);
   }
 
-  return {
-    status: 200
-  };
+  return new Response(200)
 }

@@ -1,13 +1,14 @@
+import { redirect } from '@sveltejs/kit';
 import { v4 as uuidv4 } from 'uuid';
 
 // Store the target of OAuth request
 const target = 'https://github.com/login/oauth/authorize';
 
 // Obtain clientID from env variables
-const clientID = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID;
+const clientID = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID || import.meta.env.VITE_CLIENT_ID;
 
 // eslint-disable-next-line import/prefer-default-export
-export async function get({ url }) {
+export async function GET({ url, cookies }) {
   // Store search params from incoming url object
   const { searchParams } = url;
 
@@ -18,7 +19,7 @@ export async function get({ url }) {
   const repoName = searchParams.get('repoName');
 
   // Store the application URI for redirect URL
-  const redirectURI = 'https://svetch.vercel.app/callback';
+  const redirectURI = 'http://localhost:5173/callback';
 
   // Define the OAuth scope to be requested
   const OAuthScope = 'scope=repo%20read:user%20user:email';
@@ -32,11 +33,10 @@ export async function get({ url }) {
   // Construct complete redirectURL
   const redirectURL = `${target}?client_id=${clientID}&redirect_uri=${redirectURI}/${redirectParams}`;
 
-  return {
-    status: 302,
-    headers: {
-      location: redirectURL,
-      'set-cookie': `state=${state};path=/; HttpOnly`
-    }
-  };
+  console.log('state:', state)
+
+  cookies.set('state', state, {path: '/', HttpOnly: true})
+
+  throw redirect(302, redirectURL)
+
 }
