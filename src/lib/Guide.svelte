@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import fileUtility from '../utils/fileUtility'
-  import libraryUtility from '../utils/libraryUtility';
+  import fileUtility from './utils/fileUtility'
+  import libraryUtility from './utils/libraryUtility';
   import { library } from '../store';
 
   let name;

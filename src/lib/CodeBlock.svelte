@@ -1,7 +1,7 @@
 <script>
   import { HighlightSvelte } from 'svelte-highlight';
   import Label from './Label.svelte';
-  import hlcss from '../../static/hl.css';
+  import hlcss from '../../static/hl.css?inline';
 
   export let code;
   export let fileName;

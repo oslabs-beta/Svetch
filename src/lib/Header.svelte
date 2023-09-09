@@ -8,9 +8,9 @@
 	import Button from './Button.svelte';
 	import Icon from './Icon.svelte';
 	import Modal, { getModal } from './Modal.svelte';
-	import fileUtility from '../utils/fileUtility';
-	import canvasUtility from '../utils/canvasUtility';
-	import libraryUtility from '../utils/libraryUtility';
+	import fileUtility from './utils/fileUtility';
+	import canvasUtility from './utils/canvasUtility';
+	import libraryUtility from './utils/libraryUtility';
 	
 	export let user;
 

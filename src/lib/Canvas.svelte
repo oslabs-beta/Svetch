@@ -1,9 +1,9 @@
 <script>
   import { onMount } from 'svelte';
   import { library, selectedComponent } from '../store';
-  import canvasUtility from '../utils/canvasUtility';
-  import fileUtility from '../utils/fileUtility';
-  import libraryUtility from '../utils/libraryUtility';
+  import canvasUtility from './utils/canvasUtility';
+  import fileUtility from './utils/fileUtility';
+  import libraryUtility from './utils/libraryUtility';
 
   export let state;
 

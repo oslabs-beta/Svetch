@@ -2,7 +2,7 @@
   import Label from './Label.svelte';
 	import { canvas } from '../store';
 	import Folder from './Folder.svelte';
-	import fileUtility from '../utils/fileUtility';
+	import fileUtility from './utils/fileUtility';
 	
 	let root;
 
@@ -17,7 +17,3 @@
 
 <Label text={'Directory'} fixedPos={{ parentSelector: '#DirectoryPane' }}/>
 <Folder name={root.name} children={root.children} expanded={true}></Folder>
-
-<style>
-	
-</style>
