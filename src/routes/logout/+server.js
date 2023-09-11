@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import { redirect } from '@sveltejs/kit';
 
 // eslint-disable-next-line import/prefer-default-export

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import { redirect } from '@sveltejs/kit';
 import axios from 'axios';
 
@@ -56,9 +57,9 @@ export async function GET({ url, cookies }) {
   const state = cookies.get('state')
 
   if (repoName) {
-    await axios({
+    axios({
       method: 'post',
-      url: 'http://localhost:5173/exportProject',
+      url: 'https://svetch.vercel.app/edge/exportProject',
       data: {
         token,
         user,
