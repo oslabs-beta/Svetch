@@ -99,7 +99,7 @@
   <ul>
     <li>
       The dotted grid to the right is the Canvas, and represents your
-      <span class='codeSnippet'>`index.svelte`</span> file.
+      <span class='codeSnippet'>`+page.svelte`</span> file.
     </li>
     <li>
       To add components to the Canvas, enter the name of your component and
@@ -141,7 +141,7 @@
     <li>
       To preview a component's code, simply click on its box inside of the
       Canvas or its name in the Directory pane, and the Code Preview pane will update (Note that the entire Canvas
-      defaults to <span class='codeSnippet'>`index.svelte`</span>).
+      defaults to <span class='codeSnippet'>`+page.svelte`</span>).
     </li>
   </ul>
 </div>

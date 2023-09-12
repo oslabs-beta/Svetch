@@ -272,14 +272,14 @@
         // Update the quantity of associated component type in use
         $library[selected.type].quantity -= 1;
 
-        // Set the selected component to be the index (base canvas)
-        $selectedComponent = 'index';
+        // Set the selected component to be the +page (base canvas)
+        $selectedComponent = '+page';
 
         // Re-render the canvas (removes deleted component, updates library)
         rerender();
       } else { // Mousedown event happened on canvas or component rect
         // When there is not a selected component, mousedown occured on background
-        if (!selected) $selectedComponent = 'index';
+        if (!selected) $selectedComponent = '+page';
 
         // When there is a selected component, mousedown occured on component rect
         if (selected) selected.addGlow(ctx); // add glow to the selected component rect
@@ -291,7 +291,7 @@
 
     //invokes move or resize on mouse movement only if a component is selected
     template.addEventListener('mousemove', (e) => {
-      // When there is not a selected componet rect (index selected)
+      // When there is not a selected componet rect (+page selected)
       if (!selected) return;
 
       // When there is a selected component rect moving

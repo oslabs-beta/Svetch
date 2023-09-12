@@ -19,10 +19,10 @@ export default {
     // NOTE: keyword this uses arrow syntax here (uses context of 'create' call, not 'update' call)
     canvas.update((cStore) => {
       // Store an id for the new rect that will be created
-      const id = `component${cStore.index.counter}`;
+      const id = `component${cStore['+page'].counter}`;
 
       // Increment the number of components in store by 1
-      cStore.index.counter += 1;
+      cStore['+page'].counter += 1;
 
       // Define a new rect (from destructured rectProps)
       const newRect = new EditableRect(x, y, width, height, type, color, id);
@@ -50,7 +50,7 @@ export default {
     // Update the canvas store
     canvas.update((cStore) => {
       // Store parent key
-      const parentId = parent ? parent.id : 'index';
+      const parentId = parent ? parent.id : '+page';
 
       // Store index of component in children array
       const index = cStore[parentId].children.indexOf(id);
@@ -67,7 +67,7 @@ export default {
     // Update the canvas store
     canvas.update((cStore) => {
       // Store parent key
-      const parentId = parent ? parent.id : 'index';
+      const parentId = parent ? parent.id : '+page';
 
       // Add component as a child
       cStore[parentId].children.push(id);
@@ -82,7 +82,7 @@ export default {
     // Update the canvas store
     canvas.update((cStore) => {
       // Store parent key
-      const parentId = parent ? parent.id : 'index';
+      const parentId = parent ? parent.id : '+page';
 
       // Remove child from parent component
       this.removeParent({ id, parent });
@@ -116,11 +116,11 @@ export default {
     // Unsubscribe from store to prevent changing the data
     unsubscribe();
 
-    // Decleare array for component rects (will filter out index, children come after parents)
+    // Decleare array for component rects (will filter out +page, children come after parents)
     const rects = [];
 
-    // Define queue, initially contains only index key
-    const queue = ['index'];
+    // Define queue, initially contains only +page key
+    const queue = ['+page'];
 
     // Process the queue while it has keys
     while (queue.length) {
@@ -199,9 +199,9 @@ export default {
     };
 
     // Define helper function to traverse children
-    const parseChildren = (id = 'index', path = '') => {
-      // Store component type or 'index'
-      const { type } = (cStore[id].rect || { type: 'index' });
+    const parseChildren = (id = '+page', path = '') => {
+      // Store component type or '+page'
+      const { type } = (cStore[id].rect || { type: '+page' });
 
       // Define name as component type, changes if component has children (and deduplication)
       let componentName = type;
@@ -212,15 +212,15 @@ export default {
       // Generate hash string from children array (sort so hash is irrespective of insertion order)
       const hash = children.map(({ name }) => name).sort().join('');
 
-      // When current component is not index, and component has children
-      if (children.length && type !== 'index') {
+      // When current component is not +page, and component has children
+      if (children.length && type !== '+page') {
         // Update the component name to be `type_cache value` (incremented by one)
         componentName = getName(type, hash);
 
         // Update components hash with object for this component
         map.set(`${type}_${hash}`, componentName);
 
-      // When component is index, or if compenent does not have children
+      // When component is +page, or if compenent does not have children
       } else cache._singleUse.add(type);
 
       // Return the component object
@@ -252,7 +252,7 @@ export default {
   reset: () => {
     // Define the default canvas store
     const defaultCanvas = {
-      index: {
+      '+page': {
         children: [],
         counter: 0,
       },
@@ -331,7 +331,7 @@ export default {
   restore: (oldStore) => {
     // Store the component (values) from oldStore
     const components = Object.keys(oldStore)
-      .filter((key) => key !== 'index')
+      .filter((key) => key !== '+page')
       .map((id) => oldStore[id]);
 
     // Iterate over components, update prototype of rect to be EditableRect

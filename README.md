@@ -10,7 +10,7 @@ Launch the app from [Svetch.io](https://www.svetch.io/) homepage, directly acces
 
 ### Create Components
 
-The dotted grid to the right is the canvas, and represents your `index.svelte` file. To add components to the canvas, enter the name of your component and select a color.
+The dotted grid to the right is the canvas, and represents your `+page.svelte` file. To add components to the canvas, enter the name of your component and select a color.
 
 When you click the Submit button, the new component will appear in the components library (left of Canvas). Click the component and it will appear in the Canvas, as well as the Code Preview and Directory panes.
 
@@ -32,7 +32,7 @@ You can view a tree diagram of your component hierarchy by clicking the toggle b
 
 ### Code Preview
 
-To preview a component’s code, simply click on its box inside of the Canvas or its name in the Directory pane, and the Code Preview pane will update (Note that the entire canvas defaults to `index.svelte`).
+To preview a component’s code, simply click on its box inside of the Canvas or its name in the Directory pane, and the Code Preview pane will update (Note that the entire canvas defaults to `+page.svelte`).
 
 ### Download or Export
 

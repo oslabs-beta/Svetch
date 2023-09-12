@@ -52,10 +52,10 @@ export default {
       children: []
     };
 
-    // Define `routes` folder object, which contains index
+    // Define `routes` folder object, which contains +page
     const routesFolder = {
       name: 'routes',
-      children: [{ name: 'index', id: 'index' }]
+      children: [{ name: '+page', id: '+page' }]
     };
 
     // Define file tree return object
@@ -67,9 +67,9 @@ export default {
     // Store tree created from current canvas
     const tree = canvasUtility.createTree();
 
-    // Iterate over the files hash, filter out index, return name & id for each
+    // Iterate over the files hash, filter out +page, return name & id for each
     libFolder.children = [...this.parse(tree).files.values()]
-      .filter(({ name }) => name !== 'index')
+      .filter(({ name }) => name !== '+page')
       .map(({ name, id }) => ({ name, id }));
 
     // If lib folder has children, then add it to the file tree object
@@ -120,8 +120,8 @@ export default {
 
     // Create an array of file-like objects from the files hash map
     const files = [...hash.values()].map(({ name, content }) => {
-      // Index file is stored in 'routes' folder, all others stored in 'lib'
-      const folder = name === 'index' ? 'src/routes' : 'src/lib';
+      // +page file is stored in 'routes' folder, all others stored in 'lib'
+      const folder = name === '+page' ? 'src/routes' : 'src/lib';
 
       // Create path-like string representing a relative path
       const path = `${folder}/${name}.svelte`;
