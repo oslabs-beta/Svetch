@@ -37,7 +37,7 @@ export async function POST({ request }) {
         state,
         token
       })
-    })
+    }).then(response => response.json())
 
     // Create the tree structure for the blobs
     const { tree } = await fetch(`${appURL}/repo/createTreeStructure`, {
@@ -46,7 +46,7 @@ export async function POST({ request }) {
       body: JSON.stringify({
         blobs
       })
-    })
+    }).then(response => response.json())
 
     // Get the sha from the last commit (the inital commit when the repo was created)
     const commitSha = await fetch(`${appURL}/repo/getLastCommitSha`, {
@@ -57,7 +57,7 @@ export async function POST({ request }) {
         repo,
         token
       })
-    })
+    }).then(response => response.text())
 
     // Create a git tree and get the corresponding sha
     const treeSha = await fetch(`${appURL}/repo/createGitTree`, {
@@ -70,7 +70,7 @@ export async function POST({ request }) {
         token,
         tree
       })
-    })
+    }).then(response => response.text())
 
     // Create a new commit and get the corresponding sha
     const newCommitSha = await fetch(`${appURL}/repo/createCommit`, {
@@ -83,7 +83,7 @@ export async function POST({ request }) {
         token,
         treeSha
       })
-    })
+    }).then(response => response.text())
     
     // Update the reference for the git branch
     await fetch(`${appURL}/repo/updateReference`, {
