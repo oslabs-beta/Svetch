@@ -28,7 +28,7 @@
 <style>
   h4 {
 		padding: 0 0 0 2rem;
-		background: url(folder.svg) 0 0rem no-repeat;
+		background: url(./images/folder.svg) 0 0rem no-repeat;
 		background-size: 1.1rem 1.1rem;
 		font-weight: bold;
 		cursor: pointer;
@@ -36,7 +36,7 @@
 		margin: 0;
 	}
   h4.expanded {
-    background: url(folder-open.svg) 0 0rem no-repeat;
+    background: url(./images/folder-open.svg) 0 0rem no-repeat;
     background-size: 1.1rem 1.1rem;
   }
   ul {
