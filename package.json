@@ -2,7 +2,8 @@
   "name": "svetch",
   "version": "0.0.1",
   "scripts": {
-    "dev": "vite dev",
+    "dev:vercel": "vercel dev",
+    "dev:vite": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "prettier --check . && eslint ."
@@ -16,6 +17,7 @@
     "prettier": "^3.0.3",
     "prettier-plugin-svelte": "^3.0.3",
     "svelte": "^4.0.5",
+    "vercel": "^32.2.1",
     "vite": "^4.4.2"
   },
   "type": "module",
