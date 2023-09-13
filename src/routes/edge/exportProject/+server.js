@@ -1,9 +1,13 @@
+import fileUtility from '../../../lib/utils/fileUtility';
+
 export const config = {
   runtime: 'edge'
 };
 
 // eslint-disable-next-line import/prefer-default-export
 export async function POST({ request }) {
+  // Define URL of the application
+  const appURL = 'https://svetch.vercel.app'
   
   // Parse body of incoming request object
   const { repoName, state, token, user } = await request.json();
@@ -14,9 +18,27 @@ export async function POST({ request }) {
   // Store the repo name
   const repo = repoName.replace(/\s+/g, '-');
 
-  try {
-    const appURL = 'https://svetch.vercel.app'
+  const getBlobs = async (files) => {
+    // Store array of blob promises created from passing files to blob helper fn
+    const promises = files.map((file) => fetch(`${appURL}/repo/createBlob`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        file,
+        owner,
+        repo,
+        token
+      })
+    }).then(response => response.json()))
 
+    // Await all blob promises to resolve to blob objects
+    const blobs = await Promise.all(promises);
+
+    // Return the git blob objects
+    return blobs;
+  };
+
+  try {
     // Create new GitHub repo named the value of repo
     await fetch(`${appURL}/repo/createForAuthenticatedUser`,{
       method: 'POST',
@@ -27,17 +49,18 @@ export async function POST({ request }) {
       })
     })
 
+    // Create component files from user prototype, passing state from cookies
+    const componentFiles = fileUtility.createFiles(state);
+
+    // Get the static project files
+    const projectFiles = await fetch('https://svetch.vercel.app/api/projectFiles', { 
+      method: 'GET' 
+    })
+    .then(response => response.json())
+    .then(({ files }) => files)
+
     // Get git blobs from the project and component files for the commit
-    const { blobs } = await fetch(`${appURL}/repo/getBlobs`,{
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        owner,
-        repo,
-        state,
-        token
-      })
-    }).then(response => response.json())
+    const blobs = await getBlobs([...projectFiles, ...componentFiles]);
 
     // Create the tree structure for the blobs
     const { tree } = await fetch(`${appURL}/repo/createTreeStructure`, {
