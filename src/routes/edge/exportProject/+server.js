@@ -7,8 +7,8 @@ export const config = {
 // eslint-disable-next-line import/prefer-default-export
 export async function POST({ request }) {
   // Define URL of the application
-  const appURL = 'https://svetch.vercel.app'
-  
+  const appURL = 'https://app.svetch.io';
+
   // Parse body of incoming request object
   const { repoName, state, token, user } = await request.json();
 
@@ -20,16 +20,18 @@ export async function POST({ request }) {
 
   const getBlobs = async (files) => {
     // Store array of blob promises created from passing files to blob helper fn
-    const promises = files.map((file) => fetch(`${appURL}/repo/createBlob`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        file,
-        owner,
-        repo,
-        token
-      })
-    }).then(response => response.json()))
+    const promises = files.map((file) =>
+      fetch(`${appURL}/repo/createBlob`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          file,
+          owner,
+          repo,
+          token
+        })
+      }).then((response) => response.json())
+    );
 
     // Await all blob promises to resolve to blob objects
     const blobs = await Promise.all(promises);
@@ -40,24 +42,24 @@ export async function POST({ request }) {
 
   try {
     // Create new GitHub repo named the value of repo
-    await fetch(`${appURL}/repo/createForAuthenticatedUser`,{
+    await fetch(`${appURL}/repo/createForAuthenticatedUser`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         repo,
         token
       })
-    })
+    });
 
     // Create component files from user prototype, passing state from cookies
     const componentFiles = fileUtility.createFiles(state);
 
     // Get the static project files
-    const projectFiles = await fetch('https://svetch.vercel.app/api/projectFiles', { 
-      method: 'GET' 
+    const projectFiles = await fetch('https://app.svetch.io/api/projectFiles', {
+      method: 'GET'
     })
-    .then(response => response.json())
-    .then(({ files }) => files)
+      .then((response) => response.json())
+      .then(({ files }) => files);
 
     // Get git blobs from the project and component files for the commit
     const blobs = await getBlobs([...projectFiles, ...componentFiles]);
@@ -69,7 +71,7 @@ export async function POST({ request }) {
       body: JSON.stringify({
         blobs
       })
-    }).then(response => response.json())
+    }).then((response) => response.json());
 
     // Get the sha from the last commit (the inital commit when the repo was created)
     const commitSha = await fetch(`${appURL}/repo/getLastCommitSha`, {
@@ -80,7 +82,7 @@ export async function POST({ request }) {
         repo,
         token
       })
-    }).then(response => response.text())
+    }).then((response) => response.text());
 
     // Create a git tree and get the corresponding sha
     const treeSha = await fetch(`${appURL}/repo/createGitTree`, {
@@ -93,7 +95,7 @@ export async function POST({ request }) {
         token,
         tree
       })
-    }).then(response => response.text())
+    }).then((response) => response.text());
 
     // Create a new commit and get the corresponding sha
     const newCommitSha = await fetch(`${appURL}/repo/createCommit`, {
@@ -106,8 +108,8 @@ export async function POST({ request }) {
         token,
         treeSha
       })
-    }).then(response => response.text())
-    
+    }).then((response) => response.text());
+
     // Update the reference for the git branch
     await fetch(`${appURL}/repo/updateReference`, {
       method: 'POST',
@@ -118,12 +120,11 @@ export async function POST({ request }) {
         repo,
         token
       })
-    })
-
+    });
   } catch (err) {
     // eslint-disable-next-line no-console
     console.log('ERROR:', err);
   }
 
-  return new Response(200)
+  return new Response(200);
 }

@@ -2,5 +2,5 @@
 export function load({ cookies }) {
   return {
     state: cookies.get('state')
-  }
+  };
 }

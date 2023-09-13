@@ -135,7 +135,6 @@ export default {
   },
 
   async downloadProject(_name = 'Svetch-Project') {
-    
     // Get the user's protoyped component data
     const files = this.createFiles();
 

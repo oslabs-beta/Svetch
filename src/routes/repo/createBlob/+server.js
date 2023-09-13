@@ -3,7 +3,6 @@ import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 
 // eslint-disable-next-line import/prefer-default-export
 export async function POST({ request }) {
-
   // Parse body of incoming request object
   const { file, owner, repo, token } = await request.json();
 
@@ -22,5 +21,5 @@ export async function POST({ request }) {
   });
 
   // Return a new object containing the git blob and relative file path
-  return new Response(JSON.stringify({ ...data, path: file.path }))
+  return new Response(JSON.stringify({ ...data, path: file.path }));
 }

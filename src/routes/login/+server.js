@@ -20,7 +20,7 @@ export async function GET({ url, cookies }) {
   const repoName = searchParams.get('repoName');
 
   // Store the application URI for redirect URL
-  const redirectURI = 'https://svetch.vercel.app/callback';
+  const redirectURI = 'https://app.svetch.io/callback';
 
   // Define the OAuth scope to be requested
   const OAuthScope = 'scope=repo%20read:user%20user:email';
@@ -34,8 +34,7 @@ export async function GET({ url, cookies }) {
   // Construct complete redirectURL
   const redirectURL = `${target}?client_id=${clientID}&redirect_uri=${redirectURI}/${redirectParams}`;
 
-  cookies.set('state', state, {path: '/', HttpOnly: true})
+  cookies.set('state', state, { path: '/', HttpOnly: true });
 
-  throw redirect(302, redirectURL)
-
+  throw redirect(302, redirectURL);
 }

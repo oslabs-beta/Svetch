@@ -3,7 +3,6 @@ import { restEndpointMethods } from '@octokit/plugin-rest-endpoint-methods';
 
 // eslint-disable-next-line import/prefer-default-export
 export async function POST({ request }) {
-
   // Parse body of incoming request object
   const { owner, repo, token, treeSha } = await request.json();
 
@@ -21,7 +20,7 @@ export async function POST({ request }) {
     parents: [],
     tree: treeSha
   });
-  
+
   // Return the commit sha
-  return new Response(data.sha)
+  return new Response(data.sha);
 }

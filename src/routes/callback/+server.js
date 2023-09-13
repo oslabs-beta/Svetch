@@ -6,16 +6,16 @@ const tokenURL = 'https://github.com/login/oauth/access_token';
 const userURL = 'https://api.github.com/user';
 
 const clientId = import.meta.env.VITE_VERCEL_ENV_CLIENT_ID || import.meta.env.VITE_CLIENT_ID;
-const clientSecret = import.meta.env.VITE_VERCEL_ENV_CLIENT_SECRET || import.meta.env.VITE_CLIENT_SECRET;
+const clientSecret =
+  import.meta.env.VITE_VERCEL_ENV_CLIENT_SECRET || import.meta.env.VITE_CLIENT_SECRET;
 
 const getToken = async (code) => {
-  
   const requestData = JSON.stringify({
     client_id: clientId,
     client_secret: clientSecret,
     code
   });
-  
+
   const response = await axios.post(tokenURL, requestData, {
     headers: {
       'Content-Type': 'application/json',
@@ -27,7 +27,6 @@ const getToken = async (code) => {
 };
 
 const getUser = async (token) => {
-  
   const response = await axios.get(userURL, {
     headers: {
       Accept: 'application/json',
@@ -51,15 +50,15 @@ export async function GET({ url, cookies }) {
   // get user info from Github
   const user = await getUser(token);
 
-  cookies.set('user', user.login, {path: '/', HttpOnly: true})
+  cookies.set('user', user.login, { path: '/', HttpOnly: true });
 
   // get canvas state from cookie
-  const state = cookies.get('state')
+  const state = cookies.get('state');
 
   if (repoName) {
     axios({
       method: 'post',
-      url: 'https://svetch.vercel.app/edge/exportProject',
+      url: 'https://app.svetch.io/edge/exportProject',
       data: {
         token,
         user,
@@ -69,5 +68,5 @@ export async function GET({ url, cookies }) {
     });
   }
 
-  throw redirect(302, '/')
+  throw redirect(302, '/');
 }
