@@ -13,10 +13,10 @@ export default class Rect {
 
   contains(x, y) {
     return (
-      x > this.x
-      && x < this.x + this.width
-      && y > this.y + 2 * borderWidth
-      && y < this.y + this.height + 2 * borderWidth
+      x > this.x &&
+      x < this.x + this.width &&
+      y > this.y + 2 * borderWidth &&
+      y < this.y + this.height + 2 * borderWidth
     );
   }
 
@@ -40,10 +40,7 @@ export default class Rect {
 
   deleteTabContains(x, y) {
     return (
-      x >= this.x + this.width - 20
-      && x <= this.x + this.width
-      && y >= this.y
-      && y <= this.y + 20
+      x >= this.x + this.width - 20 && x <= this.x + this.width && y >= this.y && y <= this.y + 20
     );
   }
 }

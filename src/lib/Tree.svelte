@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
-	import d3TreeRenderer from '../utils/d3TreeRenderer';
-	import canvasUtility from '../utils/canvasUtility';
+	import d3TreeRenderer from './utils/d3TreeRenderer';
+	import canvasUtility from './utils/canvasUtility';
 
 	export let height;
 

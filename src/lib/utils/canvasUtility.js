@@ -1,28 +1,20 @@
 /* eslint-disable no-underscore-dangle */
-import { canvas } from '../store';
+import { canvas } from '../../store';
 import EditableRect from './editableRect';
 
 export default {
-
   // NOTE: method contains reference to this, cannot use arrow fn syntax
   create(rectProps) {
     // Store id and type from component object
-    const {
-      x,
-      y,
-      width,
-      height,
-      type,
-      color,
-    } = rectProps;
+    const { x, y, width, height, type, color } = rectProps;
 
     // NOTE: keyword this uses arrow syntax here (uses context of 'create' call, not 'update' call)
     canvas.update((cStore) => {
       // Store an id for the new rect that will be created
-      const id = `component${cStore.index.counter}`;
+      const id = `component${cStore['+page'].counter}`;
 
       // Increment the number of components in store by 1
-      cStore.index.counter += 1;
+      cStore['+page'].counter += 1;
 
       // Define a new rect (from destructured rectProps)
       const newRect = new EditableRect(x, y, width, height, type, color, id);
@@ -50,7 +42,7 @@ export default {
     // Update the canvas store
     canvas.update((cStore) => {
       // Store parent key
-      const parentId = parent ? parent.id : 'index';
+      const parentId = parent ? parent.id : '+page';
 
       // Store index of component in children array
       const index = cStore[parentId].children.indexOf(id);
@@ -67,7 +59,7 @@ export default {
     // Update the canvas store
     canvas.update((cStore) => {
       // Store parent key
-      const parentId = parent ? parent.id : 'index';
+      const parentId = parent ? parent.id : '+page';
 
       // Add component as a child
       cStore[parentId].children.push(id);
@@ -82,7 +74,7 @@ export default {
     // Update the canvas store
     canvas.update((cStore) => {
       // Store parent key
-      const parentId = parent ? parent.id : 'index';
+      const parentId = parent ? parent.id : '+page';
 
       // Remove child from parent component
       this.removeParent({ id, parent });
@@ -92,7 +84,7 @@ export default {
 
       // Update each grandchild component rect to be new parent component rect
       grandChildren.forEach((grandChildId) => {
-        cStore[grandChildId].rect.parent = (cStore[parentId].rect || null);
+        cStore[grandChildId].rect.parent = cStore[parentId].rect || null;
       });
 
       // Add the grandchildren to the children array
@@ -111,16 +103,18 @@ export default {
     let canvasStore;
 
     // Store unsubscribe method, and update value of canvasStore
-    const unsubscribe = canvas.subscribe((val) => { canvasStore = val; });
+    const unsubscribe = canvas.subscribe((val) => {
+      canvasStore = val;
+    });
 
     // Unsubscribe from store to prevent changing the data
     unsubscribe();
 
-    // Decleare array for component rects (will filter out index, children come after parents)
+    // Decleare array for component rects (will filter out +page, children come after parents)
     const rects = [];
 
-    // Define queue, initially contains only index key
-    const queue = ['index'];
+    // Define queue, initially contains only +page key
+    const queue = ['+page'];
 
     // Process the queue while it has keys
     while (queue.length) {
@@ -151,7 +145,9 @@ export default {
     let cStore;
 
     // Store unsubscribe method, and update value of canvasStore
-    const unsubscribe = canvas.subscribe((val) => { cStore = val; });
+    const unsubscribe = canvas.subscribe((val) => {
+      cStore = val;
+    });
 
     // Unsubscribe from store to prevent changing the data
     unsubscribe();
@@ -165,7 +161,7 @@ export default {
         this[key] = (this[key] || 0) + 1;
         return this[key];
       },
-      _singleUse: new Set(),
+      _singleUse: new Set()
     };
 
     // Store a new cache object
@@ -199,9 +195,9 @@ export default {
     };
 
     // Define helper function to traverse children
-    const parseChildren = (id = 'index', path = '') => {
-      // Store component type or 'index'
-      const { type } = (cStore[id].rect || { type: 'index' });
+    const parseChildren = (id = '+page', path = '') => {
+      // Store component type or '+page'
+      const { type } = cStore[id].rect || { type: '+page' };
 
       // Define name as component type, changes if component has children (and deduplication)
       let componentName = type;
@@ -210,17 +206,20 @@ export default {
       const children = cStore[id].children.map((child) => parseChildren(child, `${path}_${type}`));
 
       // Generate hash string from children array (sort so hash is irrespective of insertion order)
-      const hash = children.map(({ name }) => name).sort().join('');
+      const hash = children
+        .map(({ name }) => name)
+        .sort()
+        .join('');
 
-      // When current component is not index, and component has children
-      if (children.length && type !== 'index') {
+      // When current component is not +page, and component has children
+      if (children.length && type !== '+page') {
         // Update the component name to be `type_cache value` (incremented by one)
         componentName = getName(type, hash);
 
         // Update components hash with object for this component
         map.set(`${type}_${hash}`, componentName);
 
-      // When component is index, or if compenent does not have children
+        // When component is +page, or if compenent does not have children
       } else cache._singleUse.add(type);
 
       // Return the component object
@@ -252,10 +251,10 @@ export default {
   reset: () => {
     // Define the default canvas store
     const defaultCanvas = {
-      index: {
+      '+page': {
         children: [],
-        counter: 0,
-      },
+        counter: 0
+      }
     };
 
     // Set the canvas store value to default
@@ -281,7 +280,9 @@ export default {
     let cStore;
 
     // Store unsubscribe method, and update value of canvasStore
-    const unsubscribe = canvas.subscribe((val) => { cStore = val; });
+    const unsubscribe = canvas.subscribe((val) => {
+      cStore = val;
+    });
 
     // Unsubscribe from store to prevent changing the data
     unsubscribe();
@@ -290,10 +291,7 @@ export default {
     const componentRects = this.parse();
 
     // Define oldChilren to be the rects associated with children ids (in the store)
-    const oldChildren = new Set(
-      cStore[selected.id].children
-        .map((id) => cStore[id].rect),
-    );
+    const oldChildren = new Set(cStore[selected.id].children.map((id) => cStore[id].rect));
 
     // Declare newChildren to store new children rects
     const newChildren = new Set();
@@ -307,8 +305,7 @@ export default {
       if (rect.containsRect(selected)) newParent = rect;
 
       // When selected contains current rect and is not an establish parent of current rect
-      if (selected.containsRect(rect)
-          && (!rect.parent || !selected.containsRect(rect.parent))) {
+      if (selected.containsRect(rect) && (!rect.parent || !selected.containsRect(rect.parent))) {
         // Add current rect to the newChildren set
         newChildren.add(rect);
       }
@@ -331,7 +328,7 @@ export default {
   restore: (oldStore) => {
     // Store the component (values) from oldStore
     const components = Object.keys(oldStore)
-      .filter((key) => key !== 'index')
+      .filter((key) => key !== '+page')
       .map((id) => oldStore[id]);
 
     // Iterate over components, update prototype of rect to be EditableRect
@@ -341,5 +338,5 @@ export default {
 
     // Set the value of canvas store to be the oldStore (with prototypes updated)
     canvas.set(oldStore);
-  },
+  }
 };

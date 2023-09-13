@@ -2,28 +2,31 @@
   "name": "svetch",
   "version": "0.0.1",
   "scripts": {
-    "dev": "svelte-kit dev",
-    "build": "svelte-kit build",
-    "package": "svelte-kit package",
-    "preview": "svelte-kit preview",
-    "prepare": "svelte-kit sync",
-    "lint": "eslint --ignore-path .gitignore .",
-    "serve": "node server/server.js"
+    "dev:vercel": "vercel dev",
+    "dev:vite": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "prettier --check . && eslint ."
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "next",
-    "@sveltejs/kit": "next",
     "eslint": "^8.34.0",
     "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-svelte3": "^3.2.1",
-    "svelte": "^3.48.0"
+    "eslint-plugin-svelte": "^2.33.0",
+    "prettier": "^3.0.3",
+    "prettier-plugin-svelte": "^3.0.3",
+    "svelte": "^4.0.5",
+    "vercel": "^32.2.1",
+    "vite": "^4.4.2"
   },
   "type": "module",
   "dependencies": {
     "@fortawesome/free-brands-svg-icons": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@octokit/plugin-rest-endpoint-methods": "^5.13.0",
+    "@sveltejs/adapter-auto": "^2.0.0",
+    "@sveltejs/kit": "^1.20.4",
     "axios": "^0.27.2",
     "b64-to-blob": "^1.2.19",
     "cookie": "^0.5.0",

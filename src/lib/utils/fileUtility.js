@@ -2,7 +2,7 @@ import axios from 'axios';
 import b64ToBlob from 'b64-to-blob';
 import fileSaver from 'file-saver';
 import JSZip from 'jszip';
-import { canvas } from '../store';
+import { canvas } from '../../store';
 import canvasUtility from './canvasUtility';
 import codeUtility from './codeUtility';
 
@@ -29,7 +29,7 @@ export default {
           name,
           children,
           content,
-          id,
+          id
         });
       }
 
@@ -49,27 +49,27 @@ export default {
     // Define `lib` folder object
     const libFolder = {
       name: 'lib',
-      children: [],
+      children: []
     };
 
-    // Define `routes` folder object, which contains index
+    // Define `routes` folder object, which contains +page
     const routesFolder = {
       name: 'routes',
-      children: [{ name: 'index', id: 'index' }],
+      children: [{ name: '+page', id: '+page' }]
     };
 
     // Define file tree return object
     const fileTree = {
       name: 'src',
-      children: [routesFolder],
+      children: [routesFolder]
     };
 
     // Store tree created from current canvas
     const tree = canvasUtility.createTree();
 
-    // Iterate over the files hash, filter out index, return name & id for each
+    // Iterate over the files hash, filter out +page, return name & id for each
     libFolder.children = [...this.parse(tree).files.values()]
-      .filter(({ name }) => name !== 'index')
+      .filter(({ name }) => name !== '+page')
       .map(({ name, id }) => ({ name, id }));
 
     // If lib folder has children, then add it to the file tree object
@@ -101,17 +101,17 @@ export default {
   },
 
   // Format name to be PascalCase
-  formatName: (name) => name
-    .toLowerCase()
-    .split(' ')
-    .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-    .join(''),
+  formatName: (name) =>
+    name
+      .toLowerCase()
+      .split(' ')
+      .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+      .join(''),
 
   // createFiles method contains reference to this, cannot use arrow fn syntax
   createFiles(_canvasUpdate = null) {
     // If updates needed, update canvas store from argument
-    if (_canvasUpdate) canvas.set(JSON.parse(_canvasUpdate).canvas);
-
+    if (_canvasUpdate) canvas.set(JSON.parse(_canvasUpdate).prevCanvas);
     // Store tree from latest canvas version
     const tree = canvasUtility.createTree();
 
@@ -120,8 +120,8 @@ export default {
 
     // Create an array of file-like objects from the files hash map
     const files = [...hash.values()].map(({ name, content }) => {
-      // Index file is stored in 'routes' folder, all others stored in 'lib'
-      const folder = name === 'index' ? 'src/routes' : 'src/lib';
+      // +page file is stored in 'routes' folder, all others stored in 'lib'
+      const folder = name === '+page' ? 'src/routes' : 'src/lib';
 
       // Create path-like string representing a relative path
       const path = `${folder}/${name}.svelte`;
@@ -144,12 +144,17 @@ export default {
     // Iterate through the file data and add each to the JSZip instance
     files.forEach(({ path, content }) => {
       // Store the file content after converting it to a Uint8Array
-      zip.file(`${path}`, Uint8Array.from(content, (x) => x.charCodeAt(0)));
+      zip.file(
+        `${path}`,
+        Uint8Array.from(content, (x) => x.charCodeAt(0))
+      );
     });
 
     // Get the static project files from the api
-    const projectFiles = await axios.get('api/projectFiles')
-      .then(({ data }) => JSON.parse(data)).then(({ zippedFiles }) => zippedFiles);
+    const projectFiles = await axios
+      .get('/api/projectFiles')
+      .then(({ data }) => data)
+      .then(({ zippedFiles }) => zippedFiles);
 
     // Add the static files to the  JSZip instance
     await zip.loadAsync(projectFiles, { base64: true });
@@ -167,6 +172,5 @@ export default {
   deleteCookie: () => {
     // Make post request to remove state cookie
     axios.post('/deleteCookie');
-  },
-
+  }
 };

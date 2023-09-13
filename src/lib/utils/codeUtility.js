@@ -21,17 +21,16 @@ export default {
     // Store an array of objects representing comonents in a list
     const objects = [];
 
-    // Pust the components into array with id set to index
+    // Puts the components into array with id set to index
     for (let i = 0; i < number; i += 1) {
       objects.push(`{ id: ${i} }`);
     }
 
-    // Tab is empty when not in 'index.svelte'
-    const tab = id === 'index' ? '\t' : '';
+    // Tab is empty when not in '+page.svelte'
+    const tab = id === '+page' ? '\t' : '';
 
     // Store the variable declations (declaring the array of components in script tag)
-    const scriptDeclaration = `\tconst ${lcName}s = [\n\t\t${objects
-      .join(',\n\t\t')}\n\t];`;
+    const scriptDeclaration = `\tconst ${lcName}s = [\n\t\t${objects.join(',\n\t\t')}\n\t];`;
 
     // Store the string representing the each block
     const eachBlock = `{#each ${lcName}s as ${lcName} (${lcName}.id)}\n\t${tab}<${name}/>\n${tab}{/each}`;
@@ -51,13 +50,11 @@ export default {
     // Declare variable to store html string, default value of one component per line
     let html = `${statements.join('\n\n')}`;
 
-    // If file is 'Index' and no content (noContent = true), overwrite html string
-    if (id === 'index' && noContent) html = '<main>\n\n</main>';
-
-    // Else, if file is 'Index', wrap default html string in main tags
-    else if (id === 'index') html = `<main>\n\t${statements.join('\n\n\t')}\n<main>`;
-
-    // Else, if no content (and not file is not 'Index'), html string is a comment
+    // If file is '+page' and no content (noContent = true), overwrite html string
+    if (id === '+page' && noContent) html = '<main>\n\n</main>';
+    // Else, if file is '+page', wrap default html string in main tags
+    else if (id === '+page') html = `<main>\n\t${statements.join('\n\n\t')}\n<main>`;
+    // Else, if no content (and not file is not '+page'), html string is a comment
     else if (noContent) html = '<!-- Enter your HTML here -->';
 
     // Return the html string
@@ -66,8 +63,9 @@ export default {
 
   composeImports: (children) => {
     // Create an array of import statements (as strings)
-    const imports = new Set(children
-      .map(({ name }) => `import ${name} from '../lib/${name}.svelte';`));
+    const imports = new Set(
+      children.map(({ name }) => `import ${name} from '../lib/${name}.svelte';`)
+    );
 
     // Define imports string to be indented statments (one per line)
     return `\n\t${[...imports].join('\n\t')}\n`;
@@ -112,25 +110,24 @@ export default {
     }
 
     // Store statements in new array (use set to deduplicate)
-    const statements = deduplicated
-      .map((name) => {
-        // If it is duplicated, it should be a list (each block)
-        if (duplicates.has(name)) {
-          // Compose the each block and associated variable declaration
-          const { eachBlock, scriptDeclaration } = this.composeEachBlock(name, cache[name], id);
+    const statements = deduplicated.map((name) => {
+      // If it is duplicated, it should be a list (each block)
+      if (duplicates.has(name)) {
+        // Compose the each block and associated variable declaration
+        const { eachBlock, scriptDeclaration } = this.composeEachBlock(name, cache[name], id);
 
-          // Push the declaration into the array
-          declarations.push(scriptDeclaration);
+        // Push the declaration into the array
+        declarations.push(scriptDeclaration);
 
-          // Return the string for the each block
-          return eachBlock;
-        }
+        // Return the string for the each block
+        return eachBlock;
+      }
 
-        // Otherwise return the string for component
-        return `<${name} />`;
-      });
+      // Otherwise return the string for component
+      return `<${name} />`;
+    });
 
     // Return the HTML statements
     return statements;
-  },
+  }
 };
