@@ -53,7 +53,7 @@ export default {
     // If file is '+page' and no content (noContent = true), overwrite html string
     if (id === '+page' && noContent) html = '<main>\n\n</main>';
     // Else, if file is '+page', wrap default html string in main tags
-    else if (id === '+page') html = `<main>\n\t${statements.join('\n\n\t')}\n<main>`;
+    else if (id === '+page') html = `<main>\n\t${statements.join('\n\n\t')}\n</main>`;
     // Else, if no content (and not file is not '+page'), html string is a comment
     else if (noContent) html = '<!-- Enter your HTML here -->';
 
